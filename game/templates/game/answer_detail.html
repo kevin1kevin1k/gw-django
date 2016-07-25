@@ -1,0 +1,21 @@
+{% extends 'game/base.html' %}
+
+{% block title %}{{ answer.name }} | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  <h1>{{ answer.name }}</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>問題</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ques in answer.questions.all %}
+        <tr>
+          <td>{{ ques.name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}

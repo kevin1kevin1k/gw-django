@@ -1,0 +1,8 @@
+{% extends 'game/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}新增答案 | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% crispy form %}
+{% endblock content %}

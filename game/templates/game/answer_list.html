@@ -1,0 +1,15 @@
+{% extends 'game/base.html' %}
+
+{% block title %}答案列表 | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% for answer in answers %}
+    <div class="answer">
+      <h2>
+        <a href="{{ answer.get_absolute_url }}">{{ answer.name }}</a>
+      </h2>
+    </div>
+  {% endfor %}
+  <hr>
+  <a href="{% url 'answer_create' %}" class="btn btn-default">新增答案</a>
+{% endblock content %}

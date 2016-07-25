@@ -1,0 +1,33 @@
+{% extends 'game/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}PLAY! | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  <a href="{% url 'game' %}" class="btn btn-default">PLAY!</a>
+  <hr>
+  <p id="word">{{ word }}</p>
+  <hr>
+    
+  <form action="{% url 'play' %}" method="post">
+    {% csrf_token %}
+    <input type="text" id="prev" name="prev"><hr>
+    問題：
+    <!-- autofocus="true" -->
+    <input type="text" id="your_name" name="your_name" required="true">
+    <input type="submit" value="送出" class="btn btn-default" onclick="display()"> 
+  </form>
+  
+  <hr>
+  
+  <p id="list">list<br></p>
+  
+  <script>
+    document.getElementById("prev").value = {{ word }};
+    function display() {
+      var lst = document.getElementById("list");
+      var txt = document.getElementById("your_name");
+      lst.innerHTML += txt.value + "<br>";
+    }
+  </script>
+{% endblock content %}

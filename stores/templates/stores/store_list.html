@@ -1,0 +1,16 @@
+{% extends 'stores/base.html' %}
+
+{% block title %}店家列表 | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% for store in stores %}
+    <div class="store">
+      <h2>
+        <a href="{{ store.get_absolute_url }}">{{ store.name }}</a>
+      </h2>
+      <p>{{ store.notes }}</p>
+    </div>
+  {% endfor %}
+  <hr>
+  <a href="{% url 'store_create' %}" class="btn btn-default">建立店家</a>
+{% endblock content %}
