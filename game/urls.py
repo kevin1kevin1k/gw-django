@@ -6,6 +6,6 @@ urlpatterns = [
     url(r'^list/', views.answer_list, name='answer_list'),
     url(r'^(?P<pk>\d+)/$', views.answer_detail, name='answer_detail'),
     url(r'^new/$', views.answer_create, name='answer_create'),
-    url(r'^playing/$', views.get_name, name='play'),
+    url(r'^playing/$', views.get_name, name='ask'),
     # url(r'^(?P<pk>\d+)/update/$', views.answer_update, name='answer_update'),
 ]

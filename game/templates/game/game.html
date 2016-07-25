@@ -6,28 +6,25 @@
 {% block content %}
   <a href="{% url 'game' %}" class="btn btn-default">PLAY!</a>
   <hr>
-  <p id="word">{{ word }}</p>
+  <p>{{ answer }}</p>
   <hr>
     
-  <form action="{% url 'play' %}" method="post">
+  <form action="{% url 'ask' %}" method="post">
     {% csrf_token %}
-    <input type="text" id="prev" name="prev"><hr>
+    <input type="hidden" id="answer" name="answer" value="{{ answer }}">
+    <input type="hidden" id="prev" name="prev" value="{{ prev }}">
     問題：
-    <!-- autofocus="true" -->
-    <input type="text" id="your_name" name="your_name" required="true">
-    <input type="submit" value="送出" class="btn btn-default" onclick="display()"> 
+    <input type="text" id="question" name="question" required="true" autofocus="true">
+    <input type="submit" value="送出" class="btn btn-default">
+    
+    <p>{{ result }}</p>
   </form>
   
   <hr>
   
-  <p id="list">list<br></p>
+  <textarea id="history" style="border: none">History</textarea>
   
   <script>
-    document.getElementById("prev").value = {{ word }};
-    function display() {
-      var lst = document.getElementById("list");
-      var txt = document.getElementById("your_name");
-      lst.innerHTML += txt.value + "<br>";
-    }
+    document.getElementById("history").innerHTML = "{{ prev }}".split("|").join("\n");
   </script>
 {% endblock content %}
