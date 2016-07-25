@@ -49,7 +49,14 @@ def get_name(request):
             if 'PREV|' in prev:
                 prev = prev[5:]
             prev_list = [s.split(' ') for s in prev.split('|')]
-            return render(request, 'game/game.html', {'answer': answer, 'result': result, 'prev': prev, 'prev_list': prev_list})
+            contexts = {
+                'answer': answer,
+                'result': result,
+                'prev': prev,
+                'prev_list': prev_list,
+                'success': answer in question
+            }
+            return render(request, 'game/game.html', contexts)
     else:
         form = AskForm()
     
