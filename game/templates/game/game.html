@@ -1,11 +1,10 @@
 {% extends 'game/base.html' %}
-{% load crispy_forms_tags %}
 
 {% block title %}PLAY! | {{ block.super }}{% endblock title %}
 
 {% block content %}
-  <a href="{% url 'game' %}" class="btn btn-default">PLAY!</a>
-  <hr>
+  <!-- <a href="{% url 'game' %}" class="btn btn-default">PLAY!</a>
+  <hr> -->
   <p>{{ answer }}</p>
   <hr>
     
@@ -15,16 +14,28 @@
     <input type="hidden" id="prev" name="prev" value="{{ prev }}">
     問題：
     <input type="text" id="question" name="question" required="true" autofocus="true">
-    <input type="submit" value="送出" class="btn btn-default">
+    <input type="submit" value="送出 (Enter)" class="btn btn-success">
     
-    <p>{{ result }}</p>
+    <!-- <p>{{ result }}</p> -->
   </form>
   
   <hr>
   
-  <textarea id="history" style="border: none">History</textarea>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>問題</th>
+        <th>結果</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in prev_list %}
+        <tr>
+          <td>{{ i.0 }}</td>
+          <td>{{ i.1 }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+            
   
-  <script>
-    document.getElementById("history").innerHTML = "{{ prev }}".split("|").join("\n");
-  </script>
 {% endblock content %}

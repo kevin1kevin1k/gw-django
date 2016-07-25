@@ -13,7 +13,7 @@ def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
     form = AskForm()
-    return render(request, 'game/game.html', {'answer': answer.name, 'prev': 'History:', 'form': form})
+    return render(request, 'game/game.html', {'answer': answer.name, 'prev': 'PREV', 'form': form})
     
 def answer_list(request):
     answers = Answer.objects.all()
@@ -45,7 +45,11 @@ def get_name(request):
             prev = data['prev']
             question = data['question']
             result = question + ' ' + eh.run(answer, question)
-            return render(request, 'game/game.html', {'answer': answer, 'result': result, 'prev': prev + '|' + result})
+            prev += '|' + result
+            if 'PREV|' in prev:
+                prev = prev[5:]
+            prev_list = [s.split(' ') for s in prev.split('|')]
+            return render(request, 'game/game.html', {'answer': answer, 'result': result, 'prev': prev, 'prev_list': prev_list})
     else:
         form = AskForm()
     
