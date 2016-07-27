@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from django.shortcuts import render, redirect
 from .models import Store
 from django.http import Http404
@@ -18,12 +20,12 @@ def store_detail(request, pk):
 
 def store_create(request):
     if request.method == 'POST':
-        form = StoreForm(request.POST, submit_title='建立')
+        form = StoreForm(request.POST)
         if form.is_valid():
             store = form.save()
             return redirect(store.get_absolute_url())
     else:
-        form = StoreForm(submit_title='建立')
+        form = StoreForm()
     return render(request, 'stores/store_create.html', {'form': form})
 
 def store_update(request, pk):
@@ -33,11 +35,11 @@ def store_update(request, pk):
         raise Http404
 
     if request.method == 'POST':
-        form = StoreForm(request.POST, instance=store, submit_title='更新')
+        form = StoreForm(request.POST, instance=store)
         if form.is_valid():
             store = form.save()
             return redirect(store.get_absolute_url())
     else:
-        form = StoreForm(instance=store, submit_title='更新')
+        form = StoreForm(instance=store)
     return render(request, 'stores/store_update.html', {'form': form, 'store': store})
 

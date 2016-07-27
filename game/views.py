@@ -29,12 +29,12 @@ def answer_detail(request, pk):
 
 def answer_create(request):
     if request.method == 'POST':
-        form = AnswerForm(request.POST, submit_title='新增')
+        form = AnswerForm(request.POST)
         if form.is_valid():
             answer = form.save()
             return redirect(answer.get_absolute_url())
     else:
-        form = AnswerForm(submit_title='新增')
+        form = AnswerForm()
     return render(request, 'game/answer_create.html', {'form': form})
 
 def get_name(request):
