@@ -5,7 +5,8 @@ from django.http import Http404
 from .models import Answer
 from .forms import AskForm, AnswerForm
 from random import choice
-import eh
+# import eh
+import main_process
 
 # Create your views here.
 
@@ -44,7 +45,8 @@ def get_name(request):
             answer = data['answer']
             prev = data['prev']
             question = data['question']
-            result = question + ' ' + eh.run(answer, question)
+            # result = question + ' ' + eh.run(answer, question)
+            result = question + ' ' + main_process.Responder().process(answer.encode('utf-8'), question.encode('utf-8'))
             prev += '|' + result
             if 'PREV|' in prev:
                 prev = prev[5:]
