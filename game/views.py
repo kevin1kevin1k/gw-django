@@ -7,6 +7,8 @@ from .forms import AskForm, AnswerForm
 from random import choice
 # import eh
 import main_process
+import question_parser as qs
+import synonym
 
 # Create your views here.
 
@@ -42,21 +44,33 @@ def get_name(request):
         form = AskForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            answer = data['answer']
-            prev = data['prev']
-            question = data['question']
-            # result = question + ' ' + eh.run(answer, question)
-            result = question + ' ' + main_process.Responder().process(answer.encode('utf-8'), question.encode('utf-8'))
-            prev += '|' + result
-            if 'PREV|' in prev:
-                prev = prev[5:]
+            answer = data['answer'].encode('utf-8')
+            prev = data['prev'].encode('utf-8')
+            question = data['question'].encode('utf-8')
+            
+            ehownetPath = 'eHowNet_utf8.csv'
+            parser = qs.question_parser(ehownetPath)
+            keywords, qtype = parser.parse_question(question)
+            syns = synonym.synonym(answer)
+            success = len(set(syns) & set(keywords)) > 0
+            if not success:
+                # result = question + ' ' + eh.run(answer, question)
+                update = 'PREV' in prev
+                responder = main_process.Responder()
+                result = question + ' ' + responder.process(answer, question, update)
+                prev += '|' + result
+                if 'PREV|' in prev:
+                    prev = prev[5:]
             prev_list = [s.split(' ') for s in prev.split('|')]
+            prev_len = len(prev_list)
+            for i in range(prev_len):
+                prev_list[i].append(i+1)
             contexts = {
                 'answer': answer,
-                'result': result,
+                # 'result': result,
                 'prev': prev,
                 'prev_list': prev_list,
-                'success': answer in question
+                'success': success
             }
             return render(request, 'game/game.html', contexts)
     else:

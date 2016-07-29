@@ -41,14 +41,16 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th class="col-lg-5">問題</th>
+            <th class="col-lg-1">#</th>
+            <th class="col-lg-4">問題</th>
             <th class="col-lg-1">結果</th>
           </tr>
         </thead>
         <tbody>
           {% for i in prev_list %}
             <tr>
-              <td class="col-lg-5">{{ i.0 }}</td>
+              <td class="col-lg-1">{{ i.2 }}</td>
+              <td class="col-lg-4">{{ i.0 }}</td>
               <td class="col-lg-1">{{ i.1 }}</td>
             </tr>
           {% endfor %}
