@@ -2,7 +2,7 @@
 
 from django.shortcuts import redirect, render
 from django.http import Http404
-from .models import Answer
+from .models import Answer, Question
 from .forms import AskForm, AnswerForm
 from random import choice
 # import eh
@@ -60,9 +60,15 @@ def get_name(request):
                 # result = question + ' ' + eh.run(answer, question)
                 update = 'PREV' in prev
                 responder = main_process.Responder()
-                result = question + ' ' + responder.process(answer, question, update)
-                prev += '|' + result
-            
+                result = responder.process(answer, question, update)
+                prev += '|' + question + ' ' + result
+                ques = Question.objects.create(
+                    answer=Answer.objects.get(name=answer),
+                    name=question,
+                    result=result
+                )
+                ques.save()
+
             prev_list = [ s.split(' ') for s in prev.split('|')[1:] ]
             for i in range(len(prev_list)):
                 prev_list[i].append(i+1)

@@ -4,16 +4,18 @@
 
 {% block content %}
   <h1>{{ answer.name }}</h1>
-  <table class="table">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th>問題</th>
+        <th>結果</th>
       </tr>
     </thead>
     <tbody>
       {% for ques in answer.questions.all %}
         <tr>
           <td>{{ ques.name }}</td>
+          <td>{{ ques.result }}</td>
         </tr>
       {% endfor %}
     </tbody>

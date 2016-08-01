@@ -15,6 +15,7 @@ class Answer(models.Model):
 class Question(models.Model):
     answer = models.ForeignKey('Answer', related_name='questions')
     name = models.CharField(max_length=20)
+    result = models.CharField(max_length=20)
     
     def __unicode__(self):
         return self.name
