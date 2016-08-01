@@ -11,9 +11,11 @@
 
   <div class="row">
     <div class="col-lg-6">
-      {% if success %}
-        <fieldset disabled>
-      {% endif %}
+    {% if success %}
+     <fieldset disabled id="fset">
+    {% else %}
+     <fieldset id="fset">
+    {% endif %}
       <form action="{% url 'ask' %}" method="post">
         {% csrf_token %}
         <input type="hidden" id="answer" name="answer" value="{{ answer }}">
@@ -25,9 +27,7 @@
           </span>
         </div>
       </form>
-      {% if success %}
-        </fieldset>
-      {% endif %}
+     </fieldset>
       
       {% if success %}
         <br>
@@ -35,6 +35,23 @@
           <p>恭喜答對！</p>
         </div>
       {% endif %}
+      
+      <br>
+      <div class="col-lg-4">
+        <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+        <script>
+          function show() {
+            document.getElementById("show_answer").style.display = "block";
+            document.getElementById("fset").disabled = "true";
+          }
+        </script>
+      </div>
+      <div class="col-lg-5">
+        <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+          正確答案：{{ answer }}
+        </div>
+      </div>
+      
     </div>
     
     <div class="col-lg-6">
