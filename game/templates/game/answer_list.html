@@ -3,13 +3,19 @@
 {% block title %}答案列表 | {{ block.super }}{% endblock title %}
 
 {% block content %}
+  <a href="{% url 'answer_create' %}" class="btn btn-default">新增答案</a>
+  <hr>
   {% for answer in answers %}
     <div class="answer">
       <h2>
-        <a href="{{ answer.get_absolute_url }}">{{ answer.name }}</a>
+        <a href="{{ answer.get_absolute_url }}">
+          {{ answer.name }}
+          {% if answer.questions.all %}
+            <span class="label label-info">{{ answer.questions.all|length }}</span>
+          {% endif %}
+        </a>
       </h2>
     </div>
   {% endfor %}
   <hr>
-  <a href="{% url 'answer_create' %}" class="btn btn-default">新增答案</a>
 {% endblock content %}
