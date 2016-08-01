@@ -9,6 +9,7 @@ from random import choice
 import main_process
 import question_parser as qs
 import synonym
+import ancestors as anc
 
 # Create your views here.
 
@@ -51,17 +52,21 @@ def get_name(request):
             ehownetPath = 'eHowNet_utf8.csv'
             parser = qs.question_parser(ehownetPath)
             keywords, qtype = parser.parse_question(question)
-            syns = synonym.synonym(answer)
-            success = len(set(syns) & set(keywords)) > 0
+            syns = synonym.synonym(answer) + [answer]
+            success = len(set(syns) & set(keywords)) > 0 or \
+                      any([anc.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
+            
             if not success:
                 # result = question + ' ' + eh.run(answer, question)
                 update = 'PREV' in prev
                 responder = main_process.Responder()
                 result = question + ' ' + responder.process(answer, question, update)
                 prev += '|' + result
-                if 'PREV|' in prev:
-                    prev = prev[5:]
-            prev_list = [s.split(' ') for s in prev.split('|')]
+                prev = prev.replace('PREV|', '')
+            
+            prev_list = []
+            if 'PREV' not in prev:
+                prev_list = [s.split(' ') for s in prev.split('|')]
             prev_len = len(prev_list)
             for i in range(prev_len):
                 prev_list[i].append(i+1)
@@ -72,6 +77,7 @@ def get_name(request):
                 'prev_list': prev_list,
                 'success': success
             }
+            
             return render(request, 'game/game.html', contexts)
     else:
         form = AskForm()
