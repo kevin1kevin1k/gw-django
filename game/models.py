@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 class Answer(models.Model):
     name = models.CharField(max_length=20)
     
-    def __str__(self):
+    def __unicode__(self):
         return self.name
     
     def get_absolute_url(self):
@@ -16,6 +16,6 @@ class Question(models.Model):
     answer = models.ForeignKey('Answer', related_name='questions')
     name = models.CharField(max_length=20)
     
-    def __str__(self):
+    def __unicode__(self):
         return self.name
     

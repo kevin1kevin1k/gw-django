@@ -62,13 +62,9 @@ def get_name(request):
                 responder = main_process.Responder()
                 result = question + ' ' + responder.process(answer, question, update)
                 prev += '|' + result
-                prev = prev.replace('PREV|', '')
             
-            prev_list = []
-            if 'PREV' not in prev:
-                prev_list = [s.split(' ') for s in prev.split('|')]
-            prev_len = len(prev_list)
-            for i in range(prev_len):
+            prev_list = [ s.split(' ') for s in prev.split('|')[1:] ]
+            for i in range(len(prev_list)):
                 prev_list[i].append(i+1)
             contexts = {
                 'answer': answer,
