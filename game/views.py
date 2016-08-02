@@ -75,11 +75,11 @@ def get_name(request):
                 update = 'PREV' in prev
                 responder = main_process.Responder()
                 result = responder.process(answer, question, update)
-                prev += '|' + question + ' ' + result
+                prev += '|' + question + ' ' + result[0]
                 ques = Question.objects.create(
                     answer=Answer.objects.get(name=answer),
                     name=question,
-                    result=result
+                    result=', '.join(result)
                 )
                 ques.save()
 
