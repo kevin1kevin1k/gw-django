@@ -13,11 +13,25 @@ import ancestors as anc
 
 # Create your views here.
 
+def group():
+    grp = []
+    size = 10
+    answers = Answer.objects.all()
+    for i in range(len(answers) / size):
+        grp.append(answers[i*size : (i+1)*size])
+    return grp
+
 def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
     form = AskForm()
-    return render(request, 'game/game.html', {'answer': answer.name, 'prev': 'PREV', 'form': form})
+    contexts = {
+        'answer': answer.name,
+        'prev': 'PREV',
+        'form': form,
+        'answers': group()
+    }
+    return render(request, 'game/game.html', contexts)
     
 def answer_list(request):
     answers = Answer.objects.all()
@@ -77,7 +91,8 @@ def get_name(request):
                 # 'result': result,
                 'prev': prev,
                 'prev_list': prev_list,
-                'success': success
+                'success': success,
+                'answers': group()
             }
             
             return render(request, 'game/game.html', contexts)

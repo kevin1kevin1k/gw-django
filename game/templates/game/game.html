@@ -75,5 +75,23 @@
       </table>
     </div>        
   </div>
+  
+  <div class="row">
+    <br>
+    <div style="width: 100%; overflow: auto;">
+      <table class="table">
+        <tbody>
+          {% for grp in answers %}
+            <tr>
+              {% for ans in grp %}
+                <td>{{ ans.name }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <br>
+  </div>
 
 {% endblock content %}
