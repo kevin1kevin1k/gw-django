@@ -23,6 +23,7 @@
           {% csrf_token %}
             <ul class="nav navbar-nav">
               <li><a href="{% url 'answer_list' %}">答案列表</a></li>
+              <li><a href="{% url 'admin:index' %}">Admin</a></li>
             </ul>
           {% endif %}
           
