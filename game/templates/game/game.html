@@ -59,16 +59,18 @@
         <thead>
           <tr>
             <th class="col-lg-1">#</th>
-            <th class="col-lg-4">問題</th>
+            <th class="col-lg-3">問題</th>
             <th class="col-lg-1">結果</th>
+            <th class="col-lg-1">信心(%)</th>
           </tr>
         </thead>
         <tbody>
           {% for i in prev_list %}
             <tr>
-              <td class="col-lg-1">{{ i.2 }}</td>
-              <td class="col-lg-4">{{ i.0 }}</td>
+              <td class="col-lg-1">{{ i.3 }}</td>
+              <td class="col-lg-3">{{ i.0 }}</td>
               <td class="col-lg-1">{{ i.1 }}</td>
+              <td class="col-lg-1">{{ i.2 }}</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -73,12 +73,12 @@ def get_result(request):
                 # result = question + ' ' + eh.run(answer, question)
                 update = 'PREV' in prev
                 responder = main_process.Responder()
-                result = responder.process(answer, question, update)
-                prev += '|' + question + ' ' + result[0]
+                result, source, conf = responder.process(answer, question, update)
+                prev += '|' + question + ' ' + result + ' ' + conf[:5]
                 ques = Question.objects.create(
                     answer=Answer.objects.get(name=answer),
                     name=question,
-                    result=', '.join(result)
+                    result=', '.join([result, source, conf[:5]])
                 )
                 ques.save()
 
