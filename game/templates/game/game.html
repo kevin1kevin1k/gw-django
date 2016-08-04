@@ -16,7 +16,7 @@
     {% else %}
      <fieldset id="fset">
     {% endif %}
-      <form action="{% url 'ask' %}" method="post">
+      <form action="{% url 'get_result' %}" method="post">
         {% csrf_token %}
         <input type="hidden" id="answer" name="answer" value="{{ answer }}">
         <input type="hidden" id="prev" name="prev" value="{{ prev }}">

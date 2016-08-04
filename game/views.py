@@ -53,7 +53,7 @@ def answer_create(request):
         form = AnswerForm()
     return render(request, 'game/answer_create.html', {'form': form})
 
-def get_name(request):
+def get_result(request):
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
@@ -98,4 +98,4 @@ def get_name(request):
     else:
         form = AskForm()
     
-    return render(request, 'game/game.html', {'result': 'error: get_name', 'form': form})
+    return render(request, 'game/game.html', {'result': 'error: get_result', 'form': form})
