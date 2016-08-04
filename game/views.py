@@ -67,11 +67,11 @@ def get_result(request):
             keywords, qtype = parser.parse_question(question)
             syns = synonym.synonym(answer) + [answer]
             success = len(set(syns) & set(keywords)) > 0 or \
-                any([ancestors.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
+                1 in [ancestors.belong(kwd, answer) for kwd in keywords]
             
             if not success:
                 # result = question + ' ' + eh.run(answer, question)
-                update = 'PREV' in prev
+                update = prev == 'PREV|'
                 responder = main_process.Responder()
                 result, source, conf = responder.process(answer, question, update)
                 prev += '|' + question + ' ' + result + ' ' + conf[:5]
