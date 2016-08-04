@@ -71,7 +71,7 @@ def get_result(request):
             
             if not success:
                 # result = question + ' ' + eh.run(answer, question)
-                update = prev == 'PREV|'
+                update = prev == 'PREV'
                 responder = main_process.Responder()
                 result, source, conf = responder.process(answer, question, update)
                 prev += '|' + question + ' ' + result + ' ' + conf[:5]
