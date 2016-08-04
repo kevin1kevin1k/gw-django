@@ -8,8 +8,7 @@ from random import choice
 # import eh
 import main_process
 import question_parser as qs
-import synonym
-import ancestors as anc
+from ehownet import synonym, ancestors
 
 # Create your views here.
 
@@ -68,7 +67,7 @@ def get_name(request):
             keywords, qtype = parser.parse_question(question)
             syns = synonym.synonym(answer) + [answer]
             success = len(set(syns) & set(keywords)) > 0 or \
-                      any([anc.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
+                any([ancestors.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
             
             if not success:
                 # result = question + ' ' + eh.run(answer, question)
