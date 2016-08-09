@@ -3,10 +3,11 @@
 {% block title %}答案列表 | {{ block.super }}{% endblock title %}
 
 {% block content %}
+<div class="container">
   <a href="{% url 'answer_create' %}" class="btn btn-default">新增答案</a>
   <hr>
   {% for answer in answers %}
-    <div class="answer">
+    <div class="answer" style="margin-left: 20px">
       <h2>
         <a href="{{ answer.get_absolute_url }}">
           {{ answer.name }}
@@ -18,4 +19,5 @@
     </div>
   {% endfor %}
   <hr>
+</div>
 {% endblock content %}
