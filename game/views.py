@@ -28,8 +28,9 @@ def group():
 def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
+    tmp = ''
     for ans in answers:
-        if ans.name == u'閃電':
+        if ans.name == tmp:
             answer = ans
             break
     form = AskForm()
@@ -115,7 +116,7 @@ def get_result(request):
                 prev += '|' + question + ',' + result[0] + ',' + str(float(result[2][:5])*100) + ',' + res
 
             else:
-                prev += '|' + question + ',AC,1,' + '哇，你答對了~~~'
+                prev += '|' + question + ',AC,100.0,' + '哇，你答對了~~~'
 
             prev_list = [ s.split(',') for s in prev.split('|')[1:] ]
             cnt = 0
