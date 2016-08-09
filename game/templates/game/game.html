@@ -33,10 +33,32 @@
     <hr>
   {% endif %}
 
+<<<<<<< HEAD
   <div class="col-lg-6" style="margin-left:0px">
    <div id="scroll" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
     <br><br>
     <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
+=======
+  <div class="row">
+    <div class="col-lg-6">
+    {% if success %}
+     <fieldset disabled id="fset">
+    {% else %}
+     <fieldset id="fset">
+    {% endif %}
+      <form action="{% url 'get_result' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="answer" name="answer" value="{{ answer }}">
+        <input type="hidden" id="prev" name="prev" value="{{ prev }}">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true">
+          <span class="input-group-btn">
+            <input type="submit" value="送出 (Enter)" class="btn btn-success">
+          </span>
+        </div>
+      </form>
+     </fieldset>
+>>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
       
     {% for i in prev_list %}
       {% if i.3 %}
@@ -111,6 +133,7 @@
     </div>
     <br><br>
     <div class="col-lg-6">
+<<<<<<< HEAD
       <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
         正確答案：{{ answer }}
       </div>
@@ -132,7 +155,24 @@
             <tr>
               <td class="col-lg-1">{{ i.3 }}</td>
               <td class="col-lg-4">{{ i.0 }}</td>
+=======
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-lg-1">#</th>
+            <th class="col-lg-3">問題</th>
+            <th class="col-lg-1">結果</th>
+            <th class="col-lg-1">信心(%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in prev_list %}
+            <tr>
+              <td class="col-lg-1">{{ i.3 }}</td>
+              <td class="col-lg-3">{{ i.0 }}</td>
+>>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
               <td class="col-lg-1">{{ i.1 }}</td>
+              <td class="col-lg-1">{{ i.2 }}</td>
             </tr>
           {% endif %}
         {% endfor %}

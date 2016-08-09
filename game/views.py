@@ -8,10 +8,14 @@ from random import choice
 # import eh
 import main_process
 import question_parser as qs
+<<<<<<< HEAD
 import synonym
 import ancestors as anc
 import time
 import random
+=======
+from ehownet import synonym, ancestors
+>>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
 
 # Create your views here.
 
@@ -56,7 +60,7 @@ def answer_create(request):
         form = AnswerForm()
     return render(request, 'game/answer_create.html', {'form': form})
 
-def get_name(request):
+def get_result(request):
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
@@ -71,6 +75,7 @@ def get_name(request):
             syns = synonym.synonym(answer) + [answer]
             start = time.clock()
             success = len(set(syns) & set(keywords)) > 0 or \
+<<<<<<< HEAD
                       any([anc.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
             end = time.clock()
             print "check answer time consuming: ",end - start
@@ -107,10 +112,20 @@ def get_name(request):
                         res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
                         res = res_list[random.randrange(len(res_list))]
                 prev += '|' + question + ',' + result[0] + ',' + res
+=======
+                1 in [ancestors.belong(kwd, answer) for kwd in keywords]
+            
+            if not success:
+                # result = question + ' ' + eh.run(answer, question)
+                update = prev == 'PREV'
+                responder = main_process.Responder()
+                result, source, conf = responder.process(answer, question, update)
+                prev += '|' + question + ' ' + result + ' ' + conf[:5]
+>>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
                 ques = Question.objects.create(
                     answer=Answer.objects.get(name=answer),
                     name=question,
-                    result=', '.join(result)
+                    result=', '.join([result, source, conf[:5]])
                 )
                 ques.save()
             else:
@@ -152,4 +167,4 @@ def get_name(request):
     else:
         form = AskForm()
     
-    return render(request, 'game/game.html', {'result': 'error: get_name', 'form': form})
+    return render(request, 'game/game.html', {'result': 'error: get_result', 'form': form})
