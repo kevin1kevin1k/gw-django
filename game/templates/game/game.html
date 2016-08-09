@@ -3,83 +3,12 @@
 {% block title %}玩遊戲 | {{ block.super }}{% endblock title %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-  {% csrf_token %}
-    <p>{{ answer }}</p>
-    <hr>
-  {% endif %}
-
-  <div class="row">
-    <div class="col-lg-6">
-    {% if success %}
-     <fieldset disabled id="fset">
-    {% else %}
-     <fieldset id="fset">
-    {% endif %}
-      <form action="{% url 'ask' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" id="answer" name="answer" value="{{ answer }}">
-        <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true">
-          <span class="input-group-btn">
-            <input type="submit" value="送出 (Enter)" class="btn btn-success">
-          </span>
-        </div>
-      </form>
-     </fieldset>
-      
-      {% if success %}
-        <br>
-        <div class="alert alert-success" role="alert">
-          <p>恭喜答對！</p>
-        </div>
-      {% endif %}
-      
-      <br>
-      <div class="col-lg-4">
-        <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
-        <script>
-          function show() {
-            document.getElementById("show_answer").style.display = "block";
-            document.getElementById("fset").disabled = "true";
-          }
-        </script>
-      </div>
-      <div class="col-lg-5">
-        <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
-          正確答案：{{ answer }}
-        </div>
-      </div>
-      
-    </div>
-    
-    <div class="col-lg-6">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th class="col-lg-1">#</th>
-            <th class="col-lg-4">問題</th>
-            <th class="col-lg-1">結果</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in prev_list %}
-            <tr>
-              <td class="col-lg-1">{{ i.2 }}</td>
-              <td class="col-lg-4">{{ i.0 }}</td>
-              <td class="col-lg-1">{{ i.1 }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>        
-  </div>
-  
+<div style="width:30px; height:600px; float:left;"></div>
+<div style="width:180px; float:left;">
   <div class="row">
     <br>
-    <div style="width: 100%; overflow: auto;">
-      <table class="table">
+    <div style="width: 100%; height:600px; overflow: auto;">
+      <table class="table" style="text-align:center;">
         <tbody>
           {% for grp in answers %}
             <tr>
@@ -93,5 +22,123 @@
     </div>
     <br>
   </div>
+</div>
+
+<div class="container" style="position:relative;">
+  <br>
+  <div style="width:30px; height:600px; float:left"></div>
+  {% if user.is_authenticated %}
+  {% csrf_token %}
+    <p>{{ answer }}</p>
+    <hr>
+  {% endif %}
+
+  <div class="col-lg-6" style="margin-left:0px">
+   <div id="scroll" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
+    <br><br>
+    <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
+      
+    {% for i in prev_list %}
+      {% if i.3 %}
+        <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
+        <br><br><br>
+      {% endif %}
+      <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.2}}</div>
+      <br><br><br>
+    {% endfor %}
+   </div>
+  <script>
+  var objDiv = document.getElementById("scroll");
+  objDiv.scrollTop = objDiv.scrollHeight;
+  </script>
+  {% if success %}
+   <fieldset disabled id="fset">
+  {% else %}
+   <fieldset id="fset">
+  {% endif %}
+    <form id="form1" action="{% url 'ask' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" id="answer" name="answer" value="{{ answer }}">
+      <input type="hidden" id="prev" name="prev" value="{{ prev }}">
+      <!--<input type="hidden" id="prev_list" name="answer" value="{{ prev_list }}">
+      <input type="hidden" id="success" name="success" value="{{ success }}">
+      <input type="hidden" id="answers" name="answers" value="{{ answers }}">-->
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
+        <span class="input-group-btn">
+          <input onclick="cclick()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
+            <script>
+            function cclick() {
+                //alert("alert!!!!!!!!!!!!!!!!");
+                //console.log("hi!!!!!")
+                var def=document.getElementById("default");
+                var clone = def.cloneNode(true);
+                var qq = document.getElementById("question").value;
+                clone.innerHTML = qq;
+                clone.style.visibility = "visible";
+                var objDiv = document.getElementById("scroll");
+                objDiv.appendChild(clone);
+                objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
+                objDiv.scrollTop = objDiv.scrollHeight;
+                //document.getElementById("form1").submit();
+                //var text=document.getElementById("scroll");
+                //text.innerHTML+='lululu';
+                //text.innerHTML+=`<br><br><div style="position: absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius: 8px;"><font style="font-weight:bold; color:#FAFAFA">${qq}</font></div>`
+            }
+            </script>
+        </span>
+      </div>
+    </form>
+   </fieldset>
+
+
+    {% if success %}
+      <br>
+      <div class="alert alert-success" role="alert">
+        <p>恭喜答對！</p>
+      </div>
+    {% endif %}
+    
+    <br>
+    <div class="col-lg-4">
+      <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+      <script>
+        function show() {
+          document.getElementById("show_answer").style.display = "block";
+          document.getElementById("fset").disabled = "true";
+        }
+      </script>
+    </div>
+    <br><br>
+    <div class="col-lg-6">
+      <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+        正確答案：{{ answer }}
+      </div>
+    </div>
+  </div>
+  <!--<div style="width:30px; height:600px; float:left;"></div>-->
+  <div class="col-lg-5">
+    <table class="table table-hover" style="margin-left:30px; background-color:#FAFAFA">
+      <thead>
+        <tr>
+          <th class="col-lg-1">#</th>
+          <th class="col-lg-3">問題</th>
+          <th class="col-lg-2">結果</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in prev_list%}
+          {% if i.3 %}
+            <tr>
+              <td class="col-lg-1">{{ i.3 }}</td>
+              <td class="col-lg-4">{{ i.0 }}</td>
+              <td class="col-lg-1">{{ i.1 }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
 {% endblock content %}
