@@ -10,12 +10,14 @@ import main_process
 import question_parser as qs
 import synonym
 import ancestors as anc
+import time
+import random
 
 # Create your views here.
 
 def group():
     grp = []
-    size = 10
+    size = 1
     answers = Answer.objects.all()
     for i in range(len(answers) / size):
         grp.append(answers[i*size : (i+1)*size])
@@ -62,30 +64,81 @@ def get_name(request):
             answer = data['answer'].encode('utf-8')
             prev = data['prev'].encode('utf-8')
             question = data['question'].encode('utf-8')
-            
+
             ehownetPath = 'eHowNet_utf8.csv'
             parser = qs.question_parser(ehownetPath)
             keywords, qtype = parser.parse_question(question)
             syns = synonym.synonym(answer) + [answer]
+            start = time.clock()
             success = len(set(syns) & set(keywords)) > 0 or \
                       any([anc.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
-            
+            end = time.clock()
+            print "check answer time consuming: ",end - start
+
             if not success:
-                # result = question + ' ' + eh.run(answer, question)
-                update = 'PREV' in prev
+                #result = question + ' ' + eh.run(answer, question)
+                update = prev == 'PREV'
+                #print 'update', update, '!!!!!!!!!'
+                #print prev.decode('utf-8').encode('mbcs')
+                start = time.clock()
                 responder = main_process.Responder()
+                end = time.clock()
+                print "Responder construction consuming: ",end - start
                 result = responder.process(answer, question, update)
-                prev += '|' + question + ' ' + result[0]
+                res = 'TEST'
+                if(result[0] == 'Y'):
+                    if(float(result[2]) > 0.9):
+                        res_list = ['沒錯', '是的', 'You\'re right', '嗯，'+question.replace('嗎', '')]
+                        res = res_list[random.randrange(len(res_list))]
+                    elif(float(result[2]) > 0.7):
+                        res_list = ['我想是吧', '應該是', '嗯，我有七成的自信說是']
+                        res = res_list[random.randrange(len(res_list))]
+                    else:
+                        res_list = ['我不是很有自信，但可能是', '大概吧', '我猜可能是吧']
+                        res = res_list[random.randrange(len(res_list))]
+                elif(result[0] == 'N'):
+                    if(float(result[2]) > 0.9):
+                        res_list = ['還差得遠呢', '你想太多了', '不是喔']
+                        res = res_list[random.randrange(len(res_list))]
+                    elif(float(result[2]) > 0.7):
+                        res_list = ['我認為不是', '應該不是', '嗯，我有七成的自信說它不是']
+                        res = res_list[random.randrange(len(res_list))]
+                    else:
+                        res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
+                        res = res_list[random.randrange(len(res_list))]
+                prev += '|' + question + ',' + result[0] + ',' + res
                 ques = Question.objects.create(
                     answer=Answer.objects.get(name=answer),
                     name=question,
                     result=', '.join(result)
                 )
                 ques.save()
+            else:
+                prev += '|' + question + ',AC,' + '哇，你答對了~~~'
 
-            prev_list = [ s.split(' ') for s in prev.split('|')[1:] ]
+            prev_list = [ s.split(',') for s in prev.split('|')[1:] ]
+            cnt = 0
             for i in range(len(prev_list)):
-                prev_list[i].append(i+1)
+                if prev_list[i][0] != '':
+                    cnt += 1
+                    prev_list[i].append(cnt)
+                else:
+                    prev_list[i].append('')
+
+            encourage = True
+            if cnt > 3 and cnt%2 == 0:
+                for i in range(-1, -5, -1):
+                    if prev_list[i][1] == 'Y':
+                        encourage = False
+            else:
+                encourage = False
+
+            if encourage:
+                res_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
+                res = res_list[random.randrange(len(res_list))]
+                prev += '|,,' + res
+                prev_list.append(['', '', res, ''])
+
             contexts = {
                 'answer': answer,
                 # 'result': result,
@@ -94,7 +147,7 @@ def get_name(request):
                 'success': success,
                 'answers': group()
             }
-            
+
             return render(request, 'game/game.html', contexts)
     else:
         form = AskForm()
