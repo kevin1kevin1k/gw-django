@@ -33,12 +33,12 @@
     <hr>
   {% endif %}
 
-<<<<<<< HEAD
+<!--<<<<<<< HEAD-->
   <div class="col-lg-6" style="margin-left:0px">
    <div id="scroll" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
     <br><br>
     <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
-=======
+<!--
   <div class="row">
     <div class="col-lg-6">
     {% if success %}
@@ -58,14 +58,14 @@
         </div>
       </form>
      </fieldset>
->>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
+-->
       
     {% for i in prev_list %}
-      {% if i.3 %}
+      {% if i.4 %}
         <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
         <br><br><br>
       {% endif %}
-      <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.2}}</div>
+      <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.3}}</div>
       <br><br><br>
     {% endfor %}
    </div>
@@ -78,7 +78,7 @@
   {% else %}
    <fieldset id="fset">
   {% endif %}
-    <form id="form1" action="{% url 'ask' %}" method="post">
+    <form id="form1" action="{% url 'get_result' %}" method="post">
       {% csrf_token %}
       <input type="hidden" id="answer" name="answer" value="{{ answer }}">
       <input type="hidden" id="prev" name="prev" value="{{ prev }}">
@@ -133,7 +133,7 @@
     </div>
     <br><br>
     <div class="col-lg-6">
-<<<<<<< HEAD
+<!--<<<<<<< HEAD-->
       <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
         正確答案：{{ answer }}
       </div>
@@ -146,31 +146,16 @@
         <tr>
           <th class="col-lg-1">#</th>
           <th class="col-lg-3">問題</th>
-          <th class="col-lg-2">結果</th>
+          <th class="col-lg-1">結果</th>
+          <th class="col-lg-1">信心(%)</th>
         </tr>
       </thead>
       <tbody>
         {% for i in prev_list%}
-          {% if i.3 %}
+          {% if i.4 %}
             <tr>
-              <td class="col-lg-1">{{ i.3 }}</td>
+              <td class="col-lg-1">{{ i.4 }}</td>
               <td class="col-lg-4">{{ i.0 }}</td>
-=======
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th class="col-lg-1">#</th>
-            <th class="col-lg-3">問題</th>
-            <th class="col-lg-1">結果</th>
-            <th class="col-lg-1">信心(%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in prev_list %}
-            <tr>
-              <td class="col-lg-1">{{ i.3 }}</td>
-              <td class="col-lg-3">{{ i.0 }}</td>
->>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
               <td class="col-lg-1">{{ i.1 }}</td>
               <td class="col-lg-1">{{ i.2 }}</td>
             </tr>

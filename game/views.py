@@ -8,14 +8,12 @@ from random import choice
 # import eh
 import main_process
 import question_parser as qs
-<<<<<<< HEAD
 import synonym
 import ancestors as anc
 import time
 import random
-=======
 from ehownet import synonym, ancestors
->>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
+
 
 # Create your views here.
 
@@ -30,6 +28,10 @@ def group():
 def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
+    for ans in answers:
+        if ans.name == u'閃電':
+            answer = ans
+            break
     form = AskForm()
     contexts = {
         'answer': answer.name,
@@ -75,8 +77,7 @@ def get_result(request):
             syns = synonym.synonym(answer) + [answer]
             start = time.clock()
             success = len(set(syns) & set(keywords)) > 0 or \
-<<<<<<< HEAD
-                      any([anc.belong(kwd, syn) == 1 for syn in syns for kwd in keywords])
+                     1 in [ancestors.belong(kwd, answer) for kwd in keywords]
             end = time.clock()
             print "check answer time consuming: ",end - start
 
@@ -111,25 +112,10 @@ def get_result(request):
                     else:
                         res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
                         res = res_list[random.randrange(len(res_list))]
-                prev += '|' + question + ',' + result[0] + ',' + res
-=======
-                1 in [ancestors.belong(kwd, answer) for kwd in keywords]
-            
-            if not success:
-                # result = question + ' ' + eh.run(answer, question)
-                update = prev == 'PREV'
-                responder = main_process.Responder()
-                result, source, conf = responder.process(answer, question, update)
-                prev += '|' + question + ' ' + result + ' ' + conf[:5]
->>>>>>> a44a75acd7c3b332477422f535a59cff1344cde8
-                ques = Question.objects.create(
-                    answer=Answer.objects.get(name=answer),
-                    name=question,
-                    result=', '.join([result, source, conf[:5]])
-                )
-                ques.save()
+                prev += '|' + question + ',' + result[0] + ',' + str(float(result[2][:5])*100) + ',' + res
+
             else:
-                prev += '|' + question + ',AC,' + '哇，你答對了~~~'
+                prev += '|' + question + ',AC,1,' + '哇，你答對了~~~'
 
             prev_list = [ s.split(',') for s in prev.split('|')[1:] ]
             cnt = 0
@@ -141,9 +127,9 @@ def get_result(request):
                     prev_list[i].append('')
 
             encourage = True
-            if cnt > 3 and cnt%2 == 0:
+            if cnt > 3:
                 for i in range(-1, -5, -1):
-                    if prev_list[i][1] == 'Y':
+                    if prev_list[i][1] != 'N':
                         encourage = False
             else:
                 encourage = False
@@ -151,8 +137,8 @@ def get_result(request):
             if encourage:
                 res_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
                 res = res_list[random.randrange(len(res_list))]
-                prev += '|,,' + res
-                prev_list.append(['', '', res, ''])
+                prev += '|,,,' + res
+                prev_list.append(['', '', '', res, ''])
 
             contexts = {
                 'answer': answer,
@@ -168,3 +154,19 @@ def get_result(request):
         form = AskForm()
     
     return render(request, 'game/game.html', {'result': 'error: get_result', 'form': form})
+
+'''
+            if not success:
+                # result = question + ' ' + eh.run(answer, question)
+                update = prev == 'PREV'
+                responder = main_process.Responder()
+                result, source, conf = responder.process(answer, question, update)
+                prev += '|' + question + ' ' + result + ' ' + conf[:5]
+
+                ques = Question.objects.create(
+                    answer=Answer.objects.get(name=answer),
+                    name=question,
+                    result=', '.join([result, source, conf[:5]])
+                )
+                ques.save()
+'''
