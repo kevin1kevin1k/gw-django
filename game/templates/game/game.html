@@ -61,12 +61,14 @@
 -->
       
     {% for i in prev_list %}
-      {% if i.4 %}
+      {% if i.3 %}
+       {% if i.0 %}
         <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
         <br><br><br>
-      {% endif %}
+       {% endif %}
       <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.3}}</div>
       <br><br><br>
+      {% endif %}
     {% endfor %}
    </div>
   <script>
@@ -155,7 +157,7 @@
           {% if i.4 %}
             <tr>
               <td class="col-lg-1">{{ i.4 }}</td>
-              <td class="col-lg-4">{{ i.0 }}</td>
+              <td class="col-lg-3">{{ i.0 }}</td>
               <td class="col-lg-1">{{ i.1 }}</td>
               <td class="col-lg-1">{{ i.2 }}</td>
             </tr>

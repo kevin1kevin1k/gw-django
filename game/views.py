@@ -28,7 +28,7 @@ def group():
 def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
-    tmp = ''
+    tmp = u'學生'
     for ans in answers:
         if ans.name == tmp:
             answer = ans
@@ -74,62 +74,114 @@ def get_result(request):
 
             ehownetPath = 'eHowNet_utf8.csv'
             parser = qs.question_parser(ehownetPath)
-            keywords, qtype = parser.parse_question(question)
+            keywords_dict = parser.parse_question(question)
             syns = synonym.synonym(answer) + [answer]
             start = time.clock()
-            success = len(set(syns) & set(keywords)) > 0 or \
-                     1 in [ancestors.belong(kwd, answer) for kwd in keywords]
+            class_exist = False
+            for key in keywords_dict:
+                if key == 'class':
+                    class_exist = True
+            print 'class', class_exist
+            success = False
+            if class_exist:
+                success = len(set(syns) & set(keywords_dict['class'])) > 0 or \
+                         1 in [ancestors.belong(kwd, answer) for kwd in keywords_dict['class']]
             end = time.clock()
             print "check answer time consuming: ",end - start
 
             if not success:
                 #result = question + ' ' + eh.run(answer, question)
                 update = prev == 'PREV'
-                #print 'update', update, '!!!!!!!!!'
-                #print prev.decode('utf-8').encode('mbcs')
                 start = time.clock()
                 responder = main_process.Responder()
                 end = time.clock()
                 print "Responder construction consuming: ",end - start
-                result = responder.process(answer, question, update)
-                res = 'TEST'
-                if(result[0] == 'Y'):
-                    if(float(result[2]) > 0.9):
-                        res_list = ['沒錯', '是的', 'You\'re right', '嗯，'+question.replace('嗎', '')]
-                        res = res_list[random.randrange(len(res_list))]
-                    elif(float(result[2]) > 0.7):
-                        res_list = ['我想是吧', '應該是', '嗯，我有七成的自信說是']
-                        res = res_list[random.randrange(len(res_list))]
-                    else:
-                        res_list = ['我不是很有自信，但可能是', '大概吧', '我猜可能是吧']
-                        res = res_list[random.randrange(len(res_list))]
-                elif(result[0] == 'N'):
-                    if(float(result[2]) > 0.9):
-                        res_list = ['還差得遠呢', '你想太多了', '不是喔']
-                        res = res_list[random.randrange(len(res_list))]
-                    elif(float(result[2]) > 0.7):
-                        res_list = ['我認為不是', '應該不是', '嗯，我有七成的自信說它不是']
-                        res = res_list[random.randrange(len(res_list))]
-                    else:
-                        res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
-                        res = res_list[random.randrange(len(res_list))]
-                prev += '|' + question + ',' + result[0] + ',' + str(float(result[2][:5])*100) + ',' + res
+                result_ls = responder.process(answer, question, update)
 
+                Y_num = 0
+                N_num = 0
+                for result in result_ls:
+                    if result[2] == 'Y':
+                        Y_num += 1
+                    elif result[2] == 'N':
+                        N_num += 1
+                    ques = Question.objects.create(
+                        answer=Answer.objects.get(name=answer),
+                        name=result[5].replace('不', '')+'嗎',
+                        result=', '.join([result[2], result[4], result[3][:5]])
+                    )
+                    ques.save()
+
+                res = 'TEST'
+                if len(result_ls) == 1:
+                    result = result_ls[0]
+                    if Y_num > 0 or N_num > 0:
+                        if Y_num > 0:
+                            if(float(result[3]) > 0.9):
+                                res_list = ['沒錯', '是的', '對']
+                                res = res_list[random.randrange(len(res_list))]
+                            elif(float(result[3]) > 0.7):
+                                res_list = ['我想是吧', '應該是', '嗯，我有七成的自信']
+                                res = res_list[random.randrange(len(res_list))]
+                            else:
+                                res_list = ['我不是很有自信，但可能是', '大概吧', '我猜可能是吧']
+                                res = res_list[random.randrange(len(res_list))]
+                        else:
+                            if(float(result[3]) > 0.9):
+                                res_list = ['還差得遠呢', '你想太多了', '不是喔']
+                                res = res_list[random.randrange(len(res_list))]
+                            elif(float(result[3]) > 0.7):
+                                res_list = ['我認為不是', '應該不是', '嗯，我有七成的自信']
+                                res = res_list[random.randrange(len(res_list))]
+                            else:
+                                res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
+                                res = res_list[random.randrange(len(res_list))]
+                        prev += '|' + question + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + res + '，' + result[5]
+                    else:
+                        prev += '|' + question + ',' + result[2] + ',' + '0' + ',' + '我聽不懂你在說什麼QQ'
+                else:
+                    Y_cnt = 0
+                    N_cnt = 0
+                    for result in result_ls:
+                        if(result[2] == 'Y'):
+                            Y_cnt += 1
+                            if Y_cnt == 1:
+                                res = result[5]
+                            elif Y_cnt == Y_num:
+                                res = res + '，也' + result[5].replace('它', '')
+                            else:
+                                res = res + '，' + result[5].replace('它', '')
+                    for result in result_ls:
+                        if(result[2] == 'N'):
+                            N_cnt += 1
+                            if N_cnt == 1:
+                                if Y_num == 0:
+                                    res = result[5]
+                                else:
+                                    res = res + '，但' + result[5]
+                            elif N_cnt == N_num:
+                                res = res + '，也' + result[5].replace('它', '')
+                            else:
+                                res = res + '，' + result[5].replace('它', '')
+                    prev += '|' + question + ',' + '' + ',' + '' + ',' + res
+                    for result in result_ls:
+                        prev += '|' + result[5].replace('不', '') + '嗎' + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + ''
             else:
                 prev += '|' + question + ',AC,100.0,' + '哇，你答對了~~~'
 
             prev_list = [ s.split(',') for s in prev.split('|')[1:] ]
             cnt = 0
             for i in range(len(prev_list)):
-                if prev_list[i][0] != '':
+                if prev_list[i][1] != '':
+                #''->encourage, 'X'->various question
                     cnt += 1
                     prev_list[i].append(cnt)
                 else:
                     prev_list[i].append('')
 
             encourage = True
-            if cnt > 3:
-                for i in range(-1, -5, -1):
+            if cnt > 2:
+                for i in range(-1, -4, -1):
                     if prev_list[i][1] != 'N':
                         encourage = False
             else:
@@ -157,17 +209,18 @@ def get_result(request):
     return render(request, 'game/game.html', {'result': 'error: get_result', 'form': form})
 
 '''
-            if not success:
-                # result = question + ' ' + eh.run(answer, question)
-                update = prev == 'PREV'
-                responder = main_process.Responder()
-                result, source, conf = responder.process(answer, question, update)
-                prev += '|' + question + ' ' + result + ' ' + conf[:5]
+                    if Y_num > 0 and N_num > 0:
+                        prev += '|' + question + ',' + 'Uncertain' + ',' + 'Various Question' + ',' + res
+                    elif Y_num > 0:
+                        prev += '|' + question + ',' + 'Y' + ',' + 'Various Question' + ',' + res
+                    elif N_num > 0:
+                        prev += '|' + question + ',' + 'N' + ',' + 'Various Question' + ',' + res
+'''
 
-                ques = Question.objects.create(
-                    answer=Answer.objects.get(name=answer),
-                    name=question,
-                    result=', '.join([result, source, conf[:5]])
-                )
-                ques.save()
+'''
+            for s in prev.split('|')[1:]:
+                questions = []
+                for ques in s.split(';'):
+                    questions.append([item for item in ques.split(',')])
+                prev_list.append(questions)
 '''
