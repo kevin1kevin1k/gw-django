@@ -14,8 +14,10 @@ import time
 import random
 from ehownet import synonym, ancestors
 
-
 # Create your views here.
+responder = None
+update = True
+already_success = False
 
 def group():
     grp = []
@@ -28,12 +30,19 @@ def group():
 def game(request):
     answers = Answer.objects.all()
     answer = choice(answers)
-    tmp = u'學生'
+    tmp = u''
     for ans in answers:
         if ans.name == tmp:
             answer = ans
             break
     form = AskForm()
+
+    global responder, update, already_success
+    update = True
+    already_success = False
+    if responder == None:
+        responder = main_process.Responder()
+        print 'new responder in game~~~~~'
     contexts = {
         'answer': answer.name,
         'prev': 'PREV',
@@ -74,30 +83,34 @@ def get_result(request):
 
             ehownetPath = 'eHowNet_utf8.csv'
             parser = qs.question_parser(ehownetPath)
-            keywords_dict = parser.parse_question(question)
+            new_question = parser.processQuestionBySpecificRule(question)
+            keywords_dict = parser.parse_question(new_question)
             syns = synonym.synonym(answer) + [answer]
             start = time.clock()
-            class_exist = False
-            for key in keywords_dict:
-                if key == 'class':
-                    class_exist = True
-            print 'class', class_exist
-            success = False
-            if class_exist:
-                success = len(set(syns) & set(keywords_dict['class'])) > 0 or \
-                         1 in [ancestors.belong(kwd, answer) for kwd in keywords_dict['class']]
+            #class_exist = 'class' in keywords_dict
+            #print 'class', class_exist
+            kwds = [kwd for keys in keywords_dict.values() for kwd in keys]
+            success = len(set(syns) & set(kwds)) > 0 or \
+                    1 in [ancestors.belong(kwd, answer) for kwd in kwds]
+            global already_success
+            if not already_success:
+                already_success = success
             end = time.clock()
             print "check answer time consuming: ",end - start
 
             if not success:
                 #result = question + ' ' + eh.run(answer, question)
-                update = prev == 'PREV'
+
                 start = time.clock()
-                responder = main_process.Responder()
+                global responder, update
+                if responder == None:
+                    responder = main_process.Responder()
+                    print 'new responder in get_result~~~~~'
                 end = time.clock()
                 print "Responder construction consuming: ",end - start
-                result_ls = responder.process(answer, question, update)
-
+                result_ls = responder.process(answer, new_question, update)
+                if responder.has_updated:
+                    update = False
                 Y_num = 0
                 N_num = 0
                 for result in result_ls:
@@ -114,31 +127,36 @@ def get_result(request):
 
                 res = 'TEST'
                 if len(result_ls) == 1:
+                    neg = parser.isNegativeSentence(question)
                     result = result_ls[0]
                     if Y_num > 0 or N_num > 0:
-                        if Y_num > 0:
+                        if (Y_num > 0 and not neg) or (N_num > 0 and neg):
                             if(float(result[3]) > 0.9):
                                 res_list = ['沒錯', '是的', '對']
                                 res = res_list[random.randrange(len(res_list))]
                             elif(float(result[3]) > 0.7):
-                                res_list = ['我想是吧', '應該是', '嗯，我有七成的自信']
+                                res_list = ['我想是吧', '應該是', '嗯，我有七成的自信', '嗯，我有七成的把握']
                                 res = res_list[random.randrange(len(res_list))]
                             else:
                                 res_list = ['我不是很有自信，但可能是', '大概吧', '我猜可能是吧']
                                 res = res_list[random.randrange(len(res_list))]
                         else:
                             if(float(result[3]) > 0.9):
-                                res_list = ['還差得遠呢', '你想太多了', '不是喔']
+                                res_list = ['我很遺憾', '不對喔', '你想太多了', '不是喔']
                                 res = res_list[random.randrange(len(res_list))]
                             elif(float(result[3]) > 0.7):
-                                res_list = ['我認為不是', '應該不是', '嗯，我有七成的自信']
+                                res_list = ['我認為不是', '應該不是', '嗯，我有七成的自信', '嗯，我有七成的把握']
                                 res = res_list[random.randrange(len(res_list))]
                             else:
                                 res_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
                                 res = res_list[random.randrange(len(res_list))]
-                        prev += '|' + question + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + res + '，' + result[5]
+                        if neg:
+                            prev += '|' + question + ',' + '' + ',' + '' + ',' + res + '，' + result[5] #for dialog
+                            prev += '|' + new_question + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + '' #for question table
+                        else:
+                            prev += '|' + question + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + res + '，' + result[5] #for both dialog and question table
                     else:
-                        prev += '|' + question + ',' + result[2] + ',' + '0' + ',' + '我聽不懂你在說什麼QQ'
+                        prev += '|' + question + ',' + result[2] + ',' + '0' + ',' + '我聽不懂你在說什麼QQ' #for both dialog and question table
                 else:
                     Y_cnt = 0
                     N_cnt = 0
@@ -163,17 +181,17 @@ def get_result(request):
                                 res = res + '，也' + result[5].replace('它', '')
                             else:
                                 res = res + '，' + result[5].replace('它', '')
-                    prev += '|' + question + ',' + '' + ',' + '' + ',' + res
+                    prev += '|' + question + ',' + '' + ',' + '' + ',' + res #for dialog
                     for result in result_ls:
-                        prev += '|' + result[5].replace('不', '') + '嗎' + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + ''
+                        prev += '|' + result[5].replace('不', '') + '嗎' + ',' + result[2] + ',' + str(format(float(result[3])*100, '.2f')) + ',' + '' #for question table
             else:
-                prev += '|' + question + ',AC,100.0,' + '哇，你答對了~~~'
+                prev += '|' + question + ',AC,,' + '答對了！答案就是「' + answer + '」'
 
             prev_list = [ s.split(',') for s in prev.split('|')[1:] ]
             cnt = 0
             for i in range(len(prev_list)):
                 if prev_list[i][1] != '':
-                #''->encourage, 'X'->various question
+                #only the item for question table would have an id number
                     cnt += 1
                     prev_list[i].append(cnt)
                 else:
@@ -198,7 +216,7 @@ def get_result(request):
                 # 'result': result,
                 'prev': prev,
                 'prev_list': prev_list,
-                'success': success,
+                'success': already_success,
                 'answers': group()
             }
 

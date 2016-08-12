@@ -59,7 +59,8 @@
       </form>
      </fieldset>
 -->
-      
+    <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">猜猜我在想什麼~~</div>
+    <br><br><br>
     {% for i in prev_list %}
       {% if i.3 %}
        {% if i.0 %}
@@ -75,11 +76,12 @@
   var objDiv = document.getElementById("scroll");
   objDiv.scrollTop = objDiv.scrollHeight;
   </script>
-  {% if success %}
+  <!--{% if success %}
    <fieldset disabled id="fset">
   {% else %}
    <fieldset id="fset">
-  {% endif %}
+  {% endif %}-->
+  <fieldset id="fset">
     <form id="form1" action="{% url 'get_result' %}" method="post">
       {% csrf_token %}
       <input type="hidden" id="answer" name="answer" value="{{ answer }}">
@@ -115,33 +117,32 @@
     </form>
    </fieldset>
 
-
     {% if success %}
       <br>
       <div class="alert alert-success" role="alert">
         <p>恭喜答對！</p>
       </div>
-    {% endif %}
-    
-    <br>
-    <div class="col-lg-4">
-      <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
-      <script>
-        function show() {
-          document.getElementById("show_answer").style.display = "block";
-          document.getElementById("fset").disabled = "true";
-        }
-      </script>
-    </div>
-    <br><br>
-    <div class="col-lg-6">
-<!--<<<<<<< HEAD-->
-      <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
-        正確答案：{{ answer }}
+    {% else %}
+      <br>
+      <div class="col-lg-4">
+        <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+        <script>
+          function show() {
+            document.getElementById("show_answer").style.display = "block";
+            document.getElementById("fset").disabled = "true";
+          }
+        </script>
       </div>
-    </div>
+      <br><br>
+      <div class="col-lg-6">
+        <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+          正確答案：{{ answer }}
+        </div>
+      </div>
+    {% endif %}
+
   </div>
-  <!--<div style="width:30px; height:600px; float:left;"></div>-->
+
   <div class="col-lg-5">
     <table class="table table-hover" style="margin-left:30px; background-color:#FAFAFA">
       <thead>
