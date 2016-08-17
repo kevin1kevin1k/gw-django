@@ -13,11 +13,46 @@ import ancestors as anc
 import time
 import random
 from ehownet import synonym, ancestors
+import re
 
 # Create your views here.
 responder = None
 update = True
 already_success = False
+hints = None
+lines = None
+
+def getHint(answer):
+    hints = []
+    ls = anc.anc(answer)
+    if ls[0] != answer:
+        hints.append(ls[1])
+    hints.append(ls[2])
+    hints.append(ls[3])
+    
+    stop_words = [answer, '有']
+    global lines
+    if lines == None:
+        f = open('eHowNet_utf8.csv')
+        lines = [_.rstrip() for _ in f.readlines()]
+    for i in range(len(lines)):
+        if '\t' + answer + '\t' in lines[i]:
+            word = ''
+            for aph in lines[i].decode('utf-8'):
+                if u'\u4e00' <= aph <= u'\u9fff':
+                    word += aph.encode('utf-8')
+                elif word == '':
+                    continue
+                else:
+                    if word not in stop_words and '值' not in word:
+                        hints.append(word)
+                    word = ''
+    '''
+    h = ''
+    for w in hints:
+        h += w + ' '
+    '''
+    return hints
 
 def group():
     grp = []
@@ -37,17 +72,20 @@ def game(request):
             break
     form = AskForm()
 
-    global responder, update, already_success
+    global responder, update, already_success, hints
     update = True
     already_success = False
     if responder == None:
         responder = main_process.Responder()
         print 'new responder in game~~~~~'
+    hints = getHint(answer.name.encode('utf-8'))
+    hint = hints[random.randrange(len(hints))]
     contexts = {
         'answer': answer.name,
         'prev': 'PREV',
         'form': form,
-        'answers': group()
+        'answers': group(),
+        'hint':hint
     }
     return render(request, 'game/game.html', contexts)
     
@@ -210,14 +248,21 @@ def get_result(request):
                 res = res_list[random.randrange(len(res_list))]
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
-
+            
+            global hints
+            for hint in hints:
+                if hint in prev:
+                    hints.remove(hint)
+            hint = hints[random.randrange(len(hints))]
+            hints.remove(hint)
             contexts = {
                 'answer': answer,
                 # 'result': result,
                 'prev': prev,
                 'prev_list': prev_list,
                 'success': already_success,
-                'answers': group()
+                'answers': group(),
+                'hint': hint
             }
 
             return render(request, 'game/game.html', contexts)

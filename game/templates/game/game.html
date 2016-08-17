@@ -33,32 +33,11 @@
     <hr>
   {% endif %}
 
-<!--<<<<<<< HEAD-->
-  <div class="col-lg-6" style="margin-left:0px">
+  <div class="col-lg-6">
    <div id="scroll" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
     <br><br>
     <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
-<!--
-  <div class="row">
-    <div class="col-lg-6">
-    {% if success %}
-     <fieldset disabled id="fset">
-    {% else %}
-     <fieldset id="fset">
-    {% endif %}
-      <form action="{% url 'get_result' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" id="answer" name="answer" value="{{ answer }}">
-        <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true">
-          <span class="input-group-btn">
-            <input type="submit" value="送出 (Enter)" class="btn btn-success">
-          </span>
-        </div>
-      </form>
-     </fieldset>
--->
+
     <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">猜猜我在想什麼~~</div>
     <br><br><br>
     {% for i in prev_list %}
@@ -86,9 +65,6 @@
       {% csrf_token %}
       <input type="hidden" id="answer" name="answer" value="{{ answer }}">
       <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-      <!--<input type="hidden" id="prev_list" name="answer" value="{{ prev_list }}">
-      <input type="hidden" id="success" name="success" value="{{ success }}">
-      <input type="hidden" id="answers" name="answers" value="{{ answers }}">-->
       <div class="input-group">
         <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
         <span class="input-group-btn">
@@ -124,12 +100,23 @@
       </div>
     {% else %}
       <br>
-      <div class="col-lg-4">
+      <div class="col-lg-6">
         <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
         <script>
           function show() {
             document.getElementById("show_answer").style.display = "block";
             document.getElementById("fset").disabled = "true";
+          }
+        </script>
+      </div>
+      <div class="col-lg-6">
+        <button type="button" class="btn btn-default" onclick="hint()">提示</button>
+        <script>
+          function hint() {
+            if(document.getElementById("show_hint").style.display == "block")
+                alert('不要那麼急，先猜猜看嘛');
+            else
+                document.getElementById("show_hint").style.display = "block";
           }
         </script>
       </div>
@@ -139,12 +126,18 @@
           正確答案：{{ answer }}
         </div>
       </div>
+      <div class="col-lg-6">
+        <div class="alert alert-info" id="show_hint" role="alert" style="display: none;">
+          提示：{{ hint }}
+        </div>
+      </div>
     {% endif %}
-
+    
   </div>
 
+  
   <div class="col-lg-5">
-    <table class="table table-hover" style="margin-left:30px; background-color:#FAFAFA">
+    <table class="table table-hover" style="background-color:#FAFAFA">
       <thead>
         <tr>
           <th class="col-lg-1">#</th>
