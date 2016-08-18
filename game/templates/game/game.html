@@ -7,7 +7,7 @@
 <div style="width:180px; float:left;">
   <div class="row">
     <br>
-    <div style="width: 100%; height:600px; overflow: auto;">
+    <div id="ansList" style="width:100%; height:600px; overflow:auto;">
       <table class="table" style="text-align:center;">
         <tbody>
           {% for grp in answers %}
@@ -20,11 +20,15 @@
         </tbody>
       </table>
     </div>
+      <script>
+        var objDiv = document.getElementById("ansList");
+        objDiv.scrollTop = parseInt("{{scroll}}");
+      </script>
     <br>
   </div>
 </div>
 
-<div class="container" style="position:relative;">
+<div class="container" style="position:relative">
   <br>
   <div style="width:30px; height:600px; float:left"></div>
   {% if user.is_authenticated %}
@@ -34,7 +38,7 @@
   {% endif %}
 
   <div class="col-lg-6">
-   <div id="scroll" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
+   <div id="dialog" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
     <br><br>
     <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
 
@@ -52,7 +56,7 @@
     {% endfor %}
    </div>
   <script>
-  var objDiv = document.getElementById("scroll");
+  var objDiv = document.getElementById("dialog");
   objDiv.scrollTop = objDiv.scrollHeight;
   </script>
   <!--{% if success %}
@@ -71,21 +75,32 @@
           <input onclick="cclick()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
             <script>
             function cclick() {
-                //alert("alert!!!!!!!!!!!!!!!!");
-                //console.log("hi!!!!!")
+                //console.log("hi!!!!!");
+                //alert("alert!!!!!")
+                var x = document.forms["form1"].value;
+                if (x == null || x == "") {
+                    console.log("fill it!!");
+                    return false;
+                }
+                
+                var ansDiv = document.getElementById("ansList");
+                document.getElementById("answer").value = ansDiv.scrollTop + ' ' + document.getElementById("answer").value;
+                console.log(document.getElementById("answer").value)
+                
                 var def=document.getElementById("default");
                 var clone = def.cloneNode(true);
                 var qq = document.getElementById("question").value;
                 clone.innerHTML = qq;
                 clone.style.visibility = "visible";
-                var objDiv = document.getElementById("scroll");
+                
+                var objDiv = document.getElementById("dialog");
+                //document.getElementById("form1").submit();
+                //var text=document.getElementById("dialog");
+                //text.innerHTML+='lululu';
+                //text.innerHTML+=`<br><br><div style="position: absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius: 8px;"><font style="font-weight:bold; color:#FAFAFA">${qq}</font></div>`
                 objDiv.appendChild(clone);
                 objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
                 objDiv.scrollTop = objDiv.scrollHeight;
-                //document.getElementById("form1").submit();
-                //var text=document.getElementById("scroll");
-                //text.innerHTML+='lululu';
-                //text.innerHTML+=`<br><br><div style="position: absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius: 8px;"><font style="font-weight:bold; color:#FAFAFA">${qq}</font></div>`
             }
             </script>
         </span>
@@ -117,6 +132,8 @@
                 alert('不要那麼急，先猜猜看嘛');
             else
                 document.getElementById("show_hint").style.display = "block";
+                var ans = "{{ answer }}", hint = "{{ hint }}";
+                document.getElementById("answer").value = ans + " " + hint;
           }
         </script>
       </div>
