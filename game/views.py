@@ -159,13 +159,21 @@ def get_result(request):
                     Y_num = 0
                     N_num = 0
                     for result in result_ls:
+                        if result[2] == '?':
+                            ques = Question.objects.create(
+                                answer=Answer.objects.get(name=answer),
+                                name=question,
+                                result=', '.join([result[2], result[4], result[3][:5]])
+                            )
+                            ques.save()
+                            continue
                         if result[2] == 'Y':
                             Y_num += 1
                         elif result[2] == 'N':
                             N_num += 1
                         ques = Question.objects.create(
                             answer=Answer.objects.get(name=answer),
-                            name=result[5].replace('不', '')+'嗎',
+                            name=result[5].replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎',
                             result=', '.join([result[2], result[4], result[3][:5]])
                         )
                         ques.save()
@@ -267,7 +275,7 @@ def get_result(request):
                         prev_list[i].append('')
                 
                 res = '你的問題必須包含\'它\'喔~'
-                prev += '|' + question + ',,,' + res
+                prev += '|' + question + ',,,' + res    #for dialog
                 prev_list.append([question, '', '', res, ''])
             
             if len(hints) > 0:
