@@ -4,12 +4,8 @@ from django.shortcuts import redirect, render
 from django.http import Http404
 from .models import Answer, Question
 from .forms import AskForm, AnswerForm
-from random import choice
-# import eh
 import main_process
 import question_parser as qs
-import synonym
-import ancestors as anc
 import time
 import random
 from ehownet import synonym, ancestors
@@ -24,7 +20,7 @@ lines = None
 
 def getHint(answer):
     hints = []
-    ls = anc.anc(answer)
+    ls = ancestors.anc(answer)
     if ls[0] != answer:
         hints.append(ls[1])
     hints.append(ls[2])
@@ -60,7 +56,7 @@ def group():
 
 def game(request):
     answers = Answer.objects.all()
-    answer = choice(answers)
+    answer = random.choice(answers)
     tmp = u''
     for ans in answers:
         if ans.name == tmp:
