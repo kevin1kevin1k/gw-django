@@ -1,1 +1,46 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Guess What{% endblock title %}</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+  {% block body %}
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="{% url 'home' %}">Guess What</a>
+        </div>
+        <div>
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'game' %}">新遊戲</a></li>
+          </ul>
+          {% if user.is_authenticated %}
+          {% csrf_token %}
+            <ul class="nav navbar-nav">
+              <li><a href="{% url 'answer_list' %}">答案列表</a></li>
+              <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            </ul>
+          {% endif %}
+          
+          <form class="navbar-right navbar-form" methos="post" action="{% url 'logout' %}">
+            {% if user.is_authenticated %}
+            {% csrf_token %}
+              <input type="hidden" name="next" value="{% url 'home' %}">
+              <button class="btn btn-default" type="submit">登出</button>
+            {% else %}
+              <a class="btn btn-default" href="{% url 'login' %}">登入</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </nav>
+  {% endblock body %}
+  </body>
+</html>
