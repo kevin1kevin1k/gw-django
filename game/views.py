@@ -90,7 +90,7 @@ def answer_list(request):
 def answer_detail(request, pk):
     try:
         answer = Answer.objects.get(pk=pk)
-    except Store.DoesNotExist:
+    except Answer.DoesNotExist:
         raise Http404
     return render(request, 'game/answer_detail.html', {'answer': answer})
 
