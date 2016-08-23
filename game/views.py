@@ -10,6 +10,7 @@ import time
 import random
 from ehownet import synonym, ancestors
 import re
+import sys
 
 # Create your views here.
 responder = None
@@ -117,7 +118,8 @@ def get_result(request):
             if len(ls) > 2:
                 if ls[2] in hints:
                     hints.remove(ls[2])
-                print answer.decode('utf-8').encode('mbcs')
+                sys_type = sys.getfilesystemencoding()
+                answer.decode('utf-8').encode(sys_type)
             answer = ls[1]
             scroll = ls[0]
 
