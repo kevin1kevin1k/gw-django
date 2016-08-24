@@ -135,9 +135,9 @@ def get_result(request):
             global hints
             ls = answer.split(' ')  # 0:scroll position; 1:answer; (2:hint)
             if len(ls) > 2:
-            for tmp in hints:
-                if ls[2] in tmp:
-                    tmp.remove(ls[2])
+                for tmp in hints:
+                    if ls[2] in tmp:
+                        tmp.remove(ls[2])
             print answer.decode('utf-8').encode(sys_type)
             answer = ls[1]
             scroll = ls[0]
