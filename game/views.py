@@ -4,14 +4,14 @@ from django.shortcuts import redirect, render
 from django.http import Http404
 from .models import Answer, Question
 from .forms import AskForm, AnswerForm
-import main_process
-import question_parser as qs
 import time
 import random
-from ehownet import synonym, ancestors, climb
 import re
 import sys
-import crawl_wiki
+from src import main_process
+from src import question_parser as qs
+from src.ehownet import synonym, ancestors, climb
+from src import crawl_wiki
 
 # Create your views here.
 responder = None

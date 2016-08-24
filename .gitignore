@@ -1,7 +1,5 @@
-ancestors.py*
-synonym.py*
-eh.py*
-tax*
 *.pyc
-*.sh
 *.csv
+*.bin
+ASBC.txt
+temp*
