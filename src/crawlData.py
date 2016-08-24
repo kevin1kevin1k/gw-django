@@ -67,7 +67,7 @@ def crawlGoogle(answer):
     sentences = []    
 
     filename = answer + '.txt'
-    filepath = 'GoogleQueryData/' + filename
+    filepath = 'resources/GoogleQueryData/' + filename
     if os.path.exists(unicode(filepath, 'utf-8')):
         f = open(unicode(filepath, 'utf-8'), 'r')
         sysPrint('find '+ filename)
@@ -108,7 +108,7 @@ def crawlGoogle(answer):
                         if s2 != '':
                             sentences.append(s2.replace(" ","").replace("\n",""))
         u_sentences = []
-        filename = 'GoogleQueryData/' + answer + '.txt'
+        filename = 'resources/GoogleQueryData/' + answer + '.txt'
         f = open(unicode(filename, 'utf-8'), 'w')
         for s in sentences:
             if s != '':
