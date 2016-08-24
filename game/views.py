@@ -4,12 +4,8 @@ from django.shortcuts import redirect, render
 from django.http import Http404
 from .models import Answer, Question
 from .forms import AskForm, AnswerForm
-from random import choice
-# import eh
 import main_process
 import question_parser as qs
-import synonym
-import ancestors as anc
 import time
 import random
 from ehownet import synonym, ancestors, climb
@@ -27,7 +23,7 @@ def getHint(answer):
     hints = []
     
     tmp = []
-    ls = anc.anc(answer)
+    ls = ancestors.anc(answer)
     if ls[0] != answer:
         tmp.append(ls[1])
     tmp.append(ls[2])
@@ -70,7 +66,7 @@ def group():
 def game(request):
     start = time.clock()
     answers = Answer.objects.all()
-    answer = choice(answers)
+    answer = random.choice(answers)
     tmp = u''
     for ans in answers:
         if ans.name == tmp:
@@ -110,7 +106,7 @@ def answer_list(request):
 def answer_detail(request, pk):
     try:
         answer = Answer.objects.get(pk=pk)
-    except Store.DoesNotExist:
+    except Answer.DoesNotExist:
         raise Http404
     return render(request, 'game/answer_detail.html', {'answer': answer})
 
@@ -139,10 +135,10 @@ def get_result(request):
             global hints
             ls = answer.split(' ')  # 0:scroll position; 1:answer; (2:hint)
             if len(ls) > 2:
-                for tmp in hints:
-                    if ls[2] in tmp:
-                        tmp.remove(ls[2])
-                print answer.decode('utf-8').encode(sys_type)
+            for tmp in hints:
+                if ls[2] in tmp:
+                    tmp.remove(ls[2])
+            print answer.decode('utf-8').encode(sys_type)
             answer = ls[1]
             scroll = ls[0]
             print "preparation:",time.clock()-earliest
