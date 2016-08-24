@@ -19,13 +19,13 @@ def sysPrint(s):
     print s.decode("utf-8").encode(sys_type)
 
 class Responder():
-    def __init__(self,ehownetPath="ehownet_word.txt",model_path="cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="LinearSVC.pkl"):
+    def __init__(self,ehownetPath="resources/ehownet_word.txt",model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="resources/LinearSVC.pkl"):
         cd.load(model_path)
         self.parser=qs.question_parser(ehownetPath)
         self.model_path=model_path
         self.clf = joblib.load(clf_path)
         self.answer_data=None
-        self.wikidict = crawl_wiki.load_pkl_to_dict('answer200.pkl')
+        self.wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
 
         self.has_updated = False
 
@@ -246,8 +246,8 @@ class Responder():
     
 def main():
     sys_type=sys.getfilesystemencoding()
-    #responder = Responder(ehownetPath="ehownet_word.txt",model_path="cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="LogisticRegression.pkl")
-    responder = Responder(ehownetPath="ehownet_word.txt",model_path="cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="LinearSVC.pkl")
+    #responder = Responder(ehownetPath="resources/ehownet_word.txt",model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="resources/LogisticRegression.pkl")
+    responder = Responder(ehownetPath="resources/ehownet_word.txt",model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin",clf_path="resources/LinearSVC.pkl")
     pre_answer=""
     while True:
         hello=u"請輸入答案 問題\n"

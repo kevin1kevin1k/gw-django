@@ -2,7 +2,7 @@
 
 import sys
 
-f = open('resultSimple.csv')
+f = open('resources/resultSimple.csv')
 lines = [line.rstrip() for line in f.readlines()]
 
 def check(word, line):

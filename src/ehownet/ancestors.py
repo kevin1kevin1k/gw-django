@@ -4,7 +4,7 @@ import sys
 import synonym
 import re
 
-f = open('resultSimple.csv')
+f = open('resources/resultSimple.csv')
 lines = [line.rstrip() for line in f.readlines()]
 
 def anc(key):

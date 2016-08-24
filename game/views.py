@@ -47,7 +47,7 @@ def getHint(answer):
     hints.append(tmp)
     
     tmp = []
-    wikidict = crawl_wiki.load_pkl_to_dict('answer200.pkl')
+    wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
     word2depth = wikidict[answer]
     for key in word2depth:
         tmp.append(key)
@@ -180,7 +180,7 @@ def get_result(request):
                     )
                     ques.save()
                     
-                    ehownetPath = 'eHowNet_utf8.csv'
+                    ehownetPath = 'resources/eHowNet_utf8.csv'
                     parser = qs.question_parser(ehownetPath)
                     neg = parser.isNegativeSentence(question)
                     if (result.label == 'Y' and not neg) or (result.label == 'N' and neg):

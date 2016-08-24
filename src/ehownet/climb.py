@@ -11,7 +11,7 @@ def climb(words):
     ans = []
     if isinstance(words, str):
         words = [words]
-    with open('eHowNet_utf8.csv', 'rb') as f:
+    with open('resources/eHowNet_utf8.csv', 'rb') as f:
         lines = csv.reader(f, delimiter='\t')
         for l in lines:
             for w in words:

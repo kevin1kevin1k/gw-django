@@ -18,7 +18,7 @@ def segmentSentence(s):
     return segments
 
 class question_parser:
-    def __init__(self, ehownetPath = "ehownet_word.txt"):
+    def __init__(self, ehownetPath = "resources/ehownet_word.txt"):
         # ancestors.load()
         self.stopWordLst=set(["它","在","是","的","有","跟","和","有的","有關","拿來","裡",
             "東西","一種","某種","做","他","她","牠","祂","功能","或","屬於","類型",
@@ -511,7 +511,7 @@ def getQuestionList(fpath):
 if __name__ == '__main__':
     import sys
     sys_type=sys.getfilesystemencoding()
-    ehownetPath="ehownet_word.txt"
+    ehownetPath="resources/ehownet_word.txt"
     #eNouns=getEHowNetNouns(ehownetPath)    
     parser=question_parser(ehownetPath)
 

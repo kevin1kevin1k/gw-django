@@ -28,7 +28,7 @@ def load(model_path):
         model = gensim.models.Word2Vec.load_word2vec_format(model_path, binary = True, unicode_errors = 'ignore')
     global corpusContent
     if corpusContent is None:
-        f = open('ASBC.txt', 'r')
+        f = open('resources/ASBC.txt', 'r')
         line = f.read()
         sentences = []
         line = line.replace('\n', '')
@@ -37,7 +37,7 @@ def load(model_path):
             #print s
         corpusContent= sentences
 
-def getSimilarity(w1,w2,model_path="cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin"):
+def getSimilarity(w1,w2,model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin"):
     if model is None:
         load(model_path)
     if not isinstance(w1, unicode):
@@ -123,7 +123,7 @@ def crawlGoogle(answer):
 def crawlWiki(answer):
     sentences = []
     u_answer = unicode(answer, 'utf-8')
-    conn = sqlite3.connect('Resource.db')
+    conn = sqlite3.connect('resources/Resource.db')
     try:    #access database
         cursor = conn.execute("SELECT * from WIKI WHERE NAME=?", [u_answer])
         for r in cursor:
@@ -176,7 +176,7 @@ def crawlWiki(answer):
 def crawlCorpus(answer):
     sentences = []
     u_answer = unicode(answer, 'utf-8')
-    conn = sqlite3.connect('Resource.db')
+    conn = sqlite3.connect('resources/Resource.db')
     try:    #access database
         cursor = conn.execute("SELECT * from CORPUS WHERE NAME=?", [u_answer])
         for r in cursor:
@@ -188,7 +188,7 @@ def crawlCorpus(answer):
     except:
         global corpusContent
         if corpusContent is None:
-            f = open('ASBC.txt', 'r')
+            f = open('resources/ASBC.txt', 'r')
             line = f.read()
             sentences = []
             line = line.replace('\n', '')
@@ -219,7 +219,7 @@ def crawlCorpus(answer):
 def crawlBaiDu(answer):
     sentences = []
     u_answer = unicode(answer, 'utf-8')
-    conn = sqlite3.connect('Resource.db')
+    conn = sqlite3.connect('resources/Resource.db')
     try:    #access database
         cursor = conn.execute("SELECT * from BAIDU WHERE NAME=?", [u_answer])
         for r in cursor:
@@ -464,7 +464,7 @@ if __name__ == '__main__':
     print 'BaiDu Frequency: ', checkBaiDu['frequency']
     print 'BaiDu Distance: ', checkBaiDu['distance']
 
-    model = gensim.models.Word2Vec.load_word2vec_format('cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
+    model = gensim.models.Word2Vec.load_word2vec_format('resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
     if u_answer in model and u_keyword in model:
         similarity = model.similarity(u_answer, u_keyword)
     else:
@@ -501,7 +501,7 @@ if __name__ == '__main__':
     f = open('parsed_data_v2.txt', 'r')
     all = f.read()
     f.close()
-    model = gensim.models.Word2Vec.load_word2vec_format('cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
+    model = gensim.models.Word2Vec.load_word2vec_format('resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
     start = True
     answer = ''
     keyword = ''
