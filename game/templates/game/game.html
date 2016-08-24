@@ -6,7 +6,7 @@
 <div style="width:10px; height:600px; float:left;"></div>
 <div class="container-fluid">
 <div class="row">
-  <div class="col-lg-2">
+  <div class="col-xs-2">
     <br>
     <div id="ansList" style="width:90%; height:600px; overflow:auto;">
       <table class="table" style="text-align:center; font-size:14px;">
@@ -28,7 +28,7 @@
     <br>
   </div>
 
-  <div class="col-lg-9">
+  <div class="col-xs-9">
   <br>
   <!--<div style="width:30px; height:600px; float:left"></div>-->
   {% if user.is_authenticated %}
@@ -71,7 +71,7 @@
     $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});    //trgger: 'click hover' -> it can be trigger while click or hover
   </script>
 
-  <div class="col-lg-6">
+  <div class="col-xs-6">
   <div id="dialog" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
     <br><br>
     <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
@@ -149,7 +149,7 @@
       </div>
     {% else %}
       <br>
-      <div class="col-lg-6" style="margin-left:-15px">
+      <div class="col-xs-6" style="margin-left:-15px">
         <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
         <script>
           function show() {
@@ -158,28 +158,50 @@
           }
         </script>
       </div>
-      <div class="col-lg-6" style="margin-left:-15px">
-        <button type="button" class="btn btn-default" onclick="hint()">提示</button>
-        <script>
-          function hint() {
-            if(document.getElementById("show_hint").style.display == "block")
-                alert('不要那麼急，先猜猜看嘛');
-            else
-                document.getElementById("show_hint").style.display = "block";
-                var ans = "{{ answer }}", hint = "{{ hint }}";
-                document.getElementById("answer").value = ans + " " + hint;
-          }
-        </script>
+      <div class="col-xs-2" style="margin-left:-15px">
+        <button type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
       </div>
+      <div class="col-xs-2" style="margin-left:-15px">
+        <button type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
+      </div>
+      <div class="col-xs-2" style="margin-left:-15px">
+        <button type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
+      </div>
+      <script>
+        function hint(i) {
+          if(document.getElementById("show_hint1").style.display == "block" ||
+             document.getElementById("show_hint2").style.display == "block" ||
+             document.getElementById("show_hint3").style.display == "block")
+              alert('不要那麼急，先猜猜看嘛');
+          else
+              var div = 'show_hint' + i.toString();
+              document.getElementById(div).style.display = "block";
+              var ans = "{{ answer }}", hint = "{{ hint }}";
+              document.getElementById("answer").value = ans + " " + hint;
+        }
+      </script>
+      
       <br><br>
-      <div class="col-lg-6" style="margin-left:-15px">
+      <div class="col-xs-6" style="margin-left:-15px">
         <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
           正確答案：{{ answer }}
         </div>
       </div>
-      <div class="col-lg-6" style="margin-left:-15px">
-        <div class="alert alert-info" id="show_hint" role="alert" style="display: none;">
-          提示：{{ hint }}
+      <div class="col-xs-6" style="margin-left:-15px">
+        <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
+          提示1：{{ hint.0 }}
+        </div>
+      </div>
+      <div class="col-xs-6" style="margin-left:-15px"></div>
+      <div class="col-xs-6" style="margin-left:-15px">
+        <div class="alert alert-info" id="show_hint2" role="alert" style="display: none;">
+          提示2：{{ hint.1 }}
+        </div>
+      </div>
+      <div class="col-xs-6" style="margin-left:-15px"></div>
+      <div class="col-xs-6" style="margin-left:-15px">
+        <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
+          提示3：{{ hint.2 }}
         </div>
       </div>
     {% endif %}
@@ -187,24 +209,24 @@
   </div>
 
   
-  <div class="col-lg-6">
+  <div class="col-xs-6">
     <table class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
       <thead>
         <tr>
-          <th class="col-lg-1">#</th>
-          <th class="col-lg-3">問題</th>
-          <th class="col-lg-1">結果</th>
-          <th class="col-lg-1">信心(%)</th>
+          <th class="col-xs-1">#</th>
+          <th class="col-xs-3">問題</th>
+          <th class="col-xs-1">結果</th>
+          <th class="col-xs-1">信心(%)</th>
         </tr>
       </thead>
       <tbody>
         {% for i in prev_list%}
           {% if i.4 %}
             <tr>
-              <td class="col-lg-1">{{ i.4 }}</td>
-              <td class="col-lg-3">{{ i.0 }}</td>
-              <td class="col-lg-1">{{ i.1 }}</td>
-              <td class="col-lg-1">{{ i.2 }}</td>
+              <td class="col-xs-1">{{ i.4 }}</td>
+              <td class="col-xs-3">{{ i.0 }}</td>
+              <td class="col-xs-1">{{ i.1 }}</td>
+              <td class="col-xs-1">{{ i.2 }}</td>
             </tr>
           {% endif %}
         {% endfor %}
