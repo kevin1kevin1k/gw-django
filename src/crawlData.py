@@ -471,6 +471,7 @@ if __name__ == '__main__':
         max_ind = np.argmax(_prob)
         pred = clf.classes_[max_ind]
         scale_prob = (_prob[0,max_ind] - 0.5) * 1.6 + 0.1
+        print "predict: ", pred
         print "prob: ", _prob[0,max_ind]
         print "scale_prob:", scale_prob
         

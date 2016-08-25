@@ -177,7 +177,7 @@
           else
               var div = 'show_hint' + i.toString();
               document.getElementById(div).style.display = "block";
-              var ans = "{{ answer }}", hint = "{{ hint }}";
+              var ans = "{{ answer }}", hint = i==1? "{{ hint.0 }}":i==2?"{{ hint.1 }}":"{{ hint.2 }}";
               document.getElementById("answer").value = ans + " " + hint;
         }
       </script>
