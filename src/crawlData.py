@@ -23,6 +23,9 @@ corpusContent = None
 
 ######################
 def load(model_path):
+    '''
+    load gensim model and corpusContent into global varieble
+    '''
     global model
     if model is None:
         model = gensim.models.Word2Vec.load_word2vec_format(model_path, binary = True, unicode_errors = 'ignore')
@@ -63,7 +66,12 @@ def checkChinese(sentence):
         if u'\u4e00' <= ch <= u'\u9fff':
             return True
     return False
+
 def crawlGoogle(answer):
+    '''
+    If the answer has already been searched, open the data.
+    Else search google for 10 pages, then save all the title and snippet.
+    '''
     sentences = []    
 
     filename = answer + '.txt'
@@ -121,6 +129,10 @@ def crawlGoogle(answer):
     return sentences
 
 def crawlWiki(answer):
+    '''
+    If the answer exist in the Resource.db, open the database.
+    Else crawl Wiki page of the answer, then save all the text into Resource.db.
+    '''
     sentences = []
     u_answer = unicode(answer, 'utf-8')
     conn = sqlite3.connect('resources/Resource.db')
@@ -174,6 +186,10 @@ def crawlWiki(answer):
     return sentences
 
 def crawlCorpus(answer):
+    '''
+    If the answer exist in the Resource.db, open the database.
+    Else find out all the sentences that contain the answer, then save them into Resource.db.
+    '''
     sentences = []
     u_answer = unicode(answer, 'utf-8')
     conn = sqlite3.connect('resources/Resource.db')
@@ -217,6 +233,10 @@ def crawlCorpus(answer):
 
 
 def crawlBaiDu(answer):
+    '''
+    If the answer exist in the Resource.db, open the database.
+    Else crawl BaiDu page of the answer, then save all the text into Resource.db.
+    '''
     sentences = []
     u_answer = unicode(answer, 'utf-8')
     conn = sqlite3.connect('resources/Resource.db')
@@ -257,6 +277,11 @@ def crawlBaiDu(answer):
     return sentences
 
 def checkFrequencyAndDistance(sentences, answer, keywordlist, cutWord = False, freqMethod = "sentence"):
+    '''
+    calculate Frequency: #(sentences that contain keyword)/#(all the sentences)
+    calculate Average Distance: the average distance of answer and keyword among the sentences that contain both keyword and answer
+    calculate Shortest Distance: the shortest distance of answer and keyword among the sentences that contain both keyword and answer
+    '''
     double_count = 0 #number of sentence that contain both answer and keyword
     distance = [] #a list of distance between answer and keyword in the sentence that contain both of them 
     answer_length = len(answer)
@@ -418,153 +443,36 @@ class AnswerData:
         return features
 
 if __name__ == '__main__':
-    '''
-    answer = '雨衣'
-    keyword = '防水'
-    u_answer = unicode(answer, 'utf-8')
-    u_keyword = unicode(keyword, 'utf-8')
-    ls = []
-    ls.append(u'防水')
-    ls.append(u'透氣')
-    BaiDuSentences = crawlBaiDu(answer)
-    checkBaiDu = checkFrequencyAndDistance(BaiDuSentences, u_answer, ls, False, "word")
-    print checkBaiDu['frequency'], checkBaiDu['distance'],len(BaiDuSentences)
-    '''
-    '''
-    answer = '雨衣'
-    keyword = '穿'
-    label = 'Y'
-
-    print 'Answer: ', answer
-    print 'Keyword: ', keyword
-    print ''
-
-    googleSentences = crawlGoogle(answer)
-    wikiSentences = crawlWiki(answer)
-    corpusSentences = crawlCorpus()
-    BaiDuSentences = crawlBaiDu(answer)
-
-
-    u_answer = unicode(answer, 'utf-8')
-    u_keyword = unicode(keyword, 'utf-8')
-
-    checkGoogle = checkFrequencyAndDistance(googleSentences, u_answer, u_keyword)
-    print 'Google Frequency: ', checkGoogle['frequency']
-    print 'Google Distance: ', checkGoogle['distance']
-
-    checkWiki = checkFrequencyAndDistance(wikiSentences, u_answer, u_keyword)
-    print 'Wiki Frequency: ', checkWiki['frequency']
-    print 'Wiki Distance: ', checkWiki['distance']
-
-    checkCorpus = checkFrequencyAndDistance(corpusSentences, u_answer, u_keyword, True)
-    print 'Corpus Frequency: ', checkCorpus['frequency']
-    print 'Corpus Distance: ', checkCorpus['distance']
-
-    checkBaiDu = checkFrequencyAndDistance(BaiDuSentences, u_answer, u_keyword)
-    print 'BaiDu Frequency: ', checkBaiDu['frequency']
-    print 'BaiDu Distance: ', checkBaiDu['distance']
-
-    model = gensim.models.Word2Vec.load_word2vec_format('resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
-    if u_answer in model and u_keyword in model:
-        similarity = model.similarity(u_answer, u_keyword)
+    sys_type=sys.getfilesystemencoding()
+    if len(sys.argv) == 3:
+        answer = sys.argv[1].decode(sys_type).encode("utf-8")
+        keyword = sys.argv[2].decode(sys_type).encode("utf-8")
+        answer_data = AnswerData(answer)
+        
+        from ehownet import synonym
+        synonym_words = synonym.synonym(keyword)
+        examine_set = [s for s in synonym_words if s != keyword and  s in keyword]
+        examine_set.insert(0, keyword)
+        
+        model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin"
+        features = answer_data.getFeatures(examine_set,model_path)
+        print features
+        
+        import numpy as np
+        features = np.array(features).reshape((1, -1))
+        from sklearn.externals import joblib
+        clf = joblib.load("resources/LinearSVC.pkl")
+        scores = clf.decision_function(features)
+        prob = 1. / (1. + np.exp(-scores))
+        if len(prob.shape) == 1:
+            _prob = np.vstack([1 - prob, prob]).T
+        else:
+            _prob = prob / prob.sum(axis=1).reshape((prob.shape[0], -1))
+        max_ind = np.argmax(_prob)
+        pred = clf.classes_[max_ind]
+        scale_prob = (_prob[0,max_ind] - 0.5) * 1.6 + 0.1
+        print "prob: ", _prob[0,max_ind]
+        print "scale_prob:", scale_prob
+        
     else:
-        print "model doesnt contain the word"
-    print 'similarity: ', similarity
-    '''
-    '''
-    data = [[answer, keyword, label, checkGoogle['frequency'], checkGoogle['distance'],
-            checkWiki['frequency'], checkWiki['distance'], checkCorpus['frequency'],
-            checkCorpus['distance'], similarity], checkBaiDu['frequency'], checkBaiDu['distance']]
-    f = open('trainData.csv', 'a')
-    w = csv.writer(f)
-    w.writerows(data)
-    f.close()
-    '''
-    '''
-    f = open('parsed_data.txt', 'r')
-    all = f.read()
-    f.close()
-    model=None
-    start = True
-    for line in all.split('\n'):
-        word = line.split(',')
-        if start:
-            answer = word[0][3:]
-
-            start = False
-        else:
-            answer = word[0]
-        keyword = word[1]
-        label = word[2]
-    '''
-    
-    f = open('parsed_data_v2.txt', 'r')
-    all = f.read()
-    f.close()
-    model = gensim.models.Word2Vec.load_word2vec_format('resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin', binary = True, unicode_errors = 'ignore')
-    start = True
-    answer = ''
-    keyword = ''
-    pre_an = ''
-    for line in all.split('\n'):
-        pre_an = answer
-        print '='*50
-        word = line.split(',')
-        if start:
-            label = word[0][3:]
-            answer = word[1][3:]
-            keyword = word[3]
-            start = False
-        else:
-            label = word[0]
-            answer = word[1]
-            keyword = word[3]
-
-        keyword = re.sub(r'\s', '', keyword)
-        print 'Answer: ', answer
-        print 'Keyword: ', keyword
-        print ''
-
-        if answer != pre_an:
-            print 'crawl'
-            googleSentences = crawlGoogle(answer)
-            wikiSentences = crawlWiki(answer)
-            BaiDuSentences = crawlBaiDu(answer)
-            corpusSentences = crawlCorpus(answer)
-
-
-        u_answer = unicode(answer, 'utf-8')
-        u_keyword = unicode(keyword, 'utf-8')
-        ls = []
-        ls.append(u_keyword)
-
-        checkGoogle = checkFrequencyAndDistance(googleSentences, u_answer, ls, freqMethod="word")
-        print 'Google Frequency: ', checkGoogle['frequency']
-        print 'Google Distance: ', checkGoogle['distance']
-
-        checkWiki = checkFrequencyAndDistance(wikiSentences, u_answer, ls, freqMethod="word")
-        print 'Wiki Frequency: ', checkWiki['frequency']
-        print 'Wiki Distance: ', checkWiki['distance']
-
-        checkCorpus = checkFrequencyAndDistance(corpusSentences, u_answer, ls, True, freqMethod="sentence")
-        print 'Corpus Frequency: ', checkCorpus['frequency']
-        print 'Corpus Distance: ', checkCorpus['distance']
-
-        checkBaiDu = checkFrequencyAndDistance(BaiDuSentences, u_answer, ls, freqMethod="word")
-        print 'BaiDu Frequency: ', checkBaiDu['frequency']
-        print 'BaiDu Distance: ', checkBaiDu['distance']
-
-        if u_answer in model and u_keyword in model:
-            similarity = model.similarity(u_answer, u_keyword)
-        else:
-            print "model doesnt contain the word"
-        print 'similarity: ', similarity
-
-        data = [[answer, keyword, label, checkGoogle['frequency'], checkGoogle['distance'],
-                checkWiki['frequency'], checkWiki['distance'], checkCorpus['frequency'],
-                checkCorpus['distance'], similarity, checkBaiDu['frequency'], checkBaiDu['distance']]]
-        f = open('trainData0801v2.csv', 'a')
-        w = csv.writer(f)
-        w.writerows(data)
-        f.close()
-    
+        print 'Usage:', sys.argv[0], '<answer> <keyword>'
