@@ -228,8 +228,9 @@ class Responder():
                 max_ind=np.argmax(prob)
                 pred=self.clf.classes_[max_ind]
                 end = time.clock()
+                scale_prob = (prob[0,max_ind] - 0.5) * 1.6 + 0.1
                 print "prediction time consuming: ",end - start
-                answer_lst.append((keyword,key, pred,"Model",str(prob[0,max_ind])))
+                answer_lst.append((keyword,key, pred,"Model",str(scale_prob)))
 
         temp=[(item[0],item[2],item[1]) for item in answer_lst ]
         answer_sentence=self.responseSentence(new_question,temp)
