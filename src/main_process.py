@@ -258,12 +258,11 @@ def main():
             continue
         answer=seg[0].decode(sys_type).encode("utf-8")
         question=seg[1].decode(sys_type).encode("utf-8")
+        update = not responder.has_updated
         if answer!=pre_answer:
-            update = True
             pre_answer=answer
+            update = True
         responses=responder.process(answer,question,update)
-        if responder.has_updated:
-            update = False
 
         for res in responses: 
             sysPrint("{r.keyword}, {r.label}, {r.conf}, {r.qtype}, {r.source}\n{r.answer_str}\n".format(r=res))

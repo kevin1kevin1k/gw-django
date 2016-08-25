@@ -14,7 +14,6 @@ from src.ehownet import synonym, ancestors, climb
 from src import crawl_wiki
 
 responder = None
-update = True
 hints = None
 
 def getHint(answer):
@@ -37,7 +36,10 @@ def getHint(answer):
     
     wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
     word2depth = wikidict[answer]
-    hints.append(word2depth.keys())
+    words = word2depth.keys()
+    if answer in words:
+        words.remove(answer)
+    hints.append(words)
     
     return hints
 
@@ -60,8 +62,7 @@ def game(request):
     #         break
     print answer.name
 
-    global responder, update, hints
-    update = True
+    global responder, hints
     if responder == None:
         responder = main_process.Responder()
         print 'new responder in game~~~~~'
@@ -132,15 +133,13 @@ def get_result(request):
             scroll = ls[0]
             print "preparation:",time.clock()-earliest
             
-            global responder, update
+            global responder
             if responder == None:
                 responder = main_process.Responder()
                 print 'new responder in get_result~~~~~'
             print "responder construction:",time.clock()-earliest
-            result_ls = responder.process(answer, question, update)
+            result_ls = responder.process(answer, question, not responder.has_updated)
             print "responder.process:",time.clock()-earliest
-            if responder.has_updated:
-                update = False
             
             if len(result_ls) == 1:
                 result = result_ls[0]
