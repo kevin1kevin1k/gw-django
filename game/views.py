@@ -18,7 +18,6 @@ responder = None
 update = True
 already_success = False
 hints = None
-lines = None
 
 def getHint(answer):
     hints = []
@@ -33,30 +32,14 @@ def getHint(answer):
     
     tmp = []
     stop_words = [answer, '有']
-    global lines
-    if lines == None:
-        f = open('resources/eHowNet_utf8.csv')
-        lines = [_.rstrip() for _ in f.readlines()]
-    word = ''
-    for i in range(len(lines)):
-        if '\t' + answer + '\t' in lines[i]:
-            for aph in lines[i].decode('utf-8'):
-                if u'\u4e00' <= aph <= u'\u9fff':
-                    word += aph.encode('utf-8')
-                elif word == '':
-                    continue
-                else:
-                    if word not in stop_words and '值' not in word:
-                        tmp.append(word)
-                    word = ''
+    for word in climb.climb_words(answer):
+        if word not in stop_words and '值' not in word:
+            tmp.append(word)
     hints.append(tmp)
     
-    tmp = []
     wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
     word2depth = wikidict[answer]
-    for key in word2depth:
-        tmp.append(key)
-    hints.append(tmp)
+    hints.append(word2depth.keys())
     
     return hints
 
@@ -72,12 +55,11 @@ def game(request):
     start = time.clock()
     answers = Answer.objects.all()
     answer = random.choice(answers)
-    tmp = u''
-    for ans in answers:
-        if ans.name == tmp:
-            answer = ans
-            break
-    form = AskForm()
+    # tmp = u''
+    # for ans in answers:
+    #     if ans.name == tmp:
+    #         answer = ans
+    #         break
     print answer.name
 
     global responder, update, already_success, hints
@@ -88,11 +70,13 @@ def game(request):
         print 'new responder in game~~~~~'
     hints = getHint(answer.name.encode('utf-8'))
     hint_ls = []
-    for i in range(len(hints)):
-        if len(hints[i]) > 0:
-            hint_ls.append(random.choice(hints[i]))
+    for hint in hints:
+        if hint:
+            hint_ls.append(random.choice(hint))
         else:
             hint_ls.append('我無話可說了')
+    
+    form = AskForm()
     contexts = {
         'answer': answer.name,
         'prev': 'PREV',
@@ -277,9 +261,7 @@ def get_result(request):
             
             hint_ls = []
             for i in range(len(hints)):
-                for hint in hints[i]:
-                    if hint in prev:
-                        hints[i].remove(hint)
+                hints[i] = [hint for hint in hints[i] if hint not in prev]
                 if len(hints[i]) > 0:
                     hint_ls.append(random.choice(hints[i]))
                 else:
@@ -287,7 +269,6 @@ def get_result(request):
             
             contexts = {
                 'answer': answer,
-                # 'result': result,
                 'prev': prev,
                 'prev_list': prev_list,
                 'success': already_success,
