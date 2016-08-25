@@ -18,6 +18,7 @@ responder = None
 update = True
 already_success = False
 hints = None
+lines = None
 
 def getHint(answer):
     hints = []
@@ -32,18 +33,22 @@ def getHint(answer):
     
     tmp = []
     stop_words = [answer, '有']
-    definiton = climb.climb(answer)
-    line = definiton[0].decode('utf-8')
+    global lines
+    if lines == None:
+        f = open('resources/eHowNet_utf8.csv')
+        lines = [_.rstrip() for _ in f.readlines()]
     word = ''
-    for aph in line:
-        if u'\u4e00' <= aph <= u'\u9fff':
-            word += aph.encode('utf-8')
-        elif word == '':
-            continue
-        else:
-            if word not in stop_words and '值' not in word:
-                tmp.append(word)
-            word = ''
+    for i in range(len(lines)):
+        if '\t' + answer + '\t' in lines[i]:
+            for aph in lines[i].decode('utf-8'):
+                if u'\u4e00' <= aph <= u'\u9fff':
+                    word += aph.encode('utf-8')
+                elif word == '':
+                    continue
+                else:
+                    if word not in stop_words and '值' not in word:
+                        tmp.append(word)
+                    word = ''
     hints.append(tmp)
     
     tmp = []
@@ -85,7 +90,7 @@ def game(request):
     hint_ls = []
     for i in range(len(hints)):
         if len(hints[i]) > 0:
-            hint_ls.append(hints[i][random.randrange(len(hints[i]))])
+            hint_ls.append(random.choice(hints[i]))
         else:
             hint_ls.append('我無話可說了')
     contexts = {
@@ -272,11 +277,11 @@ def get_result(request):
             
             hint_ls = []
             for i in range(len(hints)):
+                for hint in hints[i]:
+                    if hint in prev:
+                        hints[i].remove(hint)
                 if len(hints[i]) > 0:
-                    for hint in hints[i]:
-                        if hint in prev:
-                            hints[i].remove(hint)
-                    hint_ls.append(hints[i][random.randrange(len(hints[i]))])
+                    hint_ls.append(random.choice(hints[i]))
                 else:
                     hint_ls.append('我無話可說了')
             
