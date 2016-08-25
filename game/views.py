@@ -16,7 +16,6 @@ from src import crawl_wiki
 # Create your views here.
 responder = None
 update = True
-already_success = False
 hints = None
 
 def getHint(answer):
@@ -62,9 +61,8 @@ def game(request):
     #         break
     print answer.name
 
-    global responder, update, already_success, hints
+    global responder, update, hints
     update = True
-    already_success = False
     if responder == None:
         responder = main_process.Responder()
         print 'new responder in game~~~~~'
@@ -119,6 +117,9 @@ def get_result(request):
             answer = data['answer'].encode('utf-8')
             prev = data['prev'].encode('utf-8')
             question = data['question'].encode('utf-8')
+            success = data['success']
+            for k in data:
+                print k, data[k]
             print "get data:",time.clock()-earliest
             
             global hints
@@ -132,7 +133,7 @@ def get_result(request):
             scroll = ls[0]
             print "preparation:",time.clock()-earliest
             
-            global responder, update, already_success
+            global responder, update
             if responder == None:
                 responder = main_process.Responder()
                 print 'new responder in get_result~~~~~'
@@ -141,16 +142,12 @@ def get_result(request):
             print "responder.process:",time.clock()-earliest
             if responder.has_updated:
                 update = False
-            success = False
-            if already_success:
-                success = True
             
             if len(result_ls) == 1:
                 result = result_ls[0]
                 if result.label == 'AC':
                     prev += '|' + question + ',AC,,' + '答對了！答案就是「' + answer + '」'   #for both dialog and question table
                     success = True
-                    already_success = True
                 elif result.label == 'illegal':
                     prev += '|' + question + ',,,' + '你的問題必須包含\'它\'喔~'    #for dialog
                 elif result.label == '?':
@@ -271,7 +268,7 @@ def get_result(request):
                 'answer': answer,
                 'prev': prev,
                 'prev_list': prev_list,
-                'success': already_success,
+                'success': success,
                 'answers': group(),
                 'hint': hint_ls,
                 'scroll':scroll

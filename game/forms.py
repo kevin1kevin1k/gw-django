@@ -9,6 +9,7 @@ class AskForm(forms.Form):
     answer = forms.CharField()
     prev = forms.CharField()
     question = forms.CharField()
+    success = forms.BooleanField(required=False)
 
 class AnswerForm(forms.ModelForm):
     class Meta:
