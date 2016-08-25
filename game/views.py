@@ -13,7 +13,6 @@ from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb
 from src import crawl_wiki
 
-# Create your views here.
 responder = None
 update = True
 hints = None

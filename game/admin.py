@@ -1,8 +1,6 @@
 from django.contrib import admin
 from .models import Answer, Question
 
-# Register your models here.
-
 class QuestionInline(admin.TabularInline):
     model = Question
     extra = 1

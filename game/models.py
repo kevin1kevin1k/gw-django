@@ -1,8 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 
-# Create your models here.
-
 class Answer(models.Model):
     name = models.CharField(max_length=20)
     
