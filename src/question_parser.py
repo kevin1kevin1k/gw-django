@@ -3,6 +3,8 @@
 import string_parser as sp
 import CKIPParserClient as cc
 import re
+import time
+import os
 from ehownet import ancestors
 
 def winPrint(s):
@@ -39,7 +41,6 @@ class question_parser:
 
         ps_path="C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
 
-        import os
         dir_path=os.path.dirname(os.path.abspath(__file__))
 
         script_path=os.path.join(dir_path,"parse.ps1")
@@ -58,6 +59,9 @@ class question_parser:
             import re
             result=line.replace("#","")
             result=re.sub(r"\d+:\d+.\[\d\] ","",line)
+
+            os.remove(input_file)
+            os.remove(output_file)
 
         except Exception as e:
             print str(e)    
@@ -83,8 +87,9 @@ class question_parser:
         options['port']=8002
         options['xml']=False
 
-        input_file="temp_question.txt"
-        output_file="temp_question_parse.txt"
+        now=time.time()
+        input_file="temp_question_"+str(now)
+        output_file="temp_question_parse_"+str(now)
         uwfile=None
 
         #將要解析的句子寫入檔案
@@ -104,6 +109,9 @@ class question_parser:
         result=line.replace("#","")
         result=re.sub(r"\d+:\d+.\[\d\] ","",result)
         result=re.sub(r"\s","",result)
+
+        os.remove(input_file)
+        os.remove(output_file)
 
         return result
 
