@@ -13,7 +13,6 @@ from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb
 from src import crawl_wiki
 
-responder = None
 hints = None
 
 def getHint(answer):
@@ -62,10 +61,8 @@ def game(request):
     #         break
     print answer.name
 
-    global responder, hints
-    if responder == None:
-        responder = main_process.Responder()
-        print 'new responder in game~~~~~'
+    global hints
+    responder = main_process.Responder()
     hints = getHint(answer.name.encode('utf-8'))
     hint_ls = []
     for hint in hints:
@@ -133,10 +130,7 @@ def get_result(request):
             scroll = ls[0]
             print "preparation:",time.clock()-earliest
             
-            global responder
-            if responder == None:
-                responder = main_process.Responder()
-                print 'new responder in get_result~~~~~'
+            responder = main_process.Responder()
             print "responder construction:",time.clock()-earliest
             result_ls = responder.process(answer, question, not responder.has_updated)
             print "responder.process:",time.clock()-earliest
