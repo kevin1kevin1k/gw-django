@@ -3,6 +3,12 @@ import csv
 import re
 import ancestors
 
+content=[]
+with open('resources/eHowNet_utf8.csv', 'rb') as f:
+    reader = csv.reader(f, delimiter='\t')
+    for line in reader:
+        content.append(line)
+        
 def climb(words, strict=True):
     '''
     Return a list of all definitions (expansions) of word in `words`.
@@ -12,15 +18,16 @@ def climb(words, strict=True):
     ans = []
     if isinstance(words, str):
         words = [words]
-    with open('resources/eHowNet_utf8.csv', 'rb') as f:
-        lines = csv.reader(f, delimiter='\t')
-        for line in lines:
-            for word in words:
-                if word in line:
-                    for i in [5, 6]:
-                        if line[i]:
-                            if not strict or word not in line[i]:
-                                ans.append(line[i])
+    # with open('resources/eHowNet_utf8.csv', 'rb') as f:
+    #     lines = csv.reader(f, delimiter='\t')
+    global content
+    for line in content:
+        for word in words:
+            if word in line:
+                for i in [5, 6]:
+                    if line[i]:
+                        if not strict or word not in line[i]:
+                            ans.append(line[i])
     return ans
 
 def climb_words(word):

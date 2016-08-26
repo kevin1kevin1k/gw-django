@@ -5,17 +5,25 @@ import climb
 import ancestors
 import synonym
 
+
+content=[]
+with open('resources/eHowNet_utf8.csv', 'rb') as f:
+    reader = csv.reader(f, delimiter='\t')
+    for line in reader:
+        content.append(line)
+
 def one(w):
     '''
     Return a list of lines where `w` appears.
     '''
     
     ans = []
-    with open('resources/eHowNet_utf8.csv', 'rb') as f:
-        lines = csv.reader(f, delimiter='\t')
-        for l in lines:
-            if any([w in s for s in l]):
-                ans.append(' '.join([l[1], l[5], l[6]]))
+    # with open('resources/eHowNet_utf8.csv', 'rb') as f:
+    #     lines = csv.reader(f, delimiter='\t')
+    global content
+    for l in content:
+        if any([w in s for s in l]):
+            ans.append(' '.join([l[1], l[5], l[6]]))
     return ans
 
 def prob(a, b):
