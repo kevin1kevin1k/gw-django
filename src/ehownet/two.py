@@ -4,7 +4,8 @@ import re
 import climb
 import ancestors
 import synonym
-
+sys.path.append('src')
+from crawlData import getSimilarity
 
 content=[]
 with open('resources/eHowNet_utf8.csv', 'rb') as f:
@@ -72,7 +73,9 @@ def two(a, b, is_class=True):
     
     # (2)
     if is_class:
-        return 'N', 1.0
+        sim = getSimilarity(a, b) # [-1, 1]
+        conf = 1.0 - ((sim + 1) / 2) # [0, 1]
+        return 'N', conf
     
     # (3)
     syn = ['[{|:]'+s+'[}|:]' for s in synonym.synonym(b) if s != '']
