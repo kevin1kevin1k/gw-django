@@ -142,10 +142,10 @@ def run(a, d):
     ans = []
     
     if 'attr' in d:
-        ans.append(two(a, d['attr'], 'a'))
+        ans.append(two(a, d['attr'], is_class=False))
     
     if 'class' in d:
-        ans.append(two(a, d['class'], 'c'))
+        ans.append(two(a, d['class'], is_class=True))
     
     if 'location' in d:
         ehs = climb.climb(a)
