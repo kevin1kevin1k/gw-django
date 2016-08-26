@@ -75,6 +75,7 @@ def game(request):
     contexts = {
         'answer': answer.name,
         'prev': 'PREV',
+        'scroll_pos': 0,
         'form': form,
         'answers': group(),
         'hint': hint_ls
@@ -115,19 +116,19 @@ def get_result(request):
             prev = data['prev'].encode('utf-8')
             question = data['question'].encode('utf-8')
             success = data['success']
+            scroll_pos = data['scroll_pos']
             for k in data:
                 print k, data[k]
             print "get data:",time.clock()-earliest
             
             global hints
-            ls = answer.split(' ')  # 0:scroll position; 1:answer; (2:hint)
-            if len(ls) > 2:
+            ls = answer.split(' ') # 0:answer; (1:hint)
+            if len(ls) > 1:
                 for tmp in hints:
-                    if ls[2] in tmp:
-                        tmp.remove(ls[2])
+                    if ls[1] in tmp:
+                        tmp.remove(ls[1])
             print answer.decode('utf-8').encode(sys_type)
-            answer = ls[1]
-            scroll = ls[0]
+            answer = ls[0]
             print "preparation:",time.clock()-earliest
             
             responder = main_process.Responder()
@@ -263,7 +264,7 @@ def get_result(request):
                 'success': success,
                 'answers': group(),
                 'hint': hint_ls,
-                'scroll':scroll
+                'scroll_pos':scroll_pos
             }
             latest = time.clock()
             print "total time:", latest-earliest

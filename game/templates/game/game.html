@@ -104,6 +104,7 @@
       <input type="hidden" id="answer" name="answer" value="{{ answer }}">
       <input type="hidden" id="prev" name="prev" value="{{ prev }}">
       <input type="hidden" id="success" name="success" value="{{ success }}">      
+      <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">      
       <div class="input-group">
         <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
         <span class="input-group-btn">
@@ -119,7 +120,7 @@
                 }
                 
                 var ansDiv = document.getElementById("ansList");
-                document.getElementById("answer").value = ansDiv.scrollTop + ' ' + document.getElementById("answer").value;
+                document.getElementById("scroll_pos").value = ansDiv.scrollTop;
                 console.log(document.getElementById("answer").value)
                 
                 var def=document.getElementById("default");

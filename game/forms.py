@@ -10,6 +10,7 @@ class AskForm(forms.Form):
     prev = forms.CharField()
     question = forms.CharField()
     success = forms.BooleanField(required=False)
+    scroll_pos = forms.IntegerField()
 
 class AnswerForm(forms.ModelForm):
     class Meta:
