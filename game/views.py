@@ -13,34 +13,22 @@ from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb
 from src import crawl_wiki
 
-hints = None
-
-def getHint(answer):
-    hints = []
+def get_hints_list(answer):    
+    anc_words = ancestors.anc(answer)
     
-    tmp = []
-    ls = ancestors.anc(answer)
-    if ls[0] != answer:
-        tmp.append(ls[1])
-    tmp.append(ls[2])
-    tmp.append(ls[3])
-    hints.append(tmp)
-    
-    tmp = []
+    eh_words = []
     stop_words = [answer, '有']
     for word in climb.climb_words(answer):
         if word not in stop_words and '值' not in word:
-            tmp.append(word)
-    hints.append(tmp)
+            eh_words.append(word)
     
     wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
-    word2depth = wikidict[answer]
-    words = word2depth.keys()
-    if answer in words:
-        words.remove(answer)
-    hints.append(words)
+    word2depth = wikidict.get(answer, {})
+    wiki_words = word2depth.keys()
+    if answer in wiki_words:
+        wiki_words.remove(answer)
     
-    return hints
+    return [anc_words, eh_words, wiki_words]
 
 def group():
     grp = []
@@ -61,24 +49,23 @@ def game(request):
     #         break
     print answer.name
 
-    global hints
     responder = main_process.Responder()
-    hints = getHint(answer.name.encode('utf-8'))
-    hint_ls = []
-    for hint in hints:
-        if hint:
-            hint_ls.append(random.choice(hint))
-        else:
-            hint_ls.append('我無話可說了')
+    hints_list = get_hints_list(answer.name.encode('utf-8'))
+    chosen_hints = []
+    for hints in hints_list:
+        hint = random.choice(hints) if hints else '我無話可說了'
+        chosen_hints.append(hint)
     
     form = AskForm()
     contexts = {
         'answer': answer.name,
         'prev': 'PREV',
         'scroll_pos': 0,
+        'hints_concat': '|'.join([','.join(hints) for hints in hints_list]),
+        'used_hints': '',
+        'chosen_hints': chosen_hints,
         'form': form,
-        'answers': group(),
-        'hint': hint_ls
+        'answers': group()
     }
     end = time.clock()
     print "responder construction time: ",end - start
@@ -114,21 +101,17 @@ def get_result(request):
             data = form.cleaned_data
             answer = data['answer'].encode('utf-8')
             prev = data['prev'].encode('utf-8')
-            question = data['question'].encode('utf-8')
             success = data['success']
             scroll_pos = data['scroll_pos']
-            for k in data:
-                print k, data[k]
-            print "get data:",time.clock()-earliest
+            hints_concat = data['hints_concat']
+            used_hints = data['used_hints']
             
-            global hints
-            ls = answer.split(' ') # 0:answer; (1:hint)
-            if len(ls) > 1:
-                for tmp in hints:
-                    if ls[1] in tmp:
-                        tmp.remove(ls[1])
+            question = data['question'].encode('utf-8')
+            print 'POST data:'
+            for k in data:
+                print '\t', k, data[k]
+            print "get data:",time.clock()-earliest
             print answer.decode('utf-8').encode(sys_type)
-            answer = ls[0]
             print "preparation:",time.clock()-earliest
             
             responder = main_process.Responder()
@@ -249,22 +232,22 @@ def get_result(request):
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
             
-            hint_ls = []
-            for i in range(len(hints)):
-                hints[i] = [hint for hint in hints[i] if hint not in prev]
-                if len(hints[i]) > 0:
-                    hint_ls.append(random.choice(hints[i]))
-                else:
-                    hint_ls.append('我無話可說了')
+            hints_list = [hints.split(',') for hints in hints_concat.split('|')]
+            chosen_hints = []
+            for hints in hints_list:
+                hint = random.choice(hints) if hints else '我無話可說了'
+                chosen_hints.append(hint)
             
             contexts = {
                 'answer': answer,
                 'prev': prev,
-                'prev_list': prev_list,
                 'success': success,
-                'answers': group(),
-                'hint': hint_ls,
-                'scroll_pos':scroll_pos
+                'scroll_pos': scroll_pos,
+                'hints_concat': hints_concat,
+                'used_hints': used_hints,
+                'chosen_hints': chosen_hints,
+                'prev_list': prev_list,
+                'answers': group()
             }
             latest = time.clock()
             print "total time:", latest-earliest

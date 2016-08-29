@@ -4,238 +4,233 @@
 
 {% block content %}
 <div style="width:10px; height:600px; float:left;"></div>
+
 <div class="container-fluid">
-<div class="row">
-  <div class="col-xs-2">
-    <br>
-    <div id="ansList" style="width:90%; height:600px; overflow:auto;">
-      <table class="table" style="text-align:center; font-size:14px;">
-        <tbody>
-          {% for grp in answers %}
-            <tr>
-              {% for ans in grp %}
-                <td>{{ ans.name }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <script>
-      var ansDiv = document.getElementById("ansList");
-      ansDiv.scrollTop = {{ scroll_pos }};
-    </script>
-    <br>
-  </div>
-
-  <div class="col-xs-9">
-  <br>
-  <!--<div style="width:30px; height:600px; float:left"></div>-->
-  {% if user.is_authenticated %}
-  {% csrf_token %}
-    <p>{{ answer }} 
-        <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true 
-        data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
-        target='blank' >說明</button>
-    </p>
-    <hr>
-  {% else %}
-    <p><button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true 
-        data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
-        target='blank' >說明</button>
-    </p>
-  {% endif %}
-  <script>
-
-    var originalLeave = $.fn.popover.Constructor.prototype.leave;
-    $.fn.popover.Constructor.prototype.leave = function(obj){
-      var self = obj instanceof this.constructor ?
-        obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
-      var container, timeout;
-
-      originalLeave.call(this, obj);
-
-      if(obj.currentTarget) {
-        container = $(obj.currentTarget).siblings('.popover')
-        timeout = self.timeout;
-        container.one('mouseenter', function(){
-          //We entered the actual popover – call off the dogs
-          clearTimeout(timeout);
-          //Let's monitor popover content instead
-          container.one('mouseleave', function(){
-            $.fn.popover.Constructor.prototype.leave.call(self, self);
-          });
-        })
-      }
-    };
-    $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});    //trgger: 'click hover' -> it can be trigger while click or hover
-  </script>
-
-  <div class="col-xs-6">
-  <div id="dialog" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
-    <br><br>
-    <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
-
-    <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">猜猜我在想什麼~~</div>
-    <br><br><br>
-    {% for i in prev_list %}
-      {% if i.3 %}
-       {% if i.0 %}
-        <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
-        <br><br><br>
-       {% endif %}
-      <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.3}}</div>
-      <br><br><br>
-      {% endif %}
-    {% endfor %}
-  </div>
-  <script>
-  var objDiv = document.getElementById("dialog");
-  objDiv.scrollTop = objDiv.scrollHeight;
-  </script>
-  <!--{% if success %}
-   <fieldset disabled id="fset">
-  {% else %}
-   <fieldset id="fset">
-  {% endif %}-->
-  <fieldset id="fset">
-    <form id="form1" action="{% url 'get_result' %}" method="post">
-      {% csrf_token %}
-      <input type="hidden" id="answer" name="answer" value="{{ answer }}">
-      <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-      <input type="hidden" id="success" name="success" value="{{ success }}">      
-      <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">      
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
-        <span class="input-group-btn">
-          <input onclick="cclick()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
-            <script>
-            function cclick() {
-                //console.log("hi!!!!!");
-                //alert("alert!!!!!");
-                var x = document.getElementById("question").value;
-                if (x == null || x == "") {
-                    console.log("fill it!!");
-                    return false;
-                }
-                
-                var ansDiv = document.getElementById("ansList");
-                document.getElementById("scroll_pos").value = ansDiv.scrollTop;
-                console.log(document.getElementById("answer").value)
-                
-                var def=document.getElementById("default");
-                var clone = def.cloneNode(true);
-                var qq = document.getElementById("question").value;
-                clone.innerHTML = qq;
-                clone.style.visibility = "visible";
-                
-                var objDiv = document.getElementById("dialog");
-                //document.getElementById("form1").submit();
-                //var text=document.getElementById("dialog");
-                //text.innerHTML+='lululu';
-                //text.innerHTML+=`<br><br><div style="position: absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius: 8px;"><font style="font-weight:bold; color:#FAFAFA">${qq}</font></div>`
-                objDiv.appendChild(clone);
-                objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
-                objDiv.scrollTop = objDiv.scrollHeight;
-            }
-            </script>
-        </span>
-      </div>
-    </form>
-   </fieldset>
-
-    {% if success %}
+  <div class="row">
+    <div class="col-xs-2">
       <br>
-      <div class="alert alert-success" role="alert">
-        <p>恭喜答對！</p>
+      <div id="ansList" style="width:90%; height:600px; overflow:auto;">
+        <table class="table" style="text-align:center; font-size:14px;">
+          <tbody>
+            {% for grp in answers %}
+              <tr>
+                {% for ans in grp %}
+                  <td>{{ ans.name }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-    {% else %}
-      <br>
-      <div class="col-xs-6" style="margin-left:-15px">
-        <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
-        <script>
-          function show() {
-            document.getElementById("show_answer").style.display = "block";
-            document.getElementById("fset").disabled = "true";
-          }
-        </script>
-      </div>
-      <div class="col-xs-2" style="margin-left:-15px">
-        <button type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
-      </div>
-      <div class="col-xs-2" style="margin-left:-15px">
-        <button type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
-      </div>
-      <div class="col-xs-2" style="margin-left:-15px">
-        <button type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
-      </div>
+      
       <script>
-        function hint(i) {
-          if(document.getElementById("show_hint1").style.display == "block" ||
-             document.getElementById("show_hint2").style.display == "block" ||
-             document.getElementById("show_hint3").style.display == "block")
-              alert('不要那麼急，先猜猜看嘛');
-          else
+        var ansDiv = document.getElementById("ansList");
+        ansDiv.scrollTop = {{ scroll_pos }};
+      </script>
+      <br>
+    </div>
+
+    <div class="col-xs-9">
+      <br>
+      {% if user.is_authenticated %}
+      {% csrf_token %}
+        <p>{{ answer }}
+          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
+          target='blank' >說明</button>
+        </p>
+        <hr>
+      {% else %}
+        <p>
+          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
+          target='blank' >說明</button>
+        </p>
+      {% endif %}
+    
+      <script>
+        var originalLeave = $.fn.popover.Constructor.prototype.leave;
+        $.fn.popover.Constructor.prototype.leave = function(obj){
+          var self = obj instanceof this.constructor ?
+            obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+          var container, timeout;
+    
+          originalLeave.call(this, obj);
+    
+          if(obj.currentTarget) {
+            container = $(obj.currentTarget).siblings('.popover')
+            timeout = self.timeout;
+            container.one('mouseenter', function(){
+              clearTimeout(timeout);
+              container.one('mouseleave', function(){
+                $.fn.popover.Constructor.prototype.leave.call(self, self);
+              });
+            })
+          }
+        };
+        $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});
+      </script>
+
+      <div class="col-xs-6">
+        <div id="dialog" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
+          <br><br>
+          <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
+      
+          <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">猜猜我在想什麼~~</div>
+          <br><br><br>
+          {% for i in prev_list %}
+            {% if i.3 %}
+              {% if i.0 %}
+                <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
+                <br><br><br>
+              {% endif %}
+            <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.3}}</div>
+            <br><br><br>
+            {% endif %}
+          {% endfor %}
+        </div>
+        
+        <script>
+        var objDiv = document.getElementById("dialog");
+        objDiv.scrollTop = objDiv.scrollHeight;
+        </script>
+        
+        <fieldset id="fset">
+          <form id="form1" action="{% url 'get_result' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="answer" name="answer" value="{{ answer }}">
+            <input type="hidden" id="prev" name="prev" value="{{ prev }}">
+            <input type="hidden" id="success" name="success" value="{{ success }}">
+            <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">
+            <input type="hidden" id="hints_concat" name="hints_concat" value="{{ hints_concat }}">
+            <input type="hidden" id="used_hints" name="used_hints" value="{{ used_hints }}">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
+              <span class="input-group-btn">
+                <input onclick="cclick()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
+                
+                <script>
+                  function cclick() {
+                    var x = document.getElementById("question").value;
+                    if (x == null || x == "") {
+                      console.log("fill it!!");
+                      return false;
+                    }
+                    
+                    var ansDiv = document.getElementById("ansList");
+                    document.getElementById("scroll_pos").value = ansDiv.scrollTop;
+                    console.log(document.getElementById("answer").value)
+                    
+                    var def=document.getElementById("default");
+                    var clone = def.cloneNode(true);
+                    var qq = document.getElementById("question").value;
+                    clone.innerHTML = qq;
+                    clone.style.visibility = "visible";
+                    
+                    var objDiv = document.getElementById("dialog");
+                    objDiv.appendChild(clone);
+                    objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
+                    objDiv.scrollTop = objDiv.scrollHeight;
+                  }
+                </script>
+              </span>
+            </div>
+          </form>
+        </fieldset>
+
+        {% if success %}
+          <br>
+          <div class="alert alert-success" role="alert">
+            <p>恭喜答對！</p>
+          </div>
+        {% else %}
+          <br>
+          <div class="col-xs-6" style="margin-left:-15px">
+            <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+            <script>
+              function show() {
+                document.getElementById("show_answer").style.display = "block";
+                document.getElementById("fset").disabled = "true";
+              }
+            </script>
+          </div>
+          
+          <div class="col-xs-2" style="margin-left:-15px">
+            <button type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
+          </div>
+          
+          <div class="col-xs-2" style="margin-left:-15px">
+            <button type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
+          </div>
+          
+          <div class="col-xs-2" style="margin-left:-15px">
+            <button type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
+          </div>
+          
+          <script>
+            function hint(i) {
               var div = 'show_hint' + i.toString();
               document.getElementById(div).style.display = "block";
-              var ans = "{{ answer }}", hint = i==1? "{{ hint.0 }}":i==2?"{{ hint.1 }}":"{{ hint.2 }}";
-              document.getElementById("answer").value = ans + " " + hint;
-        }
-      </script>
-      
-      <br><br>
-      <div class="col-xs-6" style="margin-left:-15px">
-        <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
-          正確答案：{{ answer }}
-        </div>
+              document.getElementById('used_hints').value += i.toString();
+            }
+          </script>
+          
+          <br><br>
+          <div class="col-xs-6" style="margin-left:-15px">
+            <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+              正確答案：{{ answer }}
+            </div>
+          </div>
+          
+          <div class="col-xs-6" style="margin-left:-15px">
+            <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
+              提示1：{{ chosen_hints.0 }}
+            </div>
+          </div>
+          
+          <div class="col-xs-6" style="margin-left:-15px"></div>
+          
+          <div class="col-xs-6" style="margin-left:-15px">
+            <div class="alert alert-info" id="show_hint2" role="alert" style="display: none;">
+              提示2：{{ chosen_hints.1 }}
+            </div>
+          </div>
+          
+          <div class="col-xs-6" style="margin-left:-15px"></div>
+          
+          <div class="col-xs-6" style="margin-left:-15px">
+            <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
+              提示3：{{ chosen_hints.2 }}
+            </div>
+          </div>
+        {% endif %}
       </div>
-      <div class="col-xs-6" style="margin-left:-15px">
-        <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
-          提示1：{{ hint.0 }}
-        </div>
-      </div>
-      <div class="col-xs-6" style="margin-left:-15px"></div>
-      <div class="col-xs-6" style="margin-left:-15px">
-        <div class="alert alert-info" id="show_hint2" role="alert" style="display: none;">
-          提示2：{{ hint.1 }}
-        </div>
-      </div>
-      <div class="col-xs-6" style="margin-left:-15px"></div>
-      <div class="col-xs-6" style="margin-left:-15px">
-        <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
-          提示3：{{ hint.2 }}
-        </div>
-      </div>
-    {% endif %}
     
-  </div>
-
-  
-  <div class="col-xs-6">
-    <table class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
-      <thead>
-        <tr>
-          <th class="col-xs-1">#</th>
-          <th class="col-xs-3">問題</th>
-          <th class="col-xs-1">結果</th>
-          <th class="col-xs-1">信心(%)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in prev_list%}
-          {% if i.4 %}
+      <div class="col-xs-6">
+        <table class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
+          <thead>
             <tr>
-              <td class="col-xs-1">{{ i.4 }}</td>
-              <td class="col-xs-3">{{ i.0 }}</td>
-              <td class="col-xs-1">{{ i.1 }}</td>
-              <td class="col-xs-1">{{ i.2 }}</td>
+              <th class="col-xs-1">#</th>
+              <th class="col-xs-3">問題</th>
+              <th class="col-xs-1">結果</th>
+              <th class="col-xs-1">信心(%)</th>
             </tr>
-          {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {% for i in prev_list %}
+              {% if i.4 %}
+                <tr>
+                  <td class="col-xs-1">{{ i.4 }}</td>
+                  <td class="col-xs-3">{{ i.0 }}</td>
+                  <td class="col-xs-1">{{ i.1 }}</td>
+                  <td class="col-xs-1">{{ i.2 }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  </div>
-</div>
 </div>
 {% endblock content %}
