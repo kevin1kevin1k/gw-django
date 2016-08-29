@@ -132,20 +132,21 @@ class Responder():
                     break
                                 
                 #看看是否可以從wiki找到答案
+                combine=keyword
                 if key=="act":                    
                     if "object" in keywords_dict:
-                        keyword=keyword+keywords_dict["object"][0]
-                    if     "subject" in keywords_dict:
-                        keyword=keywords_dict["subject"][0]+keyword
+                        combine=keyword+keywords_dict["object"][0]
+                    if "subject" in keywords_dict:
+                        combine=keywords_dict["subject"][0]+keyword
 
                 #print self.wikidict.keys()        
                 if answer in self.wikidict:
                     word2depth = self.wikidict[answer]
-                    if keyword in word2depth:
-                        depth = word2depth[keyword]
+                    if combine in word2depth:
+                        depth = word2depth[combine]
                         conf = 0.9 ** depth # 0.9 ** 7 < 0.5
                         if conf > 0.5:
-                            answer_lst.append( (keyword, key, 'Y', 'Wiki', str(conf)) )
+                            answer_lst.append( (combine, key, 'Y', 'Wiki', str(conf)) )
                             continue
                 
                 #ehownet:
