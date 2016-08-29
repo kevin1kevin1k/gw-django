@@ -103,8 +103,10 @@
       {% csrf_token %}
       <input type="hidden" id="answer" name="answer" value="{{ answer }}">
       <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-      <input type="hidden" id="success" name="success" value="{{ success }}">      
-      <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">      
+      <input type="hidden" id="success" name="success" value="{{ success }}">
+      <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">
+      <input type="hidden" id="hints_concat" name="hints_concat" value="{{ hints_concat }}">
+      <input type="hidden" id="used_hints" name="used_hints" value="{{ used_hints }}">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
         <span class="input-group-btn">
@@ -171,15 +173,9 @@
       </div>
       <script>
         function hint(i) {
-          if(document.getElementById("show_hint1").style.display == "block" ||
-             document.getElementById("show_hint2").style.display == "block" ||
-             document.getElementById("show_hint3").style.display == "block")
-              alert('不要那麼急，先猜猜看嘛');
-          else
-              var div = 'show_hint' + i.toString();
-              document.getElementById(div).style.display = "block";
-              var ans = "{{ answer }}", hint = i==1? "{{ hint.0 }}":i==2?"{{ hint.1 }}":"{{ hint.2 }}";
-              document.getElementById("answer").value = ans + " " + hint;
+          var div = 'show_hint' + i.toString();
+          document.getElementById(div).style.display = "block";
+          document.getElementById('used_hints').value += i.toString();
         }
       </script>
       
@@ -191,19 +187,19 @@
       </div>
       <div class="col-xs-6" style="margin-left:-15px">
         <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
-          提示1：{{ hint.0 }}
+          提示1：{{ chosen_hints.0 }}
         </div>
       </div>
       <div class="col-xs-6" style="margin-left:-15px"></div>
       <div class="col-xs-6" style="margin-left:-15px">
         <div class="alert alert-info" id="show_hint2" role="alert" style="display: none;">
-          提示2：{{ hint.1 }}
+          提示2：{{ chosen_hints.1 }}
         </div>
       </div>
       <div class="col-xs-6" style="margin-left:-15px"></div>
       <div class="col-xs-6" style="margin-left:-15px">
         <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
-          提示3：{{ hint.2 }}
+          提示3：{{ chosen_hints.2 }}
         </div>
       </div>
     {% endif %}
@@ -222,7 +218,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for i in prev_list%}
+        {% for i in prev_list %}
           {% if i.4 %}
             <tr>
               <td class="col-xs-1">{{ i.4 }}</td>
