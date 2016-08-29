@@ -30,6 +30,13 @@ class Responder():
         self.has_updated = False
 
     def predictProbaByClf(self,clf,X):
+        '''
+        Input:
+            clf:a classifier 
+            X: input feature
+        Output:
+            a list,containing the probability of each class
+        '''
         scores = clf.decision_function(X)
         prob = 1. / (1. + np.exp(-scores))
         if len(prob.shape) == 1:
@@ -38,6 +45,9 @@ class Responder():
             return prob / prob.sum(axis=1).reshape((prob.shape[0], -1))
 
     def responseSentence(self,ques, ls):
+        '''
+            Give sentences to respond to users according to the question sentence and the process result.          
+        '''
         res_ls = []
         if len(ls) == 1:
             res = ques.replace('嗎', '')
@@ -90,6 +100,9 @@ class Responder():
         return res_ls
 
     def process(self,answer,question,update_data=True):
+        '''
+            Go through Wiki,Ehownet,pattern,classifier to determine Yes or No
+        '''
         self.has_updated = False
         
         Response = namedtuple('Response', ["keyword","qtype","label","conf","source","answer_str","new_question","is_neg"])
