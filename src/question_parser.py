@@ -24,7 +24,7 @@ class question_parser:
         # ancestors.load()
         self.stopWordLst=set(["它","在","是","的","有","跟","和","有的","有關","拿來","裡",
             "東西","一種","某種","做","他","她","牠","祂","功能","或","屬於","類型",
-            "需要","用到","一個","含","做出來","無關"])
+            "需要","用到","一個","含","做出來","無關","用來"])
         self.eNouns=set()
         with open(ehownetPath,"r") as file:
             for line in file.readlines():
@@ -431,10 +431,12 @@ class question_parser:
                             self.add_to_dict(key_dict,"act",word)
                         elif ancestors.is_attr(word):
                             self.add_to_dict(key_dict,"attr",word)
+                        elif "V" in head_node.data: #它會吃草嗎 它可以用來通訊嗎
+                            self.add_to_dict(key_dict,"act",word)
 
                     ###判斷動詞類別
                     verb=head_node.data.split(":")[1]
-                    match_obj=re.search(r"V[BCFIJGK]|V_2|S",verb)
+                    match_obj=re.search(r"V[BCFIJGKL]|V_2|S",verb) #VL:用來通訊
 
                     ###及物動詞,分類動詞等等要再取受詞
                     if match_obj is not None:
