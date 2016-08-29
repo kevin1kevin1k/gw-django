@@ -24,7 +24,7 @@ corpusContent = None
 ######################
 def load(model_path):
     '''
-    load gensim model and corpusContent into global varieble
+    load gensim model and corpusContent into global variable
     '''
     global model
     if model is None:
@@ -41,6 +41,11 @@ def load(model_path):
         corpusContent= sentences
 
 def getSimilarity(w1,w2,model_path="resources/cna_asbc_cbow_d300_w10_n10_hs0_i15.vectors.bin"):
+    '''
+    Using word embedding model to give consine similarity between two words.
+    The main purpose of this function is to prevent repetitive model loading 
+    when others need to use word vector similarity.
+    '''
     if model is None:
         load(model_path)
     if not isinstance(w1, unicode):
@@ -374,7 +379,7 @@ class AnswerData:
 
     def matchPattern(self,text,pattern):
         for sentence in text:
-            segments=re.compile(ur",|，|\.|。|!|！|\?|？|;|；").split(sentence)
+            segments=re.compile(ur",|，|\.|。|!|！|\?|？|;|；").split(sentence) 
             for seg in segments:
                 #sysPrint(seg)
                 if re.search(pattern,seg) is not None:
@@ -383,13 +388,16 @@ class AnswerData:
         return False 
 
     def findPattern(self,keywords):
+        '''
+        check if there are sentences matching patterns which contain answer and action keywords
+        '''
         key_combination="|".join(keywords)
         pattern1="{0}.*?(可以|能|會)({1})".format(self.answer,key_combination).decode("utf-8") #(?!機)
         pattern2="{0}.*?({1})得.*?".format(self.answer,key_combination).decode("utf-8")
         sysPrint(pattern1)
         sysPrint(pattern2)
 
-        text=self.GoogleContent+self.WikiContent+self.BaiDuContent+self.CorpusContent #(unicode)
+        text=self.Content #(unicode)
         result=self.matchPattern(text,pattern1)
         if result:
             return True
@@ -398,25 +406,46 @@ class AnswerData:
 
 
     def findPatternWithObj(self,keywords,obj):
+        '''
+        check if there are sentences matching the pattern which contains answer, action keywords and object
+        '''
         key_combination="|".join(keywords)
         pattern1="{0}.*?({1}).{{0,3}}{2}".format(self.answer,key_combination,obj).decode("utf-8")
         sysPrint(pattern1)
 
-        text=self.GoogleContent+self.WikiContent+self.BaiDuContent+self.CorpusContent #(unicode)
+        text=self.Content #(unicode)
         result=self.matchPattern(text,pattern1) 
         return result
     
-    def findPatternWithSbj(self,keywords,sbj):
+    def findPatternWithSbj(self,keywords,sbj):        
+        '''
+        check if there are sentences matching the pattern which contains answer, action keywords and subject
+        '''
         key_combination="|".join(keywords)
         pattern1="{0}.*?({1}).{{0,3}}{2}".format(sbj,key_combination,self.answer).decode("utf-8") #木匠用鐵鎚 
         #or 鐵鎚是木匠用來..!?
         sysPrint(pattern1)
 
-        text=self.GoogleContent+self.WikiContent+self.BaiDuContent+self.CorpusContent #(unicode)
+        text=self.Content #(unicode)
         result=self.matchPattern(text,pattern1) 
         return result 
 
     def getFeatures(self,keywordList,model_path):
+        '''
+        Input: 
+            keywordList: a list containing keyword and its synnonym, 
+            model_path: word embedding model
+
+        Output:
+            features extracted from answer-related content(Google,Wikipedia,Baidu,ASBC)
+            in relation to keywords
+
+            feature 0: ratio of co-occurrence frequency 
+            feature 1: average distance between answer and keywords
+            feature 2: shortest distance between answer and keywords
+            feature 3: word vectors consine similarity between answer and keywords
+
+        '''
         u_answer = unicode(self.answer, 'utf-8')
         #u_keyword = unicode(keyword, 'utf-8')
         u_keyword_lst=[unicode(k,'utf-8') for k in keywordList]
