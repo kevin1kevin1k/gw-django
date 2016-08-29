@@ -7,5 +7,4 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/$', views.answer_detail, name='answer_detail'),
     url(r'^new/$', views.answer_create, name='answer_create'),
     url(r'^playing/$', views.get_result, name='get_result'),
-    # url(r'^(?P<pk>\d+)/update/$', views.answer_update, name='answer_update'),
 ]

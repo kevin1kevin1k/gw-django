@@ -107,17 +107,11 @@ def get_result(request):
             used_hints = data['used_hints']
             
             question = data['question'].encode('utf-8')
+            print 'POST data:'
             for k in data:
-                print k, data[k]
+                print '\t', k, data[k]
             print "get data:",time.clock()-earliest
-            
-            # ls = answer.split(' ') # 0:answer; (1:hint)
-            # if len(ls) > 1:
-            #     for tmp in hints:
-            #         if ls[1] in tmp:
-            #             tmp.remove(ls[1])
             print answer.decode('utf-8').encode(sys_type)
-            # answer = ls[0]
             print "preparation:",time.clock()-earliest
             
             responder = main_process.Responder()
@@ -237,14 +231,6 @@ def get_result(request):
                 res = res_list[random.randrange(len(res_list))]
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
-            
-            # hint_ls = []
-            # for i in range(len(hints)):
-            #     hints[i] = [hint for hint in hints[i] if hint not in prev]
-            #     if len(hints[i]) > 0:
-            #         hint_ls.append(random.choice(hints[i]))
-            #     else:
-            #         hint_ls.append('我無話可說了')
             
             hints_list = [hints.split(',') for hints in hints_concat.split('|')]
             chosen_hints = []
