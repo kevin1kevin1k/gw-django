@@ -71,11 +71,12 @@ def two(a, b, is_class=True):
     
     # (2)
     if is_class:
-        sim = getSimilarity(a, b) # [-1, 1]
-        if sim:
-            conf = 1.0 - ((sim + 1) / 2) # [0, 1]
-        else:
-            conf = 0.8
+        # sim = getSimilarity(a, b) # [-1, 1]
+        # if sim:
+        #     conf = 1.0 - ((sim + 1) / 2) # [0, 1]
+        # else:
+        #     conf = 0.8
+        conf = 0.8
         return 'N', conf
     
     # (3)
