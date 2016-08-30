@@ -19,8 +19,6 @@ def one(w):
     '''
     
     ans = []
-    # with open('resources/eHowNet_utf8.csv', 'rb') as f:
-    #     lines = csv.reader(f, delimiter='\t')
     global content
     for l in content:
         if any([w in s for s in l]):

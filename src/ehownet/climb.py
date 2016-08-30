@@ -18,12 +18,10 @@ def climb(words, strict=True):
     ans = []
     if isinstance(words, str):
         words = [words]
-    # with open('resources/eHowNet_utf8.csv', 'rb') as f:
-    #     lines = csv.reader(f, delimiter='\t')
     global content
     for line in content:
         for word in words:
-            if word in line:
+            if word in line and 'V' in line[3]:
                 for i in [5, 6]:
                     if line[i]:
                         if not strict or word not in line[i]:
