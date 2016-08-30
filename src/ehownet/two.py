@@ -95,7 +95,9 @@ def two(a, b, is_class=True):
     # (4)
     pab, pba = prob(a, b), prob(b, a)
     if pab > 0 and pba > 0:
-        return 'Y', scale((pab + pba) / 2)
+        conf = scale((pab + pba) / 2)
+        if conf > 0.2:
+            return 'Y', conf
     
     # (5)
     return 'U', 1.0
