@@ -91,7 +91,7 @@
         </script>
         
         <fieldset id="fset">
-          <form id="form1" action="{% url 'get_result' %}" method="post">
+          <form id="form1" onsubmit="enter.disabled = true;" action="{% url 'get_result' %}" method="post">
             {% csrf_token %}
             <input type="hidden" id="answer" name="answer" value="{{ answer }}">
             <input type="hidden" id="prev" name="prev" value="{{ prev }}">
@@ -141,25 +141,26 @@
         {% else %}
           <br>
           <div class="col-xs-6" style="margin-left:-15px">
-            <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+            <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">公布答案</button>
             <script>
-              function show() {
+              function show_answer() {
                 document.getElementById("show_answer").style.display = "block";
                 document.getElementById("fset").disabled = "true";
+                document.getElementById("answer_btn").disabled = "true";
               }
             </script>
           </div>
           
           <div class="col-xs-2">
-            <button type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
+            <button id="hint_btn1" type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
           </div>
           
           <div class="col-xs-2">
-            <button type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
+            <button id="hint_btn2" type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
           </div>
           
           <div class="col-xs-2">
-            <button type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
+            <button id="hint_btn3" type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
           </div>
           
           <script>
@@ -167,6 +168,7 @@
               var div = 'show_hint' + i.toString();
               document.getElementById(div).style.display = "block";
               document.getElementById('used_hints').value += i.toString();
+              document.getElementById("hint_btn" + i.toString()).disabled = "true";
             }
           </script>
           
