@@ -12,8 +12,9 @@ from src import main_process
 from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb
 from src import crawl_wiki
+from src.crawlData import getSimilarity
 
-def get_hints_list(answer):    
+def get_hints(answer):    
     anc_words = ancestors.anc(answer)
     
     eh_words = []
@@ -28,7 +29,7 @@ def get_hints_list(answer):
     if answer in wiki_words:
         wiki_words.remove(answer)
     
-    return [anc_words, eh_words, wiki_words]
+    return list(set(anc_words + eh_words + wiki_words))
 
 def group():
     grp = []
@@ -42,26 +43,34 @@ def game(request):
     start = time.clock()
     answers = Answer.objects.all()
     answer = random.choice(answers)
-    # tmp = u''
-    # for ans in answers:
-    #     if ans.name == tmp:
-    #         answer = ans
-    #         break
-    print answer.name
+    
+    # for debugging
+    tmp = u''
+    for ans in answers:
+        if ans.name == tmp:
+            answer = ans
+            break
+    answer = answer.name.encode('utf-8')
+    print answer
 
-    responder = main_process.Responder()
-    hints_list = get_hints_list(answer.name.encode('utf-8'))
+    all_hints = get_hints(answer)
+    print 'all hints:', ','.join(all_hints)
+    sims = [getSimilarity(answer, hint) for hint in all_hints]
+    hints_sims = [h_s for h_s in zip(all_hints, sims) if h_s[1]]
+    sorted_hints_sims = sorted(hints_sims, key=lambda h_s: h_s[1], reverse=True)
+    print 'chosen hints:'
     chosen_hints = []
-    for hints in hints_list:
-        hint = random.choice(hints) if hints else '我無話可說了'
-        chosen_hints.append(hint)
+    for h, s in sorted_hints_sims:
+        if set(h.decode('utf-8')) & set(answer.decode('utf-8')) == set():
+            print h, s
+            chosen_hints.append(h)
+    chosen_hints = chosen_hints[:3]
     
     form = AskForm()
     contexts = {
-        'answer': answer.name,
+        'answer': answer,
         'prev': 'PREV',
         'scroll_pos': 0,
-        'hints_concat': '|'.join([','.join(hints) for hints in hints_list]),
         'used_hints': '',
         'chosen_hints': chosen_hints,
         'form': form,
@@ -232,18 +241,13 @@ def get_result(request):
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
             
-            hints_list = [hints.split(',') for hints in hints_concat.split('|')]
-            chosen_hints = []
-            for hints in hints_list:
-                hint = random.choice(hints) if hints else '我無話可說了'
-                chosen_hints.append(hint)
+            chosen_hints = hints_concat.split('|')
             
             contexts = {
                 'answer': answer,
                 'prev': prev,
                 'success': success,
                 'scroll_pos': scroll_pos,
-                'hints_concat': hints_concat,
                 'used_hints': used_hints,
                 'chosen_hints': chosen_hints,
                 'prev_list': prev_list,

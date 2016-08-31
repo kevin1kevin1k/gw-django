@@ -8,6 +8,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-2">
+      <p style="font-size: 200%;"><strong>答案列表</strong></p>
       <br>
       <div id="ansList" style="width:90%; height:600px; overflow:auto;">
         <table class="table" style="text-align:center; font-size:14px;">
@@ -31,48 +32,42 @@
     </div>
 
     <div class="col-xs-9">
-      <br>
-      {% if user.is_authenticated %}
-      {% csrf_token %}
-        <p>{{ answer }}
-          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
-          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
-          target='blank' >說明</button>
-        </p>
-        <hr>
-      {% else %}
-        <p>
-          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
-          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
-          target='blank' >說明</button>
-        </p>
-      {% endif %}
-    
-      <script>
-        var originalLeave = $.fn.popover.Constructor.prototype.leave;
-        $.fn.popover.Constructor.prototype.leave = function(obj){
-          var self = obj instanceof this.constructor ?
-            obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
-          var container, timeout;
-    
-          originalLeave.call(this, obj);
-    
-          if(obj.currentTarget) {
-            container = $(obj.currentTarget).siblings('.popover')
-            timeout = self.timeout;
-            container.one('mouseenter', function(){
-              clearTimeout(timeout);
-              container.one('mouseleave', function(){
-                $.fn.popover.Constructor.prototype.leave.call(self, self);
-              });
-            })
-          }
-        };
-        $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});
-      </script>
-
       <div class="col-xs-6">
-        <div id="dialog" style="position:relative; height:450px; overflow:auto; background-color:#FAFAFA">
+        <br>
+        <p>
+          {% if user.is_authenticated %}
+          {% csrf_token %}
+            {{ answer }}
+          {% endif %}
+          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
+          target='blank'>說明</button>
+        </p>
+        
+        <script>
+          var originalLeave = $.fn.popover.Constructor.prototype.leave;
+          $.fn.popover.Constructor.prototype.leave = function(obj){
+            var self = obj instanceof this.constructor ?
+              obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+            var container, timeout;
+      
+            originalLeave.call(this, obj);
+      
+            if(obj.currentTarget) {
+              container = $(obj.currentTarget).siblings('.popover')
+              timeout = self.timeout;
+              container.one('mouseenter', function(){
+                clearTimeout(timeout);
+                container.one('mouseleave', function(){
+                  $.fn.popover.Constructor.prototype.leave.call(self, self);
+                });
+              })
+            }
+          };
+          $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});
+        </script>
+
+        <div id="dialog" style="position:relative; height:400px; overflow:auto; background-color:#FAFAFA">
           <br><br>
           <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
       
@@ -91,18 +86,18 @@
         </div>
         
         <script>
-        var objDiv = document.getElementById("dialog");
-        objDiv.scrollTop = objDiv.scrollHeight;
+          var objDiv = document.getElementById("dialog");
+          objDiv.scrollTop = objDiv.scrollHeight;
         </script>
         
         <fieldset id="fset">
-          <form id="form1" action="{% url 'get_result' %}" method="post">
+          <form id="form1" onsubmit="enter.disabled = true;" action="{% url 'get_result' %}" method="post">
             {% csrf_token %}
             <input type="hidden" id="answer" name="answer" value="{{ answer }}">
             <input type="hidden" id="prev" name="prev" value="{{ prev }}">
             <input type="hidden" id="success" name="success" value="{{ success }}">
             <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">
-            <input type="hidden" id="hints_concat" name="hints_concat" value="{{ hints_concat }}">
+            <input type="hidden" id="hints_concat" name="hints_concat" value="{{ chosen_hints|join:'|' }}">
             <input type="hidden" id="used_hints" name="used_hints" value="{{ used_hints }}">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
@@ -146,25 +141,26 @@
         {% else %}
           <br>
           <div class="col-xs-6" style="margin-left:-15px">
-            <button type="button" class="btn btn-default" onclick="show()">公布答案</button>
+            <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">公布答案</button>
             <script>
-              function show() {
+              function show_answer() {
                 document.getElementById("show_answer").style.display = "block";
                 document.getElementById("fset").disabled = "true";
+                document.getElementById("answer_btn").disabled = "true";
               }
             </script>
           </div>
           
-          <div class="col-xs-2" style="margin-left:-15px">
-            <button type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
+          <div class="col-xs-2">
+            <button id="hint_btn1" type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
           </div>
           
-          <div class="col-xs-2" style="margin-left:-15px">
-            <button type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
+          <div class="col-xs-2">
+            <button id="hint_btn2" type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
           </div>
           
-          <div class="col-xs-2" style="margin-left:-15px">
-            <button type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
+          <div class="col-xs-2">
+            <button id="hint_btn3" type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
           </div>
           
           <script>
@@ -172,6 +168,7 @@
               var div = 'show_hint' + i.toString();
               document.getElementById(div).style.display = "block";
               document.getElementById('used_hints').value += i.toString();
+              document.getElementById("hint_btn" + i.toString()).disabled = "true";
             }
           </script>
           
@@ -211,7 +208,7 @@
           <thead>
             <tr>
               <th class="col-xs-1">#</th>
-              <th class="col-xs-3">問題</th>
+              <th class="col-xs-3">問過的問題</th>
               <th class="col-xs-1">結果</th>
               <th class="col-xs-1">信心(%)</th>
             </tr>

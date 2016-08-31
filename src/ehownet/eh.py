@@ -102,7 +102,8 @@ def rules(a, b, is_class):
         if b != '場所':
             ans.append(two(a, '場所'))
     if b in ['工具', '用具', '用品']:
-        ans.append(two(a, '器具'))
+        ans.append(two(a, '機器'))
+        ans.append(two(a, '交通工具'))        
     
     ans = [i for i in ans if i[0] == 'Y']
     if b in ['生物', '動物'] and ancestors.belong(a, '身體部件'):

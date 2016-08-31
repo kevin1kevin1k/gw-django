@@ -19,8 +19,6 @@ def one(w):
     '''
     
     ans = []
-    # with open('resources/eHowNet_utf8.csv', 'rb') as f:
-    #     lines = csv.reader(f, delimiter='\t')
     global content
     for l in content:
         if any([w in s for s in l]):
@@ -73,11 +71,12 @@ def two(a, b, is_class=True):
     
     # (2)
     if is_class:
-        sim = getSimilarity(a, b) # [-1, 1]
-        if sim:
-            conf = 1.0 - ((sim + 1) / 2) # [0, 1]
-        else:
-            conf = 0.8
+        # sim = getSimilarity(a, b) # [-1, 1]
+        # if sim:
+        #     conf = 1.0 - ((sim + 1) / 2) # [0, 1]
+        # else:
+        #     conf = 0.8
+        conf = 0.8
         return 'N', conf
     
     # (3)
@@ -95,7 +94,9 @@ def two(a, b, is_class=True):
     # (4)
     pab, pba = prob(a, b), prob(b, a)
     if pab > 0 and pba > 0:
-        return 'Y', scale((pab + pba) / 2)
+        conf = scale((pab + pba) / 2)
+        if conf > 0.2:
+            return 'Y', conf
     
     # (5)
     return 'U', 1.0
