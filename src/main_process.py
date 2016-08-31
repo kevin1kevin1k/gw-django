@@ -48,6 +48,7 @@ class Responder():
         '''
             Give sentences to respond to users according to the question sentence and the process result.          
         '''
+        ques=re.sub("他|她|牠","它",ques)
         res_ls = []
         if len(ls) == 1:
             res = ques.replace('嗎', '')
@@ -72,7 +73,6 @@ class Responder():
                     res = res.replace('得到', '不到')
                 else:
                     res = res.replace('它', '它不')
-                    res = res.replace('他', '他不')
 
             res_ls.append(res)
         else:
