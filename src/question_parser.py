@@ -163,8 +163,6 @@ class question_parser:
 
     def processQuestionBySpecificRule(self,question,root):
 
-        question=self._processQuestionBySpecificRule(question)
-
         #換成肯定句
         question=question.decode("utf-8")
 
@@ -333,6 +331,8 @@ class question_parser:
         #analyze question type : class or attribute?
         qtype= self.judge_qtype(question)
         winPrint(qtype)
+
+        question=self._processQuestionBySpecificRule(question)
 
         parse_str = self.call_ckipparser_server(question)
         winPrint(parse_str)
