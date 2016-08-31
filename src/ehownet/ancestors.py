@@ -52,7 +52,7 @@ def get_type(word):
         return 'class'
     if belong(word, '行動'):
         return 'act'
-    if belong(word, '狀態'):
+    if belong(word, '屬性值'):
         return 'attr'
     return 'class'
 
@@ -63,7 +63,7 @@ def is_act(word):
     return belong(word, '行動')
 
 def is_attr(word):
-    return belong(word, '狀態')
+    return belong(word, '屬性值')
 
 
 if __name__ == '__main__':
