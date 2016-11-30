@@ -9,7 +9,7 @@ with open('resources/eHowNet_utf8.csv', 'rb') as f:
     for line in reader:
         content.append(line)
         
-def climb(words, strict=True):
+def climb(words, strict=True, shorter=False):
     '''
     Return a list of all definitions (expansions) of word in `words`.
     (`words` as a single word, instead of list, is acceptable)
@@ -21,11 +21,18 @@ def climb(words, strict=True):
     global content
     for line in content:
         for word in words:
-            if word in line and 'V' in line[3]:
+            if word in line and 'V' not in line[3]:
                 for i in [5, 6]:
                     if line[i]:
                         if not strict or word not in line[i]:
-                            ans.append(line[i])
+                            if shorter:
+                                if ':' in line[i]:
+                                    ans.append(line[i])
+                                    break
+                                else:
+                                    continue
+                            else:
+                                ans.append(line[i])
     return ans
 
 def climb_words(word):

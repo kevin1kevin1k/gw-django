@@ -10,7 +10,7 @@ import re
 import sys
 from src import main_process
 from src import question_parser as qs
-from src.ehownet import synonym, ancestors, climb
+from src.ehownet import synonym, ancestors, climb, parse_eh
 from src import crawl_wiki
 from src.crawlData import getSimilarity
 
@@ -236,8 +236,13 @@ def get_result(request):
                 encourage = False
 
             if encourage:
-                res_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
-                res = res_list[random.randrange(len(res_list))]
+                defs = climb.climb(answer, strict=False, shorter=True)
+                if defs == []:
+                    res_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
+                    res = res_list[random.randrange(len(res_list))]
+                else:
+                    def_root = parse_eh.parse(defs[0])
+                    res = parse_eh.def2sentence(def_root)
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
             
