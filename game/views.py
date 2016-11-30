@@ -241,7 +241,9 @@ def get_result(request):
                     res_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
                     res = res_list[random.randrange(len(res_list))]
                 else:
-                    def_root = parse_eh.parse(defs[0])
+                    definition = defs[0]
+                    definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+                    def_root = parse_eh.parse(definition)
                     res = parse_eh.def2sentence(def_root)
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
