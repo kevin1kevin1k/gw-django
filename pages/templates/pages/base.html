@@ -29,7 +29,7 @@
             </ul>
           {% endif %}
           
-          <form class="navbar-right navbar-form" methos="post" action="{% url 'logout' %}">
+          <form class="navbar-right navbar-form" method="post" action="{% url 'logout' %}">
             {% if user.is_authenticated %}
             {% csrf_token %}
               <input type="hidden" name="next" value="{% url 'home' %}">
