@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 def node2str(node_a,semantic_node_dict):
 	# ---------- define rule  ---------- 
 	direct_cat=["content","target","possession","theme"]
