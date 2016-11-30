@@ -121,6 +121,11 @@ def parse(s):
     return node
 
 def def2sentence(node, max_depth=2):
+    '''
+    Input: A Tree node and an optional max_depth
+    Output: The sentence constructed from the definition implied by node 
+    '''
+    
     head = node.head
     if max_depth == 0:
         return head
@@ -150,7 +155,10 @@ if __name__ == '__main__':
         s = re.sub('(\|\w+)|(\w+\|)', '', s)
         print s
         root = parse(s)
-        root.traverse()
-        for k, v in root.collect().items():
-            print k, ','.join(v)
+        # root.traverse()
+        print def2sentence(root)
         print
+        
+        # for k, v in root.collect().items():
+        #     print k, ','.join(v)
+        # print
