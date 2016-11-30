@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import re
+from node2str import node2str
 
 class Tree:
     '''
@@ -119,6 +120,15 @@ def parse(s):
         
     return node
 
+def def2sentence(node, max_depth=2):
+    head = node.head
+    if max_depth == 0:
+        return head
+    links = {}
+    for f, n in node.feat.items():
+        if n.head != '~':
+            links[f] = def2sentence(n, max_depth - 1)
+    return node2str(head, links)
 
 if __name__ == '__main__':
     # sample ehownet definitions/expansions
