@@ -151,7 +151,13 @@
             </script>
           </div>
           
-          <div class="col-xs-2">
+          <div class="col-xs-6" style="margin-left:-15px">
+            <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+              正確答案：{{ answer }}
+            </div>
+          </div>
+          
+          <!-- <div class="col-xs-2">
             <button id="hint_btn1" type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
           </div>
           
@@ -161,25 +167,18 @@
           
           <div class="col-xs-2">
             <button id="hint_btn3" type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
-          </div>
+          </div> -->
           
-          <script>
+          <!-- <script>
             function hint(i) {
               var div = 'show_hint' + i.toString();
               document.getElementById(div).style.display = "block";
               document.getElementById('used_hints').value += i.toString();
               document.getElementById("hint_btn" + i.toString()).disabled = "true";
             }
-          </script>
+          </script> -->
           
-          <br><br>
-          <div class="col-xs-6" style="margin-left:-15px">
-            <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
-              正確答案：{{ answer }}
-            </div>
-          </div>
-          
-          <div class="col-xs-6" style="margin-left:-15px">
+          <!-- <div class="col-xs-6" style="margin-left:-15px">
             <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
               提示1：{{ chosen_hints.0 }}
             </div>
@@ -199,7 +198,7 @@
             <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
               提示3：{{ chosen_hints.2 }}
             </div>
-          </div>
+          </div> -->
         {% endif %}
       </div>
     
