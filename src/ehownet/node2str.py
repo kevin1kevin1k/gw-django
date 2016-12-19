@@ -6,7 +6,7 @@ def node2str(node_a,semantic_node_dict):
 	reverse_cat=["manner"]
 	#reverse_particle_cat=["predication","qualification","taste","telic"]
 	reverse_particle_cat=["taste"]	
-	reverse_use_cat=["instrument"]
+	reverse_use_cat=["instrument","means"]
 	sname_reverse_particle_cat=["source"]
 	location_cat=["location"]
 	sname_location_cat=["domain"]
@@ -60,7 +60,7 @@ def node2str(node_a,semantic_node_dict):
 		elif semantic in reverse_particle_cat:
 			result+= node_b + "的" 
 		elif semantic in reverse_use_cat:
-			result+= "用" + node_b + node_a
+			result+= "以" + node_b + node_a
 		elif semantic in sname_reverse_particle_cat:
 			result+= sname_translate[semantic] + "是" + node_b + "的" 
 		elif semantic in location_cat:
