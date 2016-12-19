@@ -1,4 +1,5 @@
 *.pyc
 *.csv
 *.bin
+*.sqlite3
 ASBC.txt
