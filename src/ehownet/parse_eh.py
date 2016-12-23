@@ -16,6 +16,13 @@ class Tree:
         self.feat = {}
         self.parent = None
     
+    def get_depth(self):
+        if self.head == '~':
+            return -1
+        if not self.feat:
+            return 0
+        return 1 + max([self.feat[i].get_depth() for i in self.feat])
+    
     def traverse(self, depth=0):
         '''
         Print out the Tree structure rooted at `self`.
@@ -120,7 +127,7 @@ def parse(s):
         
     return node
 
-def def2sentence(node, max_depth=2):
+def def2sentence(node, max_depth=0):
     '''
     Input: A Tree node and an optional max_depth
     Output: The sentence constructed from the definition implied by node 
@@ -149,6 +156,23 @@ if __name__ == '__main__':
         '{expenditure|費用:telic={guarantee|保證:content={pay|付:theme={money|貨幣},while={suffer|遭受:content={mishap|劫難}},agent={InstitutePlace|場所:domain={economy|經濟},telic={sell|賣:theme={affairs|事務:CoEvent={guarantee|保證},domain={economy|經濟}},agent={~}}}},price={~}}}',
         '{human|人:predication={keep|保持:agent={~},theme={safety({place|地方}):domain={police|警}}},telic={defend|防守:theme={InstitutePlace|場所:domain={education|教育},telic={and({study|學習:location={~}},{teach|教:location={~}})}},agent={~}}}'
     ]
+    
+    # from climb import climb
+    # while 1:
+    #     answer = raw_input().split()
+    #     depth = 1 if len(answer) == 1 else int(answer[1])
+    #     answer = answer[0]
+    # 
+    #     defs = climb(answer, strict=False, shorter=True)
+    #     if defs:
+    #         definition = defs[0]
+    #         definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+    #         print definition
+    #         def_root = parse(definition)
+    #         # depth = def_root.get_depth()
+    #         # print 'depth', depth
+    #         print def2sentence(def_root, depth)
+    #         print
     
     for s in l:
         # remove unnecessary English

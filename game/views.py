@@ -244,7 +244,8 @@ def get_result(request):
                     definition = defs[0]
                     definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
                     def_root = parse_eh.parse(definition)
-                    res = parse_eh.def2sentence(def_root)
+                    max_depth = def_root.get_depth()
+                    res = parse_eh.def2sentence(def_root, max_depth)
                 prev += '|,,,' + res
                 prev_list.append(['', '', '', res, ''])
             
