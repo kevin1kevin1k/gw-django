@@ -5,7 +5,7 @@ def node2str(node_a,semantic_node_dict):
 	direct_cat=["content","target","possession","theme"]
 	reverse_cat=["manner"]
 	#reverse_particle_cat=["predication","qualification","taste","telic"]
-	reverse_particle_cat=["taste"]	
+	reverse_particle_cat=["taste","size","shape"]	
 	reverse_use_cat=["instrument","means"]
 	sname_reverse_particle_cat=["source"]
 	location_cat=["location"]
