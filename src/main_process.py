@@ -236,6 +236,12 @@ class Responder():
                 end = time.clock()
                 print "feature extraction time consuming: ",end - start
 
+                #if answer and keyword don't both appear in the text content, response no
+                if features[0]==0:
+                    print 'answer and keyword list do not both appear in the text content'
+                    answer_lst.append((keyword,key, 'N',"Model",'1'))
+                    continue
+
                 start = time.clock()
                 features=np.array(features).reshape((1, -1))
                 prob=self.predictProbaByClf(self.clf,features)
