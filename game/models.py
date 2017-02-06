@@ -3,18 +3,30 @@ from django.core.urlresolvers import reverse
 
 class Answer(models.Model):
     name = models.CharField(max_length=20)
-    
+
     def __unicode__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse('answer_detail', kwargs={'pk': self.pk})
 
+class Game(models.Model):
+    '''record each game'''
+    user_id = models.IntegerField(default=0)
+    created_time = models.DateTimeField(auto_now_add=True)
+    answer = models.ForeignKey('Answer', related_name='games')
+    is_finished = models.BooleanField(default=False)
+
 class Question(models.Model):
-    answer = models.ForeignKey('Answer', related_name='questions')
-    name = models.CharField(max_length=20)
-    result = models.CharField(max_length=20)
-    
+    game_id = models.ForeignKey('Game', related_name='questions', null=True)
+    content = models.ForeignKey('ParsedQuestion', default=' ', related_name='asked_questions') # question content
+    result = models.CharField(max_length=5, blank=True) # yes or no
+    source = models.CharField(max_length=10, blank=True) # the result is given by which component
+    confidence_score = models.IntegerField(default=0)
+
     def __unicode__(self):
-        return self.name
-    
+        return self.content
+
+class ParsedQuestion(models.Model):
+    content = models.CharField(default=' ', max_length=100, primary_key=True)
+    parsed_result = models.CharField(max_length=200, blank=True)

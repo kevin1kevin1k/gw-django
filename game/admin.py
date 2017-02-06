@@ -8,8 +8,8 @@ class QuestionInline(admin.TabularInline):
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ['name']
-    inlines = [QuestionInline]
+    # inlines = [QuestionInline]
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['content']
