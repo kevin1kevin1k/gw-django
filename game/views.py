@@ -8,6 +8,7 @@ import time
 import random
 import re
 import sys
+import json
 from src import main_process
 from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb, parse_eh
@@ -160,7 +161,7 @@ def get_result(request):
                 neg = result.is_neg
                 if (result.label == 'Y' and not neg) or (result.label == 'N' and neg):
                     if(float(result.conf) > 0.9):
-                        res_list = ['沒錯', '是的', '對']
+                        pre_sentences_list = ['沒錯', '是的', '對']
                     elif(float(result.conf) > 0.7):
                         pre_sentences_list = ['我想是吧', '應該是']
                     else:
@@ -190,8 +191,8 @@ def get_result(request):
                 response['record'] = [result.new_question, result.label, format(float(result.conf)*100, '.2f')]
             
             # insert into DB
-            game = Game.objeces.get(id=game_id)
-            parse_qt = ParsedQuestion.objects.create(
+            game = Game.objects.get(id=game_id)
+            parse_qt,created = ParsedQuestion.objects.get_or_create(
                 content = question
                 #TODO: save parsed result
             )

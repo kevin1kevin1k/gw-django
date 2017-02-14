@@ -103,7 +103,7 @@
             <div class="input-group">
               <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
               <span class="input-group-btn">
-                <input onclick="ask()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
+                <input onclick="ask()" type="button" value="送出 (Enter)" class="btn btn-success" id="enter">
               </span>
                 <script>
                   function ask(event){
@@ -139,7 +139,7 @@
                                        }, // data sent with the post request
 
                                 // handle a successful response
-                                timeout : 0,
+                                timeout : 60000,
                                 success : function(json) {
                                     $('#question').val(''); // remove the value from the input
                                     $( "#loading" ).remove(); // remove the loading image
