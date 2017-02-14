@@ -91,7 +91,7 @@
         </script>
         
         <fieldset id="fset">
-          <form id="form1" onsubmit="enter.disabled = true;" action="{% url 'get_result' %}" method="post">
+          <form id="dialog_form" onsubmit="enter.disabled = true;" method="post">
             {% csrf_token %}
             <input type="hidden" id="answer" name="answer" value="{{ answer }}">
             <input type="hidden" id="prev" name="prev" value="{{ prev }}">
@@ -103,33 +103,81 @@
             <div class="input-group">
               <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
               <span class="input-group-btn">
-                <input onclick="cclick()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
-                
+                <input onclick="ask()" type="submit" value="送出 (Enter)" class="btn btn-success" id="enter">
+              </span>
                 <script>
-                  function cclick() {
+                  function ask(event){
+                      // event.preventDefault();
+                      // console.log("form submitted!");  // sanity check
+
+                      //append users' dialog box
+                      var q = document.getElementById("question").value;
+                      new_div = document.createElement('div');
+                      $(new_div).addClass('dialog_box right_dialog_box')
+                                .html(q)
+                                .appendTo($("#dialog"));
+
+                     //append loading image
+                      var objDiv = document.getElementById("dialog");
+                      objDiv.innerHTML += `<div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div>`
+                      objDiv.scrollTop = objDiv.scrollHeight;
+
+                      get_answer(q);
+                  };
+
+                  function get_answer(q) {
                     var x = document.getElementById("question").value;
-                    if (x == null || x == "") {
-                      console.log("fill it!!");
-                      return false;
+                    if( q!=null && q != ""){
+                      console.log("go");
+                      $.ajax({
+                                url : "{% url 'get_result' %}", 
+                                type : "POST", 
+                                data : { answer : '{{answer}}',
+                                         game_id : '{{game_id}}',
+                                         question : x,
+                                         csrfmiddlewaretoken: '{{ csrf_token }}'
+                                       }, // data sent with the post request
+
+                                // handle a successful response
+                                timeout : 0,
+                                success : function(json) {
+                                    $('#question').val(''); // remove the value from the input
+                                    $( "#loading" ).remove(); // remove the loading image
+                                    console.log("success"); // another sanity check                                    
+                                    console.log(json); // log the returned json to the console
+                                    alert("uh");
+                                },
+
+                                // handle a non-successful response
+                                error : function(xhr,errmsg,err) {
+                                    $('#question').val('Oops! 錯誤發生 請再試一次! ');
+                                    console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
+                                    alert("QQ"); 
+                                }
+                            });
                     }
+                    // if (x == null || x == "") {
+                    //   console.log("fill it!!");
+                    //   return false;
+                    // }
                     
-                    var ansDiv = document.getElementById("ansList");
-                    document.getElementById("scroll_pos").value = ansDiv.scrollTop;
-                    console.log(document.getElementById("answer").value)
+                    // var ansDiv = document.getElementById("ansList");
+                    // document.getElementById("scroll_pos").value = ansDiv.scrollTop;
+                    // console.log(document.getElementById("answer").value)
                     
-                    var def=document.getElementById("default");
-                    var clone = def.cloneNode(true);
-                    var qq = document.getElementById("question").value;
-                    clone.innerHTML = qq;
-                    clone.style.visibility = "visible";
+                    // var def=document.getElementById("default");
+                    // var clone = def.cloneNode(true);
+                    // var qq = document.getElementById("question").value;
+                    // clone.innerHTML = qq;
+                    // clone.style.visibility = "visible";
                     
-                    var objDiv = document.getElementById("dialog");
-                    objDiv.appendChild(clone);
-                    objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
-                    objDiv.scrollTop = objDiv.scrollHeight;
+                    // var objDiv = document.getElementById("dialog");
+                    // objDiv.appendChild(clone);
+                    // objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
+                    // objDiv.scrollTop = objDiv.scrollHeight;
                   }
                 </script>
-              </span>
+              
             </div>
           </form>
         </fieldset>
