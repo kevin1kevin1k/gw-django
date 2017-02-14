@@ -69,17 +69,17 @@
 
         <div id="dialog" style="position:relative; height:400px; overflow:auto; background-color:#FAFAFA">
           <br><br>
-          <div id="default" style="visibility:hidden; position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">DEFAULT</div>
+          <div id="default" class="dialog_box right_dialog_box" style="visibility:hidden;">DEFAULT</div>
       
-          <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">猜猜我在想什麼~~</div>
+          <div class="dialog_box left_dialog_box">猜猜我在想什麼~~</div>
           <br><br><br>
           {% for i in prev_list %}
             {% if i.3 %}
               {% if i.0 %}
-                <div style="position:absolute; text-align:right; background-color:#4682B4; right:0; padding:8px; border-radius:8px; font-weight:bold;color:#FAFAFA; margin-right:8px">{{ i.0 }}</div>
+                <div class="dialog_box right_dialog_box">{{ i.0 }}</div>
                 <br><br><br>
               {% endif %}
-            <div style="position:absolute; text-align:left; background-color:#4682B4; padding:8px; border-radius:8px; font-weight:bold; color:#FAFAFA; margin-left:8px">{{i.3}}</div>
+            <div class="dialog_box left_dialog_box">{{i.3}}</div>
             <br><br><br>
             {% endif %}
           {% endfor %}
@@ -99,6 +99,7 @@
             <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">
             <input type="hidden" id="hints_concat" name="hints_concat" value="{{ chosen_hints|join:'|' }}">
             <input type="hidden" id="used_hints" name="used_hints" value="{{ used_hints }}">
+            <input type="hidden" id="game_id" name="game_id" value="{{ game_id }}">            
             <div class="input-group">
               <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
               <span class="input-group-btn">
@@ -156,49 +157,7 @@
               正確答案：{{ answer }}
             </div>
           </div>
-          
-          <!-- <div class="col-xs-2">
-            <button id="hint_btn1" type="button" class="btn btn-default" onclick="hint(1)">提示1</button>
-          </div>
-          
-          <div class="col-xs-2">
-            <button id="hint_btn2" type="button" class="btn btn-default" onclick="hint(2)">提示2</button>
-          </div>
-          
-          <div class="col-xs-2">
-            <button id="hint_btn3" type="button" class="btn btn-default" onclick="hint(3)">提示3</button>
-          </div> -->
-          
-          <!-- <script>
-            function hint(i) {
-              var div = 'show_hint' + i.toString();
-              document.getElementById(div).style.display = "block";
-              document.getElementById('used_hints').value += i.toString();
-              document.getElementById("hint_btn" + i.toString()).disabled = "true";
-            }
-          </script> -->
-          
-          <!-- <div class="col-xs-6" style="margin-left:-15px">
-            <div class="alert alert-info" id="show_hint1" role="alert" style="display: none;">
-              提示1：{{ chosen_hints.0 }}
-            </div>
-          </div>
-          
-          <div class="col-xs-6" style="margin-left:-15px"></div>
-          
-          <div class="col-xs-6" style="margin-left:-15px">
-            <div class="alert alert-info" id="show_hint2" role="alert" style="display: none;">
-              提示2：{{ chosen_hints.1 }}
-            </div>
-          </div>
-          
-          <div class="col-xs-6" style="margin-left:-15px"></div>
-          
-          <div class="col-xs-6" style="margin-left:-15px">
-            <div class="alert alert-info" id="show_hint3" role="alert" style="display: none;">
-              提示3：{{ chosen_hints.2 }}
-            </div>
-          </div> -->
+
         {% endif %}
       </div>
     

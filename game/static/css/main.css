@@ -1,0 +1,17 @@
+.dialog_box{
+    position:absolute;  
+    background-color:#4682B4; 
+    padding:8px; 
+    border-radius:8px; 
+    font-weight:bold; 
+    color:#FAFAFA; 
+    margin-left:8px
+}
+.left_dialog_box{ 
+    text-align:left; 
+}
+
+.right_dialog_box{ 
+    text-align:right; 
+    right:0; 
+}
