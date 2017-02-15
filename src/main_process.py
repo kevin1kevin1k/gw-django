@@ -112,7 +112,7 @@ class Responder():
 
         if len(keywords_dict)==0:
             #print "不能理解此問題"
-            return [Response(keyword="",qtype="",label="?",conf="1",source="Parser",answer_str="不能理解此問題",
+            return [Response(keyword="",qtype="",label="?",conf="",source="Parser",answer_str="不能理解此問題",
                 new_question="",is_neg=False)]
         
         #檢查是否答對
@@ -124,13 +124,13 @@ class Responder():
                 any([ancestors.belong(kwd, answer) for kwd in kwds])
         if success:
             sysPrint("AC!")
-            return [Response(keyword="",qtype="",label="AC",conf="1",source="",answer_str="",
+            return [Response(keyword="",qtype="",label="AC",conf="",source="",answer_str="",
                 new_question="",is_neg=False)]
 
         #檢查問題是否包含它
         if re.search("它|他|她|牠",new_question) is None:
             sysPrint("illegal")
-            return [Response(keyword="",qtype="",label="illegal",conf="1",source="",answer_str="",
+            return [Response(keyword="",qtype="",label="illegal",conf="",source="",answer_str="",
                 new_question="",is_neg=False)]                
 
         #location,time,class,attr,act,object,subject,possession

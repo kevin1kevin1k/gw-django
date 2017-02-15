@@ -19,12 +19,11 @@ class Game(models.Model):
 
 class Question(models.Model):
     game_id = models.ForeignKey('Game', related_name='questions', null=True)
-    content =  models.CharField(max_length=100, blank=True) # question content
-    label = models.CharField(max_length=5, blank=True) # yes or no
+    content = models.ForeignKey('ParsedQuestion', default=' ', related_name='asked_questions') # question content
+    result = models.CharField(max_length=5, blank=True) # yes or no
     source = models.CharField(max_length=10, blank=True) # the result is given by which component
-    confidence_score = models.FloatField(default=0)
-    created_time = models.DateTimeField(auto_now_add=True)
-    
+    confidence_score = models.IntegerField(default=0)
+
     def __unicode__(self):
         return self.content
 
