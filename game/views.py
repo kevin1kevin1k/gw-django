@@ -140,8 +140,18 @@ def get_result(request):
         success = False
         pre_label =None
         hint = ""
+        
+        #DB
+        game = Game.objects.get(id=game_id)
+        parse_qt,created = ParsedQuestion.objects.get_or_create(
+                content = question
+                #TODO: save parsed result
+            )
+        parse_qt.save()
 
         for i, result in enumerate(result_ls):
+            small_q = question
+            
             if result.label == 'AC':
                 response_dialog = '答對了！答案就是「' + answer + '」'
                 record_list.append([question, 'AC', 1])
@@ -187,22 +197,17 @@ def get_result(request):
                         else:
                             conj = '但'
                         response_dialog += conj + result.answer_str.replace('它','')
-
-                record_list.append([result.new_question, result.label, format(float(result.conf)*100, '.2f')])
+                        
+                #if there are multiple keywords, seperate the question into multiple sentence
+                small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'                        
+                record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
             
             # insert into DB
-            game = Game.objects.get(id=game_id)
             if success:
                 game.is_finished =True
                 game.save()
                 
-            parse_qt,created = ParsedQuestion.objects.get_or_create(
-                content = question
-                #TODO: save parsed result
-            )
-
             #if one sentence contains multiple keywords, it will be saved seperatedly
-            small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'
             qo = Question.objects.create(
                 game_id = game,
                 content = small_q,
@@ -210,7 +215,6 @@ def get_result(request):
                 source = result.source,
                 confidence_score = result.conf
             )
-            parse_qt.save()
             qo.save()
             pre_label = result.label
 

@@ -68,126 +68,131 @@
         </script>
 
         <div id="dialog" style="position:relative; height:400px; overflow:auto; background-color:#FAFAFA">
-          <br><br>
-          <div id="default" class="dialog_box right_dialog_box" style="visibility:hidden;">DEFAULT</div>
-      
-          <div class="dialog_box left_dialog_box">猜猜我在想什麼~~</div>
-          <br><br><br>
-          {% for i in prev_list %}
-            {% if i.3 %}
-              {% if i.0 %}
-                <div class="dialog_box right_dialog_box">{{ i.0 }}</div>
-                <br><br><br>
-              {% endif %}
-            <div class="dialog_box left_dialog_box">{{i.3}}</div>
-            <br><br><br>
-            {% endif %}
-          {% endfor %}
+         
+          <div class='conversation_item'>
+            <div class="dialog_box left_dialog_box">猜猜我在想什麼~~</div>
+          </div>
+          
         </div>
-        
-        <script>
-          var objDiv = document.getElementById("dialog");
-          objDiv.scrollTop = objDiv.scrollHeight;
-        </script>
-        
+                
         <fieldset id="fset">
-          <form id="dialog_form" onsubmit="enter.disabled = true;" method="post">
-            {% csrf_token %}
-            <input type="hidden" id="answer" name="answer" value="{{ answer }}">
-            <input type="hidden" id="prev" name="prev" value="{{ prev }}">
-            <input type="hidden" id="success" name="success" value="{{ success }}">
-            <input type="hidden" id="scroll_pos" name="scroll_pos" value="{{ scroll_pos }}">
-            <input type="hidden" id="hints_concat" name="hints_concat" value="{{ chosen_hints|join:'|' }}">
-            <input type="hidden" id="used_hints" name="used_hints" value="{{ used_hints }}">
-            <input type="hidden" id="game_id" name="game_id" value="{{ game_id }}">            
+          <form id="dialog_form"  method="post">
+            {% csrf_token %}           
             <div class="input-group">
               <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
               <span class="input-group-btn">
                 <input onclick="ask()" type="button" value="送出 (Enter)" class="btn btn-success" id="enter">
               </span>
                 <script>
-                  function ask(event){
-                      // event.preventDefault();
-                      // console.log("form submitted!");  // sanity check
+                  function addDialog(direction,content){
+                      outer_div = document.createElement('div');
+                      $(outer_div).addClass('conversation_item').appendTo($("#dialog"));
+                      new_div = document.createElement('div');
+                      $(new_div).addClass('dialog_box')
+                                .html(content)
+                                .appendTo($(outer_div));
+                      if(direction=="l" || direction=="left"){
+                        $(new_div).addClass('left_dialog_box');
+                      }
+                      else{
+                        $(new_div).addClass('right_dialog_box');                        
+                      }
+                  }
 
+                  function ask(event){
                       //append users' dialog box
                       var q = document.getElementById("question").value;
-                      new_div = document.createElement('div');
-                      $(new_div).addClass('dialog_box right_dialog_box')
-                                .html(q)
-                                .appendTo($("#dialog"));
+                      addDialog("right",q)
 
                      //append loading image
                       var objDiv = document.getElementById("dialog");
-                      objDiv.innerHTML += `<div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div>`
+                      objDiv.innerHTML += `<div class='conversation_item'> 
+                      <div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px">
+                      </div></div>`
                       objDiv.scrollTop = objDiv.scrollHeight;
 
                       get_answer(q);
                   };
 
                   function get_answer(q) {
-                    var x = document.getElementById("question").value;
                     if( q!=null && q != ""){
-                      console.log("go");
                       $.ajax({
                                 url : "{% url 'get_result' %}", 
                                 type : "POST", 
                                 data : { answer : '{{answer}}',
                                          game_id : '{{game_id}}',
-                                         question : x,
+                                         question : q,
                                          csrfmiddlewaretoken: '{{ csrf_token }}'
                                        }, // data sent with the post request
 
-                                // handle a successful response
-                                timeout : 60000,
+
+                                //timeout : 60000,
                                 success : function(json) {
                                     $('#question').val(''); // remove the value from the input
                                     $( "#loading" ).remove(); // remove the loading image
-                                    console.log("success"); // another sanity check                                    
-                                    console.log(json); // log the returned json to the console
-                                    alert("uh");
+                                    // console.log("success"); // another sanity check                                    
+                                    
+                                    //append dialog
+                                    addDialog("left",json['response_dialog'])
+                                    
+                                    //append to record table
+                                    var row_count = document.getElementById('record_body').rows.length; 
+                                    for (var i = 0; i < json['record_list'].length; i++){
+                                        var record = json['record_list'][i];
+                                        new_row = document.createElement('tr');
+                                        new_td = document.createElement('td');                                        
+                                        $(new_td).addClass('col-xs-1')
+                                              .html(row_count+1)
+                                              .appendTo($(new_row)); 
+                                              
+                                        for (var j=0; j< record.length; j++){
+                                          var element = record[j];
+                                          new_td = document.createElement('td');
+                                          if(j==0){
+                                            $(new_td).addClass('col-xs-3');
+                                          }
+                                          else{
+                                            $(new_td).addClass('col-xs-1');
+                                          }
+                                          $(new_td).html(element).appendTo($(new_row));                                          
+                                        }
+                                        $(new_row).appendTo($("#record_body"));
+                                        row_count+=1;
+                                    }
+                                    
+                                    //show hints
+                                    if(json['hint'] != ''){
+                                    addDialog("left",json['hint'])      
+                                    }
+
+                                    if(json['success']==true){
+                                      $(".alert-success").show();
+                                      $("#answer_btn").hide();
+                                    }
+                        
                                 },
 
                                 // handle a non-successful response
                                 error : function(xhr,errmsg,err) {
                                     $('#question').val('Oops! 錯誤發生 請再試一次! ');
                                     console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
-                                    alert("QQ"); 
+                                    // alert("QQ"); 
                                 }
                             });
                     }
-                    // if (x == null || x == "") {
-                    //   console.log("fill it!!");
-                    //   return false;
-                    // }
-                    
-                    // var ansDiv = document.getElementById("ansList");
-                    // document.getElementById("scroll_pos").value = ansDiv.scrollTop;
-                    // console.log(document.getElementById("answer").value)
-                    
-                    // var def=document.getElementById("default");
-                    // var clone = def.cloneNode(true);
-                    // var qq = document.getElementById("question").value;
-                    // clone.innerHTML = qq;
-                    // clone.style.visibility = "visible";
-                    
-                    // var objDiv = document.getElementById("dialog");
-                    // objDiv.appendChild(clone);
-                    // objDiv.innerHTML += `<br><br><br><div style="position:absolute; background-color:#DDDDDD; padding:8px; border-radius:8px; margin-left:8px"><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px"></div><br><br><br>`
-                    // objDiv.scrollTop = objDiv.scrollHeight;
                   }
+
                 </script>
               
             </div>
           </form>
         </fieldset>
 
-        {% if success %}
           <br>
-          <div class="alert alert-success" role="alert">
+          <div class="alert alert-success" role="alert" style="display: none;">
             <p>恭喜答對！</p>
           </div>
-        {% else %}
+
           <br>
           <div class="col-xs-6" style="margin-left:-15px">
             <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">公布答案</button>
@@ -206,11 +211,10 @@
             </div>
           </div>
 
-        {% endif %}
       </div>
     
       <div class="col-xs-6">
-        <table class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
+        <table id='record' class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
           <thead>
             <tr>
               <th class="col-xs-1">#</th>
@@ -219,17 +223,7 @@
               <th class="col-xs-1">信心(%)</th>
             </tr>
           </thead>
-          <tbody>
-            {% for i in prev_list %}
-              {% if i.4 %}
-                <tr>
-                  <td class="col-xs-1">{{ i.4 }}</td>
-                  <td class="col-xs-3">{{ i.0 }}</td>
-                  <td class="col-xs-1">{{ i.1 }}</td>
-                  <td class="col-xs-1">{{ i.2 }}</td>
-                </tr>
-              {% endif %}
-            {% endfor %}
+          <tbody id='record_body'>
           </tbody>
         </table>
       </div>
