@@ -135,24 +135,24 @@ def get_result(request):
         print "responder.process:",time.clock()-earliest
 
         result_ls.sort(key=lambda x:x.label, reverse=True) #sort by Y/N                        
-        response_list = []
+        response_dialog = ""
+        record_list=[]
         success = False
         pre_label =None
+        hint = ""
 
         for i, result in enumerate(result_ls):
-            print("aaaaaaaaaa")
-            response = {}
             if result.label == 'AC':
-                response['dialog'] = '答對了！答案就是「' + answer + '」'
-                response['record'] = [question, 'AC', 1]
+                response_dialog = '答對了！答案就是「' + answer + '」'
+                record_list.append([question, 'AC', 1])
                 success = True
 
             elif result.label == 'illegal':
-                response['dialog'] = '你的問題必須包含「它」喔~'
+                response_dialog = '你的問題必須包含「它」喔~'
 
             elif result.label == '?':
-                response['dialog'] = '我聽不懂你在說什麼QQ'
-                response['record'] = [question,'?',1]
+                response_dialog = '我聽不懂你在說什麼QQ'
+                record_list.append([question,'?',1])
 
             else:
                 # ehownetPath = 'resources/eHowNet_utf8.csv'
@@ -177,76 +177,77 @@ def get_result(request):
 
                 if len(result_ls)==1: 
                     #if there is only one result, then append pre_sentence
-                    response['dialog'] = "{}，{}".format(pre_sentence,result.answer_str)
+                    response_dialog = "{}，{}".format(pre_sentence,result.answer_str)
                 else:
                     if i==0:
-                        response['dialog'] = result.answer_str                        
+                        response_dialog = result.answer_str                        
                     else:
                         if pre_label == result.label:
                             conj = '也'
                         else:
                             conj = '但'
-                        response['dialog'] = conj + result.answer_str.replace('它','')
+                        response_dialog += conj + result.answer_str.replace('它','')
 
-                response['record'] = [result.new_question, result.label, format(float(result.conf)*100, '.2f')]
+                record_list.append([result.new_question, result.label, format(float(result.conf)*100, '.2f')])
             
             # insert into DB
             game = Game.objects.get(id=game_id)
+            if success:
+                game.is_finished =True
+                game.save()
+                
             parse_qt,created = ParsedQuestion.objects.get_or_create(
                 content = question
                 #TODO: save parsed result
             )
+
+            #if one sentence contains multiple keywords, it will be saved seperatedly
+            small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'
             qo = Question.objects.create(
                 game_id = game,
-                content = parse_qt,
-                result = result.label
+                content = small_q,
+                label = result.label,
+                source = result.source,
+                confidence_score = result.conf
             )
             parse_qt.save()
             qo.save()
-            response_list.append(response)
             pre_label = result.label
 
-        # encourage = True
-        # if cnt > 2:
-        #     for i in range(-1, -4, -1):
-        #         if prev_list[i][1] != 'N':
-        #             encourage = False
-        # else:
-        #     encourage = False
+        encourage = False
+        question_hist = game.questions.all().order_by('id')
+        question_count = question_hist.count()
+        if question_count > 3:
+            consev_N = True
+            for i in range(question_count-1, question_count-4, -1): 
+                # if there are three consecutive N, give hints to users
+                if question_hist[i].label != 'N':
+                    consev_N = False
+            if consev_N:
+                encourage=True
 
-        # if encourage:
-        #     defs = climb.climb(answer, strict=False, shorter=True)
-        #     if defs == []:
-        #         pre_sentences_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
-        #         res = pre_sentences_list[random.randrange(len(res_list))]
-        #     else:
-        #         definition = defs[0]
-        #         definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
-        #         def_root = parse_eh.parse(definition)
-        #         max_depth = def_root.get_depth()
-        #         res = parse_eh.def2sentence(def_root, max_depth)
-        #     prev += '|,,,' + res
-        #     prev_list.append(['', '', '', res, ''])
-        
-        # chosen_hints = hints_concat.split('|')
-        
+        if encourage:
+            defs = climb.climb(answer, strict=False, shorter=True)
+            if defs == []:
+                encourage_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
+                hint = encourage_list[random.randrange(len(encourage_list))]
+            else:
+                definition = defs[0]
+                definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+                def_root = parse_eh.parse(definition)
+                max_depth = def_root.get_depth()
+                hint = '提示.. 它是' + parse_eh.def2sentence(def_root, max_depth)
+
         contexts = {
-            'answer': answer,
-            # 'prev': prev,
-            # 'success': success,
-            # 'scroll_pos': scroll_pos,
-            # 'used_hints': used_hints,
-            # 'chosen_hints': chosen_hints,
-            # 'prev_list': prev_list,
-            # 'answers': group(),
-            'game_id':game.id,
-            'response_list':response_list
+            'success':success,
+            'response_dialog':response_dialog,
+            'record_list':record_list,
+            'hint':hint
         }
         latest = time.clock()
         print "total time:", latest-earliest
         # return render(request, 'game/game.html', contexts)
         # return render_to_response("game/game.html", RequestContext(request, contexts))
-        print("hi")
         return HttpResponse(json.dumps(contexts),content_type="application/json")
     
     return HttpResponse({error:True},content_type="application/json")
