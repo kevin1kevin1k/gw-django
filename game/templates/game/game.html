@@ -71,14 +71,32 @@
         </div>
                 
         <fieldset id="fset">
-          <form id="dialog_form"  method="post">
+          <!--<form id="dialog_form"  method="post">-->
+         <div id="dialog_form">
             {% csrf_token %}           
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" onkey="if(event.keyCode == 13)document.getElementById('enter').click()">
+              <input type="text" class="form-control" placeholder="問個問題..." id="question" name="question" required="true" autofocus="true" > 
               <span class="input-group-btn">
                 <input onclick="ask()" type="button" value="送出 (Enter)" class="btn btn-success" id="enter">
               </span>
                 <script>
+
+                  //enter trigger
+                  $("#question").keyup(function(event){
+                      if(event.keyCode == 13){
+                          $("#enter").click();
+                      }
+                  });
+                  
+                  // $('#dialog_form').on('keyup keypress', function(e) {
+                  //   var keyCode = e.keyCode || e.which;
+                  //   if (keyCode === 13) { 
+                  //     e.preventDefault();
+                  //     return false;
+                  //   }
+                  // });
+
+                  //append new dialog box
                   function addDialog(direction,content){
                       outer_div = document.createElement('div');
                       $(outer_div).addClass('conversation_item').appendTo($("#dialog"));
@@ -180,7 +198,8 @@
                 </script>
               
             </div>
-          </form>
+          <!--</form>-->
+         </div>
         </fieldset>
 
           <br>
