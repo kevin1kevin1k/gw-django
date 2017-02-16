@@ -188,6 +188,8 @@
                                 // handle a non-successful response
                                 error : function(xhr,errmsg,err) {
                                     $('#question').val('Oops! 錯誤發生 請再試一次! ');
+                                    $( "#loading" ).remove(); // remove the loading image
+                                    
                                     console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
                                     // alert("QQ"); 
                                 }
