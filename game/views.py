@@ -72,10 +72,6 @@ def game(request):
     form = AskForm()
     contexts = {
         'answer': answer,
-        'prev': 'PREV',
-        'scroll_pos': 0,
-        'used_hints': '',
-        'form': form,
         'answers': group(),
         'game_id' : game.id
     }
@@ -197,7 +193,7 @@ def get_result(request):
                         else:
                             conj = '但'
                         response_dialog += conj + result.answer_str.replace('它','')
-                        
+
                 #if there are multiple keywords, seperate the question into multiple sentence
                 small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'                        
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
