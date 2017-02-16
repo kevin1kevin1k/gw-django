@@ -16,9 +16,11 @@ class Game(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     answer = models.ForeignKey('Answer', related_name='games')
     is_finished = models.BooleanField(default=False)
+    hint_used = models.BooleanField(default=False)
+    original_questions = models.ManyToManyField('Original_Question')
 
 class Question(models.Model):
-    game_id = models.ForeignKey('Game', related_name='questions', null=True)
+    game = models.ForeignKey('Game', related_name='questions', null=True)
     content =  models.CharField(max_length=100, blank=True) # question content
     label = models.CharField(max_length=5, blank=True) # yes or no
     source = models.CharField(max_length=10, blank=True) # the result is given by which component
@@ -28,6 +30,7 @@ class Question(models.Model):
     def __unicode__(self):
         return self.content
 
-class ParsedQuestion(models.Model):
+class Original_Question(models.Model):
     content = models.CharField(default=' ', max_length=100, primary_key=True)
     parsed_result = models.CharField(max_length=200, blank=True)
+    

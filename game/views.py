@@ -2,7 +2,7 @@
 
 from django.shortcuts import redirect, render, render_to_response
 from django.http import Http404,HttpResponse
-from .models import Answer, Question, Game, ParsedQuestion
+from .models import Answer, Question, Game, Original_Question
 from .forms import AskForm, AnswerForm
 import time
 import random
@@ -139,12 +139,13 @@ def get_result(request):
         
         #DB
         game = Game.objects.get(id=game_id)
-        parse_qt,created = ParsedQuestion.objects.get_or_create(
+        original_qt,created = Original_Question.objects.get_or_create(
                 content = question
                 #TODO: save parsed result
             )
-        parse_qt.save()
-
+        game.original_questions.add(original_qt)
+        original_qt.save()
+        
         for i, result in enumerate(result_ls):
             small_q = question
             
@@ -201,11 +202,10 @@ def get_result(request):
             # insert into DB
             if success:
                 game.is_finished =True
-                game.save()
                 
             #if one sentence contains multiple keywords, it will be saved seperatedly
             qo = Question.objects.create(
-                game_id = game,
+                game = game,
                 content = small_q,
                 label = result.label,
                 source = result.source,
@@ -213,11 +213,14 @@ def get_result(request):
             )
             qo.save()
             pre_label = result.label
+            if result.label != 'Y' and result.label !='AC':
+                overall_lable = 'N'
 
+        #hint
         encourage = False
         question_hist = game.questions.all().order_by('id')
         question_count = question_hist.count()
-        if question_count > 3:
+        if question_count >= 3:
             consev_N = True
             for i in range(question_count-1, question_count-4, -1): 
                 # if there are three consecutive N, give hints to users
@@ -237,6 +240,9 @@ def get_result(request):
                 def_root = parse_eh.parse(definition)
                 max_depth = def_root.get_depth()
                 hint = '提示.. 它是' + parse_eh.def2sentence(def_root, max_depth)
+                game.hint_used =True
+        
+        game.save()
 
         contexts = {
             'success':success,

@@ -106,7 +106,9 @@ class Responder():
         self.has_updated = False
         
         Response = namedtuple('Response', ["keyword","qtype","label","conf","source","answer_str","new_question","is_neg"])
+        
         ## parse the question
+        question = question.replace('\n','').replace(' ','')
         keywords_dict,new_question=self.parser.parse_question(question)
         is_neg=self.parser.isNegativeSentence(question)
 
@@ -124,7 +126,7 @@ class Responder():
                 any([ancestors.belong(kwd, answer) for kwd in kwds])
         if success:
             sysPrint("AC!")
-            return [Response(keyword="",qtype="",label="AC",conf="1",source="",answer_str="",
+            return [Response(keyword="",qtype="",label="AC",conf="1",source="",answer_str=answer,
                 new_question="",is_neg=False)]
 
         #檢查問題是否包含它
