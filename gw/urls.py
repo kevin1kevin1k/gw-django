@@ -17,10 +17,17 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from pages.views import home
 from game.views import game
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
+    # url(r'^$', home, name="home"),
+    # url(r'^game/', include('game.urls')),
+    # url(r'^admin/', include(admin.site.urls)),
+    # url(r'^accounts/', include('django.contrib.auth.urls')),
+]
+urlpatterns += i18n_patterns(
     url(r'^$', home, name="home"),
     url(r'^game/', include('game.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-]
+)

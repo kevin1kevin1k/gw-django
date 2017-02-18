@@ -1,10 +1,11 @@
+{% load i18n %}
 {% extends 'game/base.html' %}
 
-{% block title %}答案列表 | {{ block.super }}{% endblock title %}
+{% block title %} {% trans 'List of Answers' %} | {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container">
-  <a href="{% url 'answer_create' %}" class="btn btn-default">新增答案</a>
+  <a href="{% url 'answer_create' %}" class="btn btn-default">{% trans 'Add an answer' %}</a>
   <hr>
   {% for answer in answers %}
     <div class="answer" style="margin-left: 20px">
