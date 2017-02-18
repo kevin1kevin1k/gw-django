@@ -24,6 +24,7 @@ urlpatterns = [
     # url(r'^game/', include('game.urls')),
     # url(r'^admin/', include(admin.site.urls)),
     # url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
 urlpatterns += i18n_patterns(
     url(r'^$', home, name="home"),
