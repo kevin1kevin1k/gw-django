@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-02-18 15:39+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: game/templates/game/answer_list.html:4 pages/templates/pages/base.html:26
+msgid "List of Answers"
+msgstr "答案列表"
+
+#: game/templates/game/answer_list.html:8
+msgid "Add an answer"
+msgstr "新增答案"
+
+#: game/templates/game/game.html:4
+msgid "Play the game!"
+msgstr "玩遊戲"
+
+#: game/templates/game/game.html:12
+msgid "List of answers"
+msgstr "答案列表"
+
+#: game/templates/game/game.html:40
+msgid "Introduction"
+msgstr "說明"
+
+#: game/templates/game/game.html:69
+msgid "Guess what is in my mind now!"
+msgstr "猜猜我在想什麼~"
+
+#: game/templates/game/game.html:79
+msgid "Ask a question.."
+msgstr "問個問題.."
+
+#: game/templates/game/game.html:81
+msgid "Submit"
+msgstr "送出"
+
+#: game/templates/game/game.html:191
+msgid "Oops! There is something wrong, please try again."
+msgstr "Oops! 錯誤發生，請再試一次! "
+
+#: game/templates/game/game.html:210
+msgid "Congratulations! You are right!"
+msgstr "恭喜答對!"
+
+#: game/templates/game/game.html:227
+msgid "Answer:"
+msgstr "正確答案:"
+
+#: game/templates/game/game.html:238
+msgid "Question"
+msgstr "問題"
+
+#: game/templates/game/game.html:239
+msgid "Result"
+msgstr "結果"
+
+#: game/templates/game/game.html:240
+#, python-format
+msgid "Confidence(%%)"
+msgstr "信心(%%)"
+
+#: gw/settings/base.py:117
+msgid "English"
+msgstr "英文"
+
+#: gw/settings/base.py:118
+msgid "Chinese"
+msgstr "中文"
+
+#: pages/templates/pages/base.html:25
+msgid "New Game"
+msgstr "新遊戲"
+
+#: pages/templates/pages/base.html:31
+msgid "Admin"
+msgstr "管理"
+
+#: pages/templates/pages/base.html:39
+msgid "Logout"
+msgstr "登出"
+
+#: pages/templates/pages/base.html:41
+msgid "Login"
+msgstr "登入"
