@@ -31,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
 # SECURITY WARNING: don't run with debug turned on in production!
 ### DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['140.112.107.119']
 
 
 # Application definition
@@ -113,6 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en'
+ugettext = lambda s: s
 LANGUAGES = (
     ('en', _('English')),
     ('zh-hant', _('Chinese')),

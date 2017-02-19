@@ -146,9 +146,19 @@
                                     $( "#loading" ).remove(); // remove the loading image
                                     // console.log("success"); // another sanity check                                    
                                     
+                                    //append translated question
+                                    if(json['question_trans'])
+                                    {
+                                      addDialog("right",json['question_trans'])
+                                    }
+
                                     //append dialog
                                     addDialog("left",json['response_dialog'])
-                                    
+                                    if(json['response_dialog_trans'])
+                                    {
+                                      addDialog("left",json['response_dialog_trans'])
+                                    }
+
                                     //append to record table
                                     var row_count = document.getElementById('record_body').rows.length; 
                                     for (var i = 0; i < json['record_list'].length; i++){
@@ -177,6 +187,9 @@
                                     //show hints
                                     if(json['hint'] != ''){
                                     addDialog("left",json['hint'])      
+                                    }
+                                    if(json['hint_trans'] != ''){
+                                    addDialog("left",json['hint_trans'])      
                                     }
 
                                     if(json['success']==true){

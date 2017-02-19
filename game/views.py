@@ -14,6 +14,7 @@ from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb, parse_eh
 from src import crawl_wiki
 from src.crawlData import getSimilarity
+from src.TranslationTool import google_translate as gt
 
 def get_hints(answer):    
     anc_words = ancestors.anc(answer)
@@ -117,6 +118,17 @@ def get_result(request):
         question = request.POST.get('question').encode('utf-8')
         game_id =  request.POST.get('game_id')
 
+        if request.LANGUAGE_CODE == 'en':
+            print('english mode!')
+            if '?' not in question:
+                question = question+'?'
+            question = question.replace('it','he')                
+            question = gt.translate(question,sl='en',tl='zh-tw')
+            question = question.replace('？','').replace('?','')
+            if '他' not in question:
+                question = '它'+question
+
+
         # print 'POST data:'
         # for k in data:
         #     print '\t', k, data[k]
@@ -172,14 +184,14 @@ def get_result(request):
                     elif(float(result.conf) > 0.7):
                         pre_sentences_list = ['我想是吧', '應該是']
                     else:
-                        pre_sentences_list = ['我不是很有自信，但可能是', '大概吧', '我猜可能是吧']
+                        pre_sentences_list = ['大概吧', '我猜可能是吧']
                 else:
                     if(float(result.conf) > 0.9):
-                        pre_sentences_list = ['我很遺憾', '不對喔', '你想太多了', '不是喔']
+                        pre_sentences_list = ['我很遺憾', '不對喔', '不是喔']
                     elif(float(result.conf) > 0.7):
                         pre_sentences_list = ['我認為不是', '應該不是']
                     else:
-                        pre_sentences_list = ['我不是很有自信，但可能不是吧', '大概不是吧', '應該不是吧', '我猜可能不是吧']
+                        pre_sentences_list = ['大概不是吧', '應該不是吧', '我猜可能不是吧']
                 pre_sentence = pre_sentences_list[random.randrange(len(pre_sentences_list))]
 
                 if len(result_ls)==1: 
@@ -218,6 +230,7 @@ def get_result(request):
 
         #hint
         encourage = False
+        hint=''
         question_hist = game.questions.all().order_by('id')
         question_count = question_hist.count()
         if question_count >= 3:
@@ -239,7 +252,7 @@ def get_result(request):
                 definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
                 def_root = parse_eh.parse(definition)
                 max_depth = def_root.get_depth()
-                hint = '提示.. 它是' + parse_eh.def2sentence(def_root, max_depth)
+                hint = '提示， 它是' + parse_eh.def2sentence(def_root, max_depth)
                 game.hint_used =True
         
         game.save()
@@ -248,8 +261,24 @@ def get_result(request):
             'success':success,
             'response_dialog':response_dialog,
             'record_list':record_list,
-            'hint':hint
+            'hint':hint,
+            'question_trans':'',
+            'response_dialog_trans':'',
+            'hint_trans':''
         }
+        if request.LANGUAGE_CODE == 'en':
+            dialog_en = []
+            for subs in response_dialog.split('，'):
+                dialog_en.append(gt.translate(subs,sl='zh-tw',tl='en'))
+            response_dialog_en = ','.join(dialog_en)
+
+            contexts['question_trans'] = question
+            contexts['response_dialog_trans'] = response_dialog_en
+
+            if hint:
+                hint_en = gt.translate(hint,sl='zh-tw',tl='en')
+                contexts['hint_trans'] = hint_en
+
         latest = time.clock()
         print "total time:", latest-earliest
         # return render(request, 'game/game.html', contexts)
