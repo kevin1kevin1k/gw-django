@@ -1,4 +1,5 @@
 {% extends 'pages/base.html' %}
+{% load i18n %}
 
 {% block body %}
 {{ block.super }}
@@ -6,16 +7,17 @@
   <h1>Guess What</h1>
   <hr>
   <h3>
+    
     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-    電腦會隨機從200個詞裡面選出一個作為答案
+    {% trans The system randomly selects one of 200 words as the answer. %}
     <br><br>
     
     <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-    你可以不斷問問題，從對話中猜猜看答案是什麼
+    {% trans You can keep asking questions, and try to guess the answer with the dialog as hints. %}
     <br><br>
     
     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    問題最好是「它/他/她/牠...嗎」的形式，否則可能會有意想不到的結果
+    {% trans The question sentence must contain 'it/he/she'. %}
     <br><br>
     
     <!--<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
@@ -23,9 +25,11 @@
     <br><br>-->
     
     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-    要猜答案時除了可以問「它是<答案>嗎」，也可以直接輸入「<答案>」
+    {% trans 'You can guess the answer by asking a question (e.g. "Is it airplane?").' %}
     <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;例如：「它是飛機嗎」或是「飛機」
+
+    {% trans 'Or directly type the answer (e.g. "Airplane").' %}
+    
     <br><br>
   </h3>
 </div>

@@ -35,8 +35,14 @@
           {% csrf_token %}
             {{ answer }}
           {% endif %}
-          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+          <!--<button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
           data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
+          target='blank'>{% trans 'Introduction' %}</button>-->
+          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+          data-content="{% blocktrans %} The question sentence must contain 'it/he/she'. <br>
+                           You can guess the answer by asking a question (e.g. 'Is it airplane?'). <br>
+                           Or directly type the answer (e.g. 'Airplane'). <br>
+                        {% endblocktrans %}"
           target='blank'>{% trans 'Introduction' %}</button>
         </p>
         
@@ -225,7 +231,7 @@
 
           <br>
           <div class="col-xs-6" style="margin-left:-15px">
-            <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">公布答案</button>
+            <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">{% trans 'Reveal the Answer' %}</button>
             <script>
               function show_answer() {
                 document.getElementById("show_answer").style.display = "block";
