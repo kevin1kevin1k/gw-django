@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-18 15:39+0000\n"
+"POT-Creation-Date: 2017-02-19 15:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,52 +33,68 @@ msgstr "玩遊戲"
 msgid "List of answers"
 msgstr "答案列表"
 
-#: game/templates/game/game.html:40
+#: game/templates/game/game.html:40 game/templates/game/game.html:46
 msgid "Introduction"
 msgstr "說明"
 
-#: game/templates/game/game.html:69
+#: game/templates/game/game.html:42
+msgid ""
+" The question sentence must contain 'it/he/she'. <br>\n"
+"                           You can guess the answer by asking a question (e."
+"g. 'Is it airplane?'). <br>\n"
+"                           Or directly type the answer (e.g. 'Airplane'). "
+"<br>\n"
+"                        "
+msgstr ""
+"你的問題必須包含 '它/他/她' <br>\n"
+"你也用句子問也可以直接猜答案, 例如:飛機 <br>                        "
+
+#: game/templates/game/game.html:75
 msgid "Guess what is in my mind now!"
 msgstr "猜猜我在想什麼~"
 
-#: game/templates/game/game.html:79
+#: game/templates/game/game.html:85
 msgid "Ask a question.."
 msgstr "問個問題.."
 
-#: game/templates/game/game.html:81
+#: game/templates/game/game.html:87
 msgid "Submit"
 msgstr "送出"
 
-#: game/templates/game/game.html:191
+#: game/templates/game/game.html:210
 msgid "Oops! There is something wrong, please try again."
 msgstr "Oops! 錯誤發生，請再試一次! "
 
-#: game/templates/game/game.html:210
+#: game/templates/game/game.html:229
 msgid "Congratulations! You are right!"
 msgstr "恭喜答對!"
 
-#: game/templates/game/game.html:227
+#: game/templates/game/game.html:234
+msgid "Reveal the Answer"
+msgstr "公布答案"
+
+#: game/templates/game/game.html:246
 msgid "Answer:"
 msgstr "正確答案:"
 
-#: game/templates/game/game.html:238
+#: game/templates/game/game.html:257
 msgid "Question"
 msgstr "問題"
 
-#: game/templates/game/game.html:239
+#: game/templates/game/game.html:258
 msgid "Result"
 msgstr "結果"
 
-#: game/templates/game/game.html:240
+#: game/templates/game/game.html:259
 #, python-format
 msgid "Confidence(%%)"
 msgstr "信心(%%)"
 
-#: gw/settings/base.py:117
+#: gw/settings/base.py:118
 msgid "English"
 msgstr "英文"
 
-#: gw/settings/base.py:118
+#: gw/settings/base.py:119
 msgid "Chinese"
 msgstr "中文"
 
@@ -97,3 +113,27 @@ msgstr "登出"
 #: pages/templates/pages/base.html:41
 msgid "Login"
 msgstr "登入"
+
+#: pages/templates/pages/home.html:12
+msgid "The system randomly selects one of 200 words as the answer."
+msgstr "電腦會隨機從200個詞裡面選出一個作為答案"
+
+#: pages/templates/pages/home.html:16
+msgid ""
+"You can keep asking questions, and try to guess the answer with the dialog "
+"as hints."
+msgstr ""
+"你可以不斷問問題，從對話中猜猜看答案是什麼"
+
+#: pages/templates/pages/home.html:20
+msgid "The question sentence must contain 'it/he/she'."
+msgstr "你的問題裡必須包含 '它/他/她'"
+
+#: pages/templates/pages/home.html:28
+msgid ""
+"You can guess the answer by asking a question (e.g. \"Is it airplane?\")."
+msgstr "你可以用句子猜答案，例如: 它是飛機嗎?"
+
+#: pages/templates/pages/home.html:31
+msgid "Or directly type the answer (e.g. \"Airplane\")."
+msgstr "也可以直接猜答案，例如: 飛機"
