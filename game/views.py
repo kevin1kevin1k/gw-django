@@ -120,6 +120,7 @@ def get_result(request):
 
         if request.LANGUAGE_CODE == 'en':
             print('english mode!')
+            question_origin = question
             if '?' not in question:
                 question = question+'?'
             question = question.replace('it','he')                
@@ -210,12 +211,12 @@ def get_result(request):
                 #if there are multiple keywords, seperate the question into multiple sentence
                 small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'   
                 if request.LANGUAGE_CODE == 'en':
-                    if small_q != question:  
-                        print(small_q)
-                        print("oh!")
+                    if small_q != question.replace('他','它'):
                         small_q = gt.translate(small_q,sl='zh-tw',tl='en')                       
+                    else:
+                        small_q = question_origin
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
-            
+                
             # insert into DB
             if success:
                 game.is_finished =True
