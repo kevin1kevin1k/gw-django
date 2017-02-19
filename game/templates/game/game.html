@@ -153,12 +153,12 @@
                                     }
 
                                     //append dialog
-                                    addDialog("left",json['response_dialog'])
-                                    if(json['response_dialog_trans'])
+                                    if(json['response_dialog_trans']) //eng
                                     {
                                       addDialog("left",json['response_dialog_trans'])
                                     }
-
+                                    addDialog("left",json['response_dialog']) //chinese
+                                    
                                     //append to record table
                                     var row_count = document.getElementById('record_body').rows.length; 
                                     for (var i = 0; i < json['record_list'].length; i++){

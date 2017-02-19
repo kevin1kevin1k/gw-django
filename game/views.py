@@ -208,7 +208,12 @@ def get_result(request):
                         response_dialog += conj + result.answer_str.replace('它','')
 
                 #if there are multiple keywords, seperate the question into multiple sentence
-                small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'                        
+                small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'   
+                if request.LANGUAGE_CODE == 'en':
+                    if small_q != question:  
+                        print(small_q)
+                        print("oh!")
+                        small_q = gt.translate(small_q,sl='zh-tw',tl='en')                       
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
             
             # insert into DB
