@@ -86,9 +86,13 @@ def answer_list(request):
 def answer_detail(request, pk):
     try:
         answer = Answer.objects.get(pk=pk)
+        games = answer.games.all()
+        question_list =[]
+        for game in games:
+            question_list.extend(game.questions.all())
     except Answer.DoesNotExist:
         raise Http404
-    return render(request, 'game/answer_detail.html', {'answer': answer})
+    return render(request, 'game/answer_detail.html', {'answer': answer,'questions':question_list})
 
 def answer_create(request):
     if request.method == 'POST':
@@ -99,6 +103,7 @@ def answer_create(request):
     else:
         form = AnswerForm()
     return render(request, 'game/answer_create.html', {'form': form})
+
 
 def get_result(request):
     earliest = time.clock()

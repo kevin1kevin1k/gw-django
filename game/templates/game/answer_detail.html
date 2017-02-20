@@ -10,13 +10,17 @@
       <tr>
         <th>問題</th>
         <th>結果</th>
+        <th>來源</th>
+        <th>信心</th>
       </tr>
     </thead>
     <tbody>
-      {% for ques in answer.questions.all %}
+      {% for ques in questions %}
         <tr>
-          <td>{{ ques.name }}</td>
-          <td>{{ ques.result }}</td>
+          <td>{{ ques.content }}</td>
+          <td>{{ ques.label }}</td>
+          <td>{{ ques.source }}</td>
+          <td>{{ ques.confidence_score }}</td>
         </tr>
       {% endfor %}
     </tbody>
