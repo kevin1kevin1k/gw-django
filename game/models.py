@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 
 class Answer(models.Model):
     name = models.CharField(max_length=20)
+    name_en = models.CharField(max_length=20, default='NULL')
 
     def __unicode__(self):
         return self.name

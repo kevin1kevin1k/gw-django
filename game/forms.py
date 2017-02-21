@@ -17,7 +17,7 @@ class AskForm(forms.Form):
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
-        fields = ['name']
+        fields = ['name', 'name_en']
     
     def __init__(self, *args, **kwargs):
         super(AnswerForm, self).__init__(*args, **kwargs)

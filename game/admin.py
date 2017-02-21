@@ -7,7 +7,7 @@ class QuestionInline(admin.TabularInline):
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'name_en']
     # inlines = [QuestionInline]
 
 @admin.register(Question)
