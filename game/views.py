@@ -52,6 +52,8 @@ def game(request):
             answer = ans
             break
     print(answer.name.encode(sys.getfilesystemencoding()))
+    name = answer.name
+    name_en = answer.name_en
     answer = answer.name.encode('utf-8')
 
     game = Game.objects.create(answer = Answer.objects.get(name=answer))
@@ -72,7 +74,8 @@ def game(request):
     
     form = AskForm()
     contexts = {
-        'answer': answer,
+        'answer': name,
+        'answer_en': name_en,
         'answers': group(),
         'game_id' : game.id
     }
