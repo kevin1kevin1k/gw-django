@@ -134,7 +134,7 @@ def get_result(request):
             question = question.replace('it','he')                
             question = gt.translate(question,sl='en',tl='zh-tw')
             question = question.replace('？','').replace('?','')
-            if '他' not in question and '它' not in question and len(question)>3:
+            if '他' not in question and '它' not in question and len(question.decode('utf-8'))>3:
                 question = '它'+question
 
 
