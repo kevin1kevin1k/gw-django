@@ -134,7 +134,7 @@ def get_result(request):
             question = question.replace('it','he')                
             question = gt.translate(question,sl='en',tl='zh-tw')
             question = question.replace('？','').replace('?','')
-            if '他' not in question:
+            if '他' not in question and '它' not in question and len(question)>3:
                 question = '它'+question
 
 
@@ -247,16 +247,22 @@ def get_result(request):
         hint=''
         question_hist = game.questions.all().order_by('id')
         question_count = question_hist.count()
-        if question_count >= 3:
-            consev_N = True
-            for i in range(question_count-1, question_count-4, -1): 
-                # if there are three consecutive N, give hints to users
-                if question_hist[i].label != 'N':
-                    consev_N = False
-            if consev_N:
-                encourage=True
-
-        if encourage:
+        # if question_count >= 3:
+        #     consev_N = True
+        #     for i in range(question_count-1, question_count-4, -1): 
+        #         # if there are three consecutive N, give hints to users
+        #         if question_hist[i].label != 'N':
+        #             consev_N = False
+        #     if consev_N:
+        #         encourage=True
+        n_count = sum([1 if q.label=='N' else 0 for q in question_hist])
+        if n_count == 3 and question_hist[question_count-1].label == 'N' :
+            anc_words = ancestors.anc(answer)
+            anc = anc_words[0]
+            hint ='給你一點提示， 它是' + anc + '的一種'
+            game.hint_used = 'Ancestor'
+            # encourage = True
+        elif n_count == 6 and question_hist[question_count-1].label == 'N':
             defs = climb.climb(answer, strict=False, shorter=True)
             if defs == []:
                 encourage_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
@@ -266,8 +272,21 @@ def get_result(request):
                 definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
                 def_root = parse_eh.parse(definition)
                 max_depth = def_root.get_depth()
-                hint = '提示， 它是' + parse_eh.def2sentence(def_root, max_depth)
-                game.hint_used =True
+                hint = '給你一點提示， 它是' + parse_eh.def2sentence(def_root, max_depth)
+                game.hint_used = 'Sentence'
+        
+        # if encourage:
+        #     defs = climb.climb(answer, strict=False, shorter=True)
+        #     if defs == []:
+        #         encourage_list = ['再想想看:)', '加油啊，你可以的~', '再猜猜看:)', '不要氣餒:)']
+        #         hint = encourage_list[random.randrange(len(encourage_list))]
+        #     else:
+        #         definition = defs[0]
+        #         definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+        #         def_root = parse_eh.parse(definition)
+        #         max_depth = def_root.get_depth()
+        #         hint = '提示， 它是' + parse_eh.def2sentence(def_root, max_depth)
+        #         game.hint_used =True
         
         game.save()
 
@@ -290,7 +309,10 @@ def get_result(request):
             contexts['response_dialog_trans'] = response_dialog_en
 
             if hint:
-                hint_en = gt.translate(hint,sl='zh-tw',tl='en')
+                hint_en_sub= []
+                for subs in hint.split('，'):
+                    hint_en_sub.append(gt.translate(subs,sl='zh-tw',tl='en'))
+                hint_en = ','.join(hint_en_sub)
                 contexts['hint_trans'] = hint_en
 
         latest = time.clock()

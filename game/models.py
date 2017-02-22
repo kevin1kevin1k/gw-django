@@ -17,7 +17,7 @@ class Game(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     answer = models.ForeignKey('Answer', related_name='games')
     is_finished = models.BooleanField(default=False)
-    hint_used = models.BooleanField(default=False)
+    hint_used = models.CharField(max_length=20, default='None')
     original_questions = models.ManyToManyField('Original_Question')
 
 class Question(models.Model):
