@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en'
-ugettext = lambda s: s
+#ugettext = lambda s: s
 LANGUAGES = (
     ('en', _('English')),
     ('zh-hant', _('Chinese')),
