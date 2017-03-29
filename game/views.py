@@ -327,7 +327,7 @@ def get_hint(request):
 
             anc_words = ancestors.anc(answer)
             anc = anc_words[0]
-            hint ='它是' + anc + '的一種'
+            hint ='提示: 它是' + anc + '的一種'
             name ='ancestor'
 
         elif hint_count == 1: #定義式
@@ -337,7 +337,7 @@ def get_hint(request):
                 definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
                 def_root = parse_eh.parse(definition)
                 max_depth = def_root.get_depth()
-                hint = '它是' + parse_eh.def2sentence(def_root, max_depth)
+                hint = '提示: 它是' + parse_eh.def2sentence(def_root, max_depth)
                 name = 'definition sentence'
 
         elif hint_count == 2: #10選1
@@ -364,16 +364,19 @@ def get_hint(request):
             hint_obj.save()
 
         #translation
+        hint_trans = ''
         if request.LANGUAGE_CODE == 'en' and hint: 
             if name == 'multiple choice':
                 ans_en = game.answer.name_en
                 candidate_ans = [a.name_en.encode('utf-8') for a in candidate_ans_objs] + [ans_en]
                 random.shuffle(candidate_ans)
                 candidate_str = ', '.join(candidate_ans) 
-                hint = 'The answer is in the following list:' + candidate_str
+                hint_trans = 'The answer is in the following list:' + candidate_str
             else:
-                hint = gt.translate(hint,sl='zh-tw',tl='en')
+                hint_ = hint.replace('提示: ','') #先把有標點符號的部份去掉, 以免翻譯api只處理標點符號前半部份
+                hint_trans = gt.translate(hint_,sl='zh-tw',tl='en')
+                hint_trans = 'Hint: ' + hint_trans
 
-        contexts ={'hint' : hint}
+        contexts ={'hint' : hint , 'hint_trans' : hint_trans}
         return HttpResponse(json.dumps(contexts),content_type="application/json")
         

@@ -246,7 +246,7 @@
           </div>
           
           <div class="col-xs-6" style="margin-left:-15px">
-            <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()">{% trans 'Hint' %}</button>
+            <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()" count=0>{% trans 'Hint' %}</button>
             
             <script>
               function get_hint() {
@@ -260,17 +260,25 @@
                   type:"POST",
 
                   success: function(json){
-                    if(json['hint'].length > 0){
+                    
                       h = json['hint'];
-                      var hints_block = document.getElementById("hints_block");
-                      new_div = document.createElement('div');
-                      $(new_div).html(h).addClass('alert alert-info').attr("role", "alert").appendTo($(hints_block));
 
-                      if(hints_block.children.length>=3){
+                      if(h.length > 0){
+                      addDialog("left",h)
+                      }      
+
+                      if(json['hint_trans'].length > 0){
+                        addDialog("left",json['hint_trans'])      
+                      }
+                      
+                      hcount = document.getElementById("hint_btn").getAttribute('count');
+                      hcount = parseInt(hcount)+1;
+                      document.getElementById("hint_btn").setAttribute('count',hcount);
+                      
+                      if(hcount >= 3){
                         document.getElementById("hint_btn").disabled = "true";
                       }
-
-                    }
+                    
                   },
 
                   error:function(xhr,errmsg,err){ 
@@ -286,10 +294,6 @@
             <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
               {% trans 'Answer:' %} {{ answer_en }} {{ answer }}
             </div>
-          </div>
-
-          <div class="col-xs-6" style="margin-left:-15px" id='hints_block'>
-            
           </div>
 
       </div>
