@@ -342,12 +342,12 @@ def get_hint(request):
 
         elif hint_count == 2: #10選1
             answers_count = Answer.objects.all().count()
-            answer_id = game.answer
+            answer_id = game.answer.id
             all_ids = [i+1 for i in range(answers_count) if i !=answer_id]
             random.shuffle(all_ids)
             candidate_ids = all_ids[0:9]
-            candidate_ans = Answer.objects.filter(id__in=candidate_ids)
-            candidate_ans = [a.name.encode('utf-8') for a in candidate_ans] + [answer]
+            candidate_ans_objs = Answer.objects.filter(id__in=candidate_ids)
+            candidate_ans = [a.name.encode('utf-8') for a in candidate_ans_objs] + [answer]
             random.shuffle(candidate_ans)
             candidate_str = ', '.join(candidate_ans) 
             hint = '答案就在其中:' + candidate_str
@@ -364,11 +364,15 @@ def get_hint(request):
             hint_obj.save()
 
         #translation
-        print(hint)
-        if request.LANGUAGE_CODE == 'en': 
-            hint = hint.replace(',',' ')
-            hint = gt.translate(hint,sl='zh-tw',tl='en')
-            print(hint)
+        if request.LANGUAGE_CODE == 'en' and hint: 
+            if name == 'multiple choice':
+                ans_en = game.answer.name_en
+                candidate_ans = [a.name_en.encode('utf-8') for a in candidate_ans_objs] + [ans_en]
+                random.shuffle(candidate_ans)
+                candidate_str = ', '.join(candidate_ans) 
+                hint = 'The answer is in the following list:' + candidate_str
+            else:
+                hint = gt.translate(hint,sl='zh-tw',tl='en')
 
         contexts ={'hint' : hint}
         return HttpResponse(json.dumps(contexts),content_type="application/json")
