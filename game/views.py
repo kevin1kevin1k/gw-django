@@ -350,7 +350,7 @@ def get_hint(request):
             candidate_ans = [a.name.encode('utf-8') for a in candidate_ans] + [answer]
             random.shuffle(candidate_ans)
             candidate_str = ', '.join(candidate_ans) 
-            hint = '答案就在其中：' + candidate_str
+            hint = '答案就在其中:' + candidate_str
             name = 'multiple choice'
         
         if hint:
@@ -362,6 +362,13 @@ def get_hint(request):
                     pre_questions_count = qcount
             )
             hint_obj.save()
+
+        #translation
+        print(hint)
+        if request.LANGUAGE_CODE == 'en': 
+            hint = hint.replace(',',' ')
+            hint = gt.translate(hint,sl='zh-tw',tl='en')
+            print(hint)
 
         contexts ={'hint' : hint}
         return HttpResponse(json.dumps(contexts),content_type="application/json")
