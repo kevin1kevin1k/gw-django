@@ -2,13 +2,14 @@
 
 from django.shortcuts import redirect, render, render_to_response
 from django.http import Http404,HttpResponse
-from .models import Answer, Question, Game, Original_Question
+from .models import Answer, Question, Game, Original_Question, Hint
 from .forms import AskForm, AnswerForm
 import time
 import random
 import re
 import sys
 import json
+from ipware.ip import get_ip
 from src import main_process
 from src import question_parser as qs
 from src.ehownet import synonym, ancestors, climb, parse_eh
@@ -16,22 +17,22 @@ from src import crawl_wiki
 from src.crawlData import getSimilarity
 from src.TranslationTool import google_translate as gt
 
-def get_hints(answer):    
-    anc_words = ancestors.anc(answer)
+# def get_hints(answer):    
+#     anc_words = ancestors.anc(answer)
     
-    eh_words = []
-    stop_words = [answer, '有']
-    for word in climb.climb_words(answer):
-        if word not in stop_words and '值' not in word:
-            eh_words.append(word)
+#     eh_words = []
+#     stop_words = [answer, '有']
+#     for word in climb.climb_words(answer):
+#         if word not in stop_words and '值' not in word:
+#             eh_words.append(word)
     
-    wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
-    word2depth = wikidict.get(answer, {})
-    wiki_words = word2depth.keys()
-    if answer in wiki_words:
-        wiki_words.remove(answer)
+#     wikidict = crawl_wiki.load_pkl_to_dict('resources/answer200.pkl')
+#     word2depth = wikidict.get(answer, {})
+#     wiki_words = word2depth.keys()
+#     if answer in wiki_words:
+#         wiki_words.remove(answer)
     
-    return list(set(anc_words + eh_words + wiki_words))
+#     return list(set(anc_words + eh_words + wiki_words))
 
 def group():
     grp = []
@@ -56,7 +57,11 @@ def game(request):
     name_en = answer.name_en
     answer = answer.name.encode('utf-8')
 
-    game = Game.objects.create(answer = Answer.objects.get(name=answer))
+    ip = get_ip(request)
+    if ip is None:
+        ip = ""
+
+    game = Game.objects.create(answer = Answer.objects.get(name=answer),source_ip = ip)
     game.save()
 
     # all_hints = get_hints(answer)
@@ -71,8 +76,7 @@ def game(request):
     #         print h, s
     #         chosen_hints.append(h)
     # chosen_hints = chosen_hints[:3]
-    
-    form = AskForm()
+
     contexts = {
         'answer': name,
         'answer_en': name_en,
@@ -323,3 +327,56 @@ def get_result(request):
     
     return HttpResponse({error:True},content_type="application/json")
     # return render(request, 'game/game.html', {'result': 'error: get_result', 'form': form})
+
+def get_hint(request):
+    if request.method == 'POST':
+        game_id =  request.POST.get('game_id')
+        answer =  request.POST.get('answer').encode('utf-8')
+        game = Game.objects.get(id=game_id)
+
+        hint_count = game.hints.all().count()     
+        hint = ''
+        name = ''
+        if hint_count == 0: #上位
+
+            anc_words = ancestors.anc(answer)
+            anc = anc_words[0]
+            hint ='它是' + anc + '的一種'
+            name ='ancestor'
+
+        elif hint_count == 1: #定義式
+            defs = climb.climb(answer, strict=False, shorter=True)
+            if defs:
+                definition = defs[0]
+                definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+                def_root = parse_eh.parse(definition)
+                max_depth = def_root.get_depth()
+                hint = '它是' + parse_eh.def2sentence(def_root, max_depth)
+                name = 'definition sentence'
+
+        elif hint_count == 2: #10選1
+            answers_count = Answer.objects.all().count()
+            answer_id = game.answer
+            all_ids = [i+1 for i in range(answers_count) if i !=answer_id]
+            random.shuffle(all_ids)
+            candidate_ids = all_ids[0:9]
+            candidate_ans = Answer.objects.filter(id__in=candidate_ids)
+            candidate_ans = [a.name.encode('utf-8') for a in candidate_ans] + [answer]
+            random.shuffle(candidate_ans)
+            candidate_str = ', '.join(candidate_ans) 
+            hint = '答案就在其中：' + candidate_str
+            name = 'multiple choice'
+        
+        if hint:
+            qcount = game.questions.all().count()
+            hint_obj = Hint.objects.create(
+                    game = game,
+                    name = name,
+                    content = hint,
+                    pre_questions_count = qcount
+            )
+            hint_obj.save()
+
+        contexts ={'hint' : hint}
+        return HttpResponse(json.dumps(contexts),content_type="application/json")
+        

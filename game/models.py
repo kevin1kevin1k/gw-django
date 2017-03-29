@@ -14,11 +14,21 @@ class Answer(models.Model):
 class Game(models.Model):
     '''record each game'''
     user_id = models.IntegerField(default=0)
+    source_ip =  models.CharField(max_length=20, blank=True)
+    score = models.IntegerField(default=0)
     created_time = models.DateTimeField(auto_now_add=True)
     answer = models.ForeignKey('Answer', related_name='games')
     is_finished = models.BooleanField(default=False)
-    hint_used = models.CharField(max_length=20, default='None')
     original_questions = models.ManyToManyField('Original_Question')
+    #questions
+    #hints
+
+class Hint(models.Model):
+    game = models.ForeignKey('Game', related_name='hints', null=True)
+    name = models.CharField(max_length=20, blank=True)
+    content = models.CharField(max_length=100, blank=True)
+    pre_questions_count = models.IntegerField(default=0)
+    created_time = models.DateTimeField(auto_now_add=True)    
 
 class Question(models.Model):
     game = models.ForeignKey('Game', related_name='questions', null=True)

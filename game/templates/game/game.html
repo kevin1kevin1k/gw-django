@@ -123,6 +123,9 @@
                   function ask(event){
                       //append users' dialog box
                       var q = document.getElementById("question").value;
+                      if(!q || !q.trim().length){
+                        return;
+                      }
                       addDialog("right",q)
 
                      //append loading image
@@ -243,9 +246,50 @@
           </div>
           
           <div class="col-xs-6" style="margin-left:-15px">
+            <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()">{% trans 'Hint' %}</button>
+            
+            <script>
+              function get_hint() {
+                $.ajax({
+                  url: "{% url 'get_hint' %}",
+                  data: {
+                          answer : '{{answer}}',
+                          game_id : '{{game_id}}',
+                          csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                  type:"POST",
+
+                  success: function(json){
+                    if(json['hint'].length > 0){
+                      h = json['hint'];
+                      var hints_block = document.getElementById("hints_block");
+                      new_div = document.createElement('div');
+                      $(new_div).html(h).addClass('alert alert-info').attr("role", "alert").appendTo($(hints_block));
+
+                      if(hints_block.children.length>=3){
+                        document.getElementById("hint_btn").disabled = "true";
+                      }
+
+                    }
+                  },
+
+                  error:function(xhr, ajaxOptions, thrownError){ 
+                      
+                  }
+                });
+              }
+            </script>
+
+          </div>
+
+          <div class="col-xs-6" style="margin-left:-15px">
             <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
               {% trans 'Answer:' %} {{ answer_en }} {{ answer }}
             </div>
+          </div>
+
+          <div class="col-xs-6" style="margin-left:-15px" id='hints_block'>
+            
           </div>
 
       </div>
