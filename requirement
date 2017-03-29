@@ -5,4 +5,5 @@ scikit-learn
 simplejson
 bs4
 gensim
+django-ipware
 
