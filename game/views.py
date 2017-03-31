@@ -61,7 +61,7 @@ def game(request):
     if ip is None:
         ip = ""
 
-    game = Game.objects.create(answer = Answer.objects.get(name=answer),source_ip = ip)
+    game = Game.objects.create(answer = Answer.objects.get(name=answer),source_ip = ip, score=100)
     game.save()
 
     # all_hints = get_hints(answer)
@@ -81,7 +81,8 @@ def game(request):
         'answer': name,
         'answer_en': name_en,
         'answers': group(),
-        'game_id' : game.id
+        'game_id' : game.id,
+        'score' : game.score
     }
 
     return render(request, 'game/game.html', contexts)
@@ -159,6 +160,7 @@ def get_result(request):
         response_dialog = ""
         record_list=[]
         success = False
+        score_diff = 0
         pre_label =None
         
         #DB
@@ -227,7 +229,8 @@ def get_result(request):
                     else:
                         small_q = question_origin
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
-                
+                score_diff = -1 # one question minus 1 point
+
             # insert into DB
             if success:
                 game.is_finished =True
@@ -278,12 +281,15 @@ def get_result(request):
         #         hint = '給你一點提示， 它是' + parse_eh.def2sentence(def_root, max_depth)
         #         game.hint_used = 'Sentence'
         
+        score = game.score + score_diff
+        game.score = score
         game.save()
 
         contexts = {
             'success':success,
             'response_dialog':response_dialog,
             'record_list':record_list,
+            'score':score,
             # 'hint':hint,
             'question_trans':'',
             'response_dialog_trans':'',
@@ -323,12 +329,14 @@ def get_hint(request):
         hint_count = game.hints.all().count()     
         hint = ''
         name = ''
+        score_diff = 0
         if hint_count == 0: #上位
 
             anc_words = ancestors.anc(answer)
             anc = anc_words[0]
             hint ='提示: 它是' + anc + '的一種'
             name ='ancestor'
+            score_diff = -5
 
         elif hint_count == 1: #定義式
             defs = climb.climb(answer, strict=False, shorter=True)
@@ -339,6 +347,7 @@ def get_hint(request):
                 max_depth = def_root.get_depth()
                 hint = '提示: 它是' + parse_eh.def2sentence(def_root, max_depth)
                 name = 'definition sentence'
+                score_diff = -10
 
         elif hint_count == 2: #10選1
             answers_count = Answer.objects.all().count()
@@ -352,6 +361,7 @@ def get_hint(request):
             candidate_str = ', '.join(candidate_ans) 
             hint = '答案就在其中:' + candidate_str
             name = 'multiple choice'
+            score_diff = -15
         
         if hint:
             qcount = game.questions.all().count()
@@ -362,6 +372,9 @@ def get_hint(request):
                     pre_questions_count = qcount
             )
             hint_obj.save()
+
+            game.score =  game.score + score_diff
+            game.save()
 
         #translation
         hint_trans = ''
@@ -377,6 +390,6 @@ def get_hint(request):
                 hint_trans = gt.translate(hint_,sl='zh-tw',tl='en')
                 hint_trans = 'Hint: ' + hint_trans
 
-        contexts ={'hint' : hint , 'hint_trans' : hint_trans}
+        contexts ={'hint' : hint , 'hint_trans' : hint_trans, 'score' : game.score }
         return HttpResponse(json.dumps(contexts),content_type="application/json")
         

@@ -30,23 +30,29 @@
 
     <div class="col-xs-9">
       <div class="col-xs-6">
-        <br>
-        <p>
-          {% if user.is_authenticated %}
-          {% csrf_token %}
-            {{ answer }}
-          {% endif %}
-          <!--<button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
-          data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
-          target='blank'>{% trans 'Introduction' %}</button>-->
-          <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
-          data-content="{% blocktrans %} The question sentence must contain 'it/he/she'. <br>
-                           You can guess the answer by asking a question (e.g. 'Is it airplane?'). <br>
-                           Or directly type the answer (e.g. 'Airplane'). <br>
-                        {% endblocktrans %}"
-          target='blank'>{% trans 'Introduction' %}</button>
-        </p>
-        
+        <div class="row">
+        <div class="col-xs-6">        
+          <p>
+            {% if user.is_authenticated %}
+            {% csrf_token %}
+              {{ answer }}
+            {% endif %}
+            <!--<button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+            data-content="你的問題必須包含&quot;它&quot;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:它是動物嗎<br><br>你也可以直接猜答案<br>&nbsp;&nbsp;&nbsp;&nbsp;例如:飛機"
+            target='blank'>{% trans 'Introduction' %}</button>-->
+            <button id="help" type="button" class="btn btn-default" style="margin-left:15px" data-popover="true" data-html=true
+            data-content="{% blocktrans %} The question sentence must contain 'it/he/she'. <br>
+                            You can guess the answer by asking a question (e.g. 'Is it airplane?'). <br>
+                            Or directly type the answer (e.g. 'Airplane'). <br>
+                          {% endblocktrans %}"
+            target='blank'>{% trans 'Introduction' %}</button>
+          </p>
+        </div>
+
+        <div class="col-xs-6" id='score'>
+          {% trans 'Your score : ' %} <span id='score_value'> {{ score }} </span>
+        </div>
+
         <script>
           var originalLeave = $.fn.popover.Constructor.prototype.leave;
           $.fn.popover.Constructor.prototype.leave = function(obj){
@@ -69,235 +75,248 @@
           };
           $('body').popover({ selector: '[data-popover]', trigger: 'hover', placement: 'right', delay: {show: 50, hide: 400}});
         </script>
+      <!--end of row-->
+      </div> 
 
-        <div id="dialog" style="position:relative; height:400px; overflow:auto; background-color:#FAFAFA">
-         
-          <div class='conversation_item'>
-            <div class="dialog_box left_dialog_box">{% trans 'Guess what is in my mind now!' %}</div>
-          </div>
+      <div class="row">      
+          <br>
+          <div id="dialog" style="position:relative; height:400px; overflow:auto; background-color:#FAFAFA">
           
-        </div>
-                
-        <fieldset id="fset">
-          <!--<form id="dialog_form"  method="post">-->
-         <div id="dialog_form">
-            {% csrf_token %}           
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="{% trans 'Ask a question..' %}" id="question" name="question" required="true" autofocus="true" > 
-              <span class="input-group-btn">
-                <input onclick="ask()" type="button" value="{% trans 'Submit' %}" class="btn btn-success" id="enter">
-              </span>
-                <script>
-
-                  //enter trigger
-                  $("#question").keyup(function(event){
-                      if(event.keyCode == 13){
-                          $("#enter").click();
-                      }
-                  });
-                  
-                  // $('#dialog_form').on('keyup keypress', function(e) {
-                  //   var keyCode = e.keyCode || e.which;
-                  //   if (keyCode === 13) { 
-                  //     e.preventDefault();
-                  //     return false;
-                  //   }
-                  // });
-
-                  //append new dialog box
-                  function addDialog(direction,content){
-                      outer_div = document.createElement('div');
-                      $(outer_div).addClass('conversation_item').appendTo($("#dialog"));
-                      new_div = document.createElement('div');
-                      $(new_div).addClass('dialog_box')
-                                .html(content)
-                                .appendTo($(outer_div));
-                      if(direction=="l" || direction=="left"){
-                        $(new_div).addClass('left_dialog_box');
-                      }
-                      else{
-                        $(new_div).addClass('right_dialog_box');                        
-                      }
-                  }
-
-                  function ask(event){
-                      //append users' dialog box
-                      var q = document.getElementById("question").value;
-                      if(!q || !q.trim().length){
-                        return;
-                      }
-                      addDialog("right",q)
-
-                     //append loading image
-                      var objDiv = document.getElementById("dialog");
-                      objDiv.innerHTML += `<div class='conversation_item'> 
-                      <div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px">
-                      </div></div>`
-                      objDiv.scrollTop = objDiv.scrollHeight;
-
-                      get_answer(q);
-                  };
-
-                  function get_answer(q) {
-                    if( q!=null && q != ""){
-                      $.ajax({
-                                url : "{% url 'get_result' %}", 
-                                type : "POST", 
-                                data : { answer : '{{answer}}',
-                                         game_id : '{{game_id}}',
-                                         question : q,
-                                         csrfmiddlewaretoken: '{{ csrf_token }}'
-                                       }, // data sent with the post request
-
-
-                                //timeout : 60000,
-                                success : function(json) {
-                                    $('#question').val(''); // remove the value from the input
-                                    $( "#loading" ).remove(); // remove the loading image
-                                    // console.log("success"); // another sanity check                                    
-                                    
-                                    //append translated question
-                                    if(json['question_trans'])
-                                    {
-                                      addDialog("right",json['question_trans'])
-                                    }
-
-                                    //append dialog
-                                    if(json['response_dialog_trans']) //eng
-                                    {
-                                      addDialog("left",json['response_dialog_trans'])
-                                    }
-                                    addDialog("left",json['response_dialog']) //chinese
-                                    
-                                    //append to record table
-                                    var row_count = document.getElementById('record_body').rows.length; 
-                                    for (var i = 0; i < json['record_list'].length; i++){
-                                        var record = json['record_list'][i];
-                                        new_row = document.createElement('tr');
-                                        new_td = document.createElement('td');                                        
-                                        $(new_td).addClass('col-xs-1')
-                                              .html(row_count+1)
-                                              .appendTo($(new_row)); 
-                                              
-                                        for (var j=0; j< record.length; j++){
-                                          var element = record[j];
-                                          new_td = document.createElement('td');
-                                          if(j==0){
-                                            $(new_td).addClass('col-xs-3');
-                                          }
-                                          else{
-                                            $(new_td).addClass('col-xs-1');
-                                          }
-                                          $(new_td).html(element).appendTo($(new_row));                                          
-                                        }
-                                        $(new_row).appendTo($("#record_body"));
-                                        row_count+=1;
-                                    }
-                                    
-                                    //show hints
-                                    // if(json['hint'] != ''){
-                                    // addDialog("left",json['hint'])      
-                                    // }
-                                    // if(json['hint_trans'] != ''){
-                                    // addDialog("left",json['hint_trans'])      
-                                    // }
-
-                                    if(json['success']==true){
-                                      $(".alert-success").show();
-                                      $("#answer_btn").hide();
-                                    }
-                        
-                                },
-
-                                // handle a non-successful response
-                                error : function(xhr,errmsg,err) {
-                                    $('#question').val('{% trans "Oops! There is something wrong, please try again." %}');
-                                    $( "#loading" ).remove(); // remove the loading image
-                                    
-                                    console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
-                                    // alert("QQ"); 
-                                }
-                            });
-                    }
-                  }
-
-                </script>
-              
+            <div class='conversation_item'>
+              <div class="dialog_box left_dialog_box">{% trans 'Guess what is in my mind now!' %}</div>
             </div>
-          <!--</form>-->
-         </div>
-        </fieldset>
-
-          <br>
-          <div class="alert alert-success" role="alert" style="display: none;">
-            <p>{% trans 'Congratulations! You are right!' %}</p>
-          </div>
-
-          <br>
-          <div class="col-xs-6" style="margin-left:-15px">
-            <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">{% trans 'Reveal the Answer' %}</button>
-            <script>
-              function show_answer() {
-                document.getElementById("show_answer").style.display = "block";
-                document.getElementById("fset").disabled = "true";
-                document.getElementById("answer_btn").disabled = "true";
-              }
-            </script>
-          </div>
-          
-          <div class="col-xs-6" style="margin-left:-15px">
-            <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()" count=0>{% trans 'Hint' %}</button>
             
-            <script>
-              function get_hint() {
-                $.ajax({
-                  url: "{% url 'get_hint' %}",
-                  data: {
-                          answer : '{{answer}}',
-                          game_id : '{{game_id}}',
-                          csrfmiddlewaretoken: '{{ csrf_token }}',
-                        },
-                  type:"POST",
-
-                  success: function(json){
-                    
-                      h = json['hint'];
-
-                      if(h.length > 0){
-                      addDialog("left",h)
-                      }      
-
-                      if(json['hint_trans'].length > 0){
-                        addDialog("left",json['hint_trans'])      
-                      }
-                      
-                      hcount = document.getElementById("hint_btn").getAttribute('count');
-                      hcount = parseInt(hcount)+1;
-                      document.getElementById("hint_btn").setAttribute('count',hcount);
-                      
-                      if(hcount >= 3){
-                        document.getElementById("hint_btn").disabled = "true";
-                      }
-                    
-                  },
-
-                  error:function(xhr,errmsg,err){ 
-                    console.log(xhr.status + ": " + xhr.responseText + errmsg);
-                  }
-                });
-              }
-            </script>
-
           </div>
+                  
+          <fieldset id="fset">
+            <!--<form id="dialog_form"  method="post">-->
+          <div id="dialog_form">
+              {% csrf_token %}           
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="{% trans 'Ask a question..' %}" id="question" name="question" required="true" autofocus="true" > 
+                <span class="input-group-btn">
+                  <input onclick="ask()" type="button" value="{% trans 'Submit' %}" class="btn btn-success" id="enter">
+                </span>
+                  <script>
 
-          <div class="col-xs-6" style="margin-left:-15px">
-            <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
-              {% trans 'Answer:' %} {{ answer_en }} {{ answer }}
+                    //enter trigger
+                    $("#question").keyup(function(event){
+                        if(event.keyCode == 13){
+                            $("#enter").click();
+                        }
+                    });
+                    
+                    // $('#dialog_form').on('keyup keypress', function(e) {
+                    //   var keyCode = e.keyCode || e.which;
+                    //   if (keyCode === 13) { 
+                    //     e.preventDefault();
+                    //     return false;
+                    //   }
+                    // });
+
+                    //append new dialog box
+                    function addDialog(direction,content){
+                        outer_div = document.createElement('div');
+                        $(outer_div).addClass('conversation_item').appendTo($("#dialog"));
+                        new_div = document.createElement('div');
+                        $(new_div).addClass('dialog_box')
+                                  .html(content)
+                                  .appendTo($(outer_div));
+                        if(direction=="l" || direction=="left"){
+                          $(new_div).addClass('left_dialog_box');
+                        }
+                        else{
+                          $(new_div).addClass('right_dialog_box');                        
+                        }
+                    }
+
+                    function ask(event){
+                        //append users' dialog box
+                        var q = document.getElementById("question").value;
+                        if(!q || !q.trim().length){
+                          return;
+                        }
+                        addDialog("right",q)
+
+                      //append loading image
+                        var objDiv = document.getElementById("dialog");
+                        objDiv.innerHTML += `<div class='conversation_item'> 
+                        <div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px">
+                        </div></div>`
+                        objDiv.scrollTop = objDiv.scrollHeight;
+
+                        get_answer(q);
+                    };
+
+                    function get_answer(q) {
+                      if( q!=null && q != ""){
+                        $.ajax({
+                                  url : "{% url 'get_result' %}", 
+                                  type : "POST", 
+                                  data : { answer : '{{answer}}',
+                                          game_id : '{{game_id}}',
+                                          question : q,
+                                          csrfmiddlewaretoken: '{{ csrf_token }}'
+                                        }, // data sent with the post request
+
+
+                                  //timeout : 60000,
+                                  success : function(json) {
+                                      $('#question').val(''); // remove the value from the input
+                                      $( "#loading" ).remove(); // remove the loading image
+                                      // console.log("success"); // another sanity check                                    
+                                      
+                                      //append translated question
+                                      if(json['question_trans'])
+                                      {
+                                        addDialog("right",json['question_trans'])
+                                      }
+
+                                      //append dialog
+                                      if(json['response_dialog_trans']) //eng
+                                      {
+                                        addDialog("left",json['response_dialog_trans'])
+                                      }
+                                      addDialog("left",json['response_dialog']) //chinese
+                                      
+                                      //append to record table
+                                      var row_count = document.getElementById('record_body').rows.length; 
+                                      for (var i = 0; i < json['record_list'].length; i++){
+                                          var record = json['record_list'][i];
+                                          new_row = document.createElement('tr');
+                                          new_td = document.createElement('td');                                        
+                                          $(new_td).addClass('col-xs-1')
+                                                .html(row_count+1)
+                                                .appendTo($(new_row)); 
+                                                
+                                          for (var j=0; j< record.length; j++){
+                                            var element = record[j];
+                                            new_td = document.createElement('td');
+                                            if(j==0){
+                                              $(new_td).addClass('col-xs-3');
+                                            }
+                                            else{
+                                              $(new_td).addClass('col-xs-1');
+                                            }
+                                            $(new_td).html(element).appendTo($(new_row));                                          
+                                          }
+                                          $(new_row).appendTo($("#record_body"));
+                                          row_count+=1;
+                                      }
+                                      
+                                      //show hints
+                                      // if(json['hint'] != ''){
+                                      // addDialog("left",json['hint'])      
+                                      // }
+                                      // if(json['hint_trans'] != ''){
+                                      // addDialog("left",json['hint_trans'])      
+                                      // }
+
+                                      // update score
+                                      $("#score_value").html(json['score'])
+
+                                      if(json['success']==true){
+                                        $(".alert-success").show();
+                                        $("#answer_btn").hide();
+                                        $("#hint_btn").hide();
+                                        
+                                      }
+                          
+                                  },
+
+                                  // handle a non-successful response
+                                  error : function(xhr,errmsg,err) {
+                                      $('#question').val('{% trans "Oops! There is something wrong, please try again." %}');
+                                      $( "#loading" ).remove(); // remove the loading image
+                                      
+                                      console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
+                                      // alert("QQ"); 
+                                  }
+                              });
+                      }
+                    }
+
+                  </script>
+                
+              </div>
+            <!--</form>-->
+          </div>
+          </fieldset>
+
+            <br>
+            <div class="alert alert-success" role="alert" style="display: none;">
+              <p>{% trans 'Congratulations! You are right!' %}</p>
             </div>
-          </div>
 
+            <br>
+            <div class="col-xs-6" style="margin-left:-15px">
+              <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">{% trans 'Reveal the Answer' %}</button>
+              <script>
+                function show_answer() {
+                  document.getElementById("show_answer").style.display = "block";
+                  document.getElementById("fset").disabled = "true";
+                  document.getElementById("answer_btn").disabled = "true";
+                }
+              </script>
+            </div>
+            
+            <div class="col-xs-6" style="margin-left:-15px">
+              <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()" count=0>{% trans 'Hint' %}</button>
+              
+              <script>
+                function get_hint() {
+                  $.ajax({
+                    url: "{% url 'get_hint' %}",
+                    data: {
+                            answer : '{{answer}}',
+                            game_id : '{{game_id}}',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                          },
+                    type:"POST",
+
+                    success: function(json){
+                      
+                        h = json['hint'];
+
+                        if(json['hint_trans'].length > 0){
+                          addDialog("left",json['hint_trans'])      
+                        }
+                        if(h.length > 0){
+                        addDialog("left",h)
+                        }      
+                        
+                        hcount = document.getElementById("hint_btn").getAttribute('count');
+                        hcount = parseInt(hcount)+1;
+                        document.getElementById("hint_btn").setAttribute('count',hcount);
+                        
+                        if(hcount >= 3){
+                          document.getElementById("hint_btn").disabled = "true";
+                        }
+                        
+                        //update score
+                        $("#score_value").html(json['score'])
+                        
+                      
+                    },
+
+                    error:function(xhr,errmsg,err){ 
+                      console.log(xhr.status + ": " + xhr.responseText + errmsg);
+                    }
+                  });
+                }
+              </script>
+
+            </div>
+
+            <div class="col-xs-6" style="margin-left:-15px">
+              <div class="alert alert-info" id="show_answer" role="alert" style="display: none;">
+                {% trans 'Answer:' %} {{ answer_en }} {{ answer }}
+              </div>
+            </div>
+
+      </div> <!--end of row-->
       </div>
-    
+      
       <div class="col-xs-6">
         <table id='record' class="table table-hover" style="background-color:#FAFAFA; border-radius:8px;">
           <thead>
@@ -312,7 +331,8 @@
           </tbody>
         </table>
       </div>
-    </div>
+
+    </div> <!--<div class="col-xs-9">-->
   </div>
 </div>
 {% endblock content %}

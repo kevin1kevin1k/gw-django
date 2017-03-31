@@ -36,3 +36,11 @@
     margin-right:50%;
     
 }
+
+#score{
+    font-size: 18pt;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: 600;
+    color: #76C091;
+    text-align: right;
+}

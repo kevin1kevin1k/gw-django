@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-29 07:41+0000\n"
+"POT-Creation-Date: 2017-03-31 03:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,63 +33,75 @@ msgstr "玩遊戲"
 msgid "List of answers"
 msgstr "答案列表"
 
-#: game/templates/game/game.html:41 game/templates/game/game.html:47
+#: game/templates/game/game.html:42 game/templates/game/game.html:48
 msgid "Introduction"
 msgstr "說明"
 
-#: game/templates/game/game.html:43
+#: game/templates/game/game.html:44
+#, fuzzy
+#| msgid ""
+#| " The question sentence must contain 'it/he/she'. <br>\n"
+#| "                           You can guess the answer by asking a question "
+#| "(e.g. 'Is it airplane?'). <br>\n"
+#| "                           Or directly type the answer (e.g. 'Airplane'). "
+#| "<br>\n"
+#| "                        "
 msgid ""
 " The question sentence must contain 'it/he/she'. <br>\n"
-"                           You can guess the answer by asking a question (e."
+"                            You can guess the answer by asking a question (e."
 "g. 'Is it airplane?'). <br>\n"
-"                           Or directly type the answer (e.g. 'Airplane'). "
+"                            Or directly type the answer (e.g. 'Airplane'). "
 "<br>\n"
-"                        "
+"                          "
 msgstr ""
 "你的問題必須包含 '它/他/她' <br>\n"
 "你也用句子問也可以直接猜答案, 例如:飛機 <br>                        "
 
-#: game/templates/game/game.html:76
+#: game/templates/game/game.html:53
+msgid "Your score : "
+msgstr "分數 ： "
+
+#: game/templates/game/game.html:86
 msgid "Guess what is in my mind now!"
 msgstr "猜猜我在想什麼~"
 
-#: game/templates/game/game.html:86
+#: game/templates/game/game.html:96
 msgid "Ask a question.."
 msgstr "問個問題.."
 
-#: game/templates/game/game.html:88
+#: game/templates/game/game.html:98
 msgid "Submit"
 msgstr "送出"
 
-#: game/templates/game/game.html:214
+#: game/templates/game/game.html:229
 msgid "Oops! There is something wrong, please try again."
 msgstr "Oops! 錯誤發生，請再試一次! "
 
-#: game/templates/game/game.html:233
+#: game/templates/game/game.html:248
 msgid "Congratulations! You are right!"
 msgstr "恭喜答對!"
 
-#: game/templates/game/game.html:238
+#: game/templates/game/game.html:253
 msgid "Reveal the Answer"
 msgstr "公布答案"
 
-#: game/templates/game/game.html:249
+#: game/templates/game/game.html:264
 msgid "Hint"
 msgstr "提示"
 
-#: game/templates/game/game.html:287
+#: game/templates/game/game.html:314
 msgid "Answer:"
 msgstr "正確答案:"
 
-#: game/templates/game/game.html:302
+#: game/templates/game/game.html:326
 msgid "Question"
 msgstr "問題"
 
-#: game/templates/game/game.html:303
+#: game/templates/game/game.html:327
 msgid "Result"
 msgstr "結果"
 
-#: game/templates/game/game.html:304
+#: game/templates/game/game.html:328
 #, python-format
 msgid "Confidence(%%)"
 msgstr "信心(%%)"
