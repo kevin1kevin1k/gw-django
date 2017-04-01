@@ -26,6 +26,7 @@ git clone https://github.com/kevin1kevin1k/gw-django
 - Python 2.* (2.7 recommended)
 - django
 - django-crispy-forms
+- django-ipware
 - numpy
 - sklearn
 - scipy
@@ -37,22 +38,22 @@ You can directly `pip install` them, or install them in virtual environment with
 
 1. Install the virtualenv package and create venv
 
-    ```sh
+   ```sh
     pip install virtualenv
     virtualenv venv
-    ```
+   ```
 
 2. Activate the virtual environment
 
     If you are using Windows:
-    ```sh
+   ```sh
     venv\Scripts\activate
-    ```
+   ```
 
     For other users (Linux, Mac, etc.):
-    ```sh
+   ```sh
     source venv/bin/activate
-    ```
+   ```
 
 3. Now you can `pip install` them in the virtual environment.  
 
