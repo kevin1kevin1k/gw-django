@@ -100,11 +100,12 @@
                   <script>
 
                     //enter trigger
-                    $("#question").keyup(function(event){
-                        if(event.keyCode == 13){
-                            $("#enter").click();
-                        }
-                    });
+                    function submit_question(event){
+                      if(event.keyCode == 13){
+                          $("#enter").click();
+                      }
+                    }
+                    $("#question").keyup(submit_question);
                     
                     // $('#dialog_form').on('keyup keypress', function(e) {
                     //   var keyCode = e.keyCode || e.which;
@@ -131,12 +132,17 @@
                     }
 
                     function ask(event){
+                        //disable enter trigger
+                        // $("#question").keyup(function(e){return;});
+
                         //append users' dialog box
                         var q = document.getElementById("question").value;
                         if(!q || !q.trim().length){
                           return;
                         }
                         addDialog("right",q)
+
+                        $('#question').val(''); // remove the value from the input
 
                       //append loading image
                         var objDiv = document.getElementById("dialog");
@@ -162,7 +168,7 @@
 
                                   //timeout : 60000,
                                   success : function(json) {
-                                      $('#question').val(''); // remove the value from the input
+                                      // $('#question').val(''); // remove the value from the input
                                       $( "#loading" ).remove(); // remove the loading image
                                       // console.log("success"); // another sanity check                                    
                                       
@@ -231,7 +237,12 @@
                                       
                                       console.log(xhr.status + ": " + xhr.responseText + errmsg); // provide a bit more info about the error to the console
                                       // alert("QQ"); 
-                                  }
+                                  },
+                                  // complete : function(xhr,status) {
+                                  //   //recover enter triger
+                                  //   $("#question").keyup(submit_question);
+
+                                  // }
                               });
                       }
                     }
