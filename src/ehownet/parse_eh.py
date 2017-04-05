@@ -2,7 +2,7 @@
 
 import re
 from node2str import node2str
-
+import climb
 class Tree:
     '''
     A tree structure for the representation of the parsed result
@@ -180,15 +180,26 @@ if __name__ == '__main__':
     #         print def2sentence(def_root, depth)
     #         print
     
-    for s in l:
-        # remove unnecessary English
-        s = re.sub('(\|\w+)|(\w+\|)', '', s)
-        print s
-        root = parse(s)
-        # root.traverse()
-        print def2sentence(root)
-        print
+    # for s in l:
+    #     # remove unnecessary English
+    #     s = re.sub('(\|\w+)|(\w+\|)', '', s)
+    #     print s
+    #     root = parse(s)
+    #     # root.traverse()
+    #     print def2sentence(root)
+    #     print
         
-        # for k, v in root.collect().items():
-        #     print k, ','.join(v)
-        # print
+    #     # for k, v in root.collect().items():
+    #     #     print k, ','.join(v)
+    #     # print
+
+    test=['進口商', '蜜蜂', '雨靴', '冰箱', '理賠','鍋子','螃蟹','電話','牙醫師']
+    for term in test:
+        defs = climb.climb(term, strict=False, shorter=True)
+        if defs:
+            definition = defs[0]
+            definition = re.sub('(\|\w+)|(\w+\|)', '', definition)
+            print(definition)
+            def_root = parse(definition)
+            max_depth = def_root.get_depth()
+            print(def2sentence(def_root, max_depth))
