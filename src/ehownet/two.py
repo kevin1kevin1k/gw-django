@@ -6,9 +6,11 @@ import ancestors
 import synonym
 sys.path.append('src')
 from crawlData import getSimilarity
+from os.path import abspath, dirname, join
 
 content=[]
-with open('resources/eHowNet_utf8.csv', 'rb') as f:
+PATH = dirname(dirname(dirname(abspath(__file__))))
+with open(join(PATH, 'resources/eHowNet_utf8.csv'), 'rb') as f:
     reader = csv.reader(f, delimiter='\t')
     for line in reader:
         content.append(line)

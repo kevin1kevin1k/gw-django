@@ -1,8 +1,10 @@
 # coding: utf-8
 
 import sys
+from os.path import abspath, dirname, join
 
-f = open('resources/resultSimple.csv')
+PATH = dirname(dirname(dirname(abspath(__file__))))
+f = open(join(PATH, 'resources/resultSimple.csv'))
 lines = [line.rstrip() for line in f.readlines()]
 
 def check(word, line):
