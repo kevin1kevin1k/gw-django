@@ -193,7 +193,8 @@ if __name__ == '__main__':
     #     #     print k, ','.join(v)
     #     # print
 
-    test=['進口商', '蜜蜂', '雨靴', '冰箱', '理賠','鍋子','螃蟹','電話','牙醫師']
+    test=['進口商', '蜜蜂', '雨靴', '冰箱', '理賠','鍋子','螃蟹','電話','牙醫師','鑰匙','三明治','單翼','蛇','代書',
+            '鯨魚','布丁','河','茶','火藥','銀行','牛','火車','手電筒','閃電','披薩','櫃子','太空衣','未婚夫','口罩','心肌']
     for term in test:
         defs = climb.climb(term, strict=False, shorter=True)
         if defs:
@@ -203,3 +204,5 @@ if __name__ == '__main__':
             def_root = parse(definition)
             max_depth = def_root.get_depth()
             print(def2sentence(def_root, max_depth))
+        else:
+            print('no def')
