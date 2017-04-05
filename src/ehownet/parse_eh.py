@@ -127,20 +127,26 @@ def parse(s):
         
     return node
 
-def def2sentence(node, max_depth=0):
+def def2sentence(node, max_depth=-1):
     '''
     Input: A Tree node and an optional max_depth
     Output: The sentence constructed from the definition implied by node 
     '''
     
+    depth = node.get_depth()
+    if 0 <= max_depth < depth:
+        depth = max_depth
+    
     head = node.head
-    if max_depth == 0:
+    if depth == 0:
         return head
     links = {}
     for f, n in node.feat.items():
-        if n.head != '~':
-            links[f] = def2sentence(n, max_depth - 1)
-    return node2str(head, links)
+        if '~' not in n.head:
+            links[f] = def2sentence(n, depth - 1)
+    
+    ans = node2str(head, links)
+    return ans
 
 if __name__ == '__main__':
     # sample ehownet definitions/expansions

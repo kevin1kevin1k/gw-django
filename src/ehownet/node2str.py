@@ -1,6 +1,9 @@
 # encoding: utf-8
 
 def node2str(node_a,semantic_node_dict):
+	if not semantic_node_dict:
+		return node_a
+	
 	# ---------- define rule  ---------- 
 	direct_cat=["content","target","possession","theme"]
 	reverse_cat=["manner"]
@@ -67,10 +70,12 @@ def node2str(node_a,semantic_node_dict):
 			result+= "在" + node_b + "的" 
 		elif semantic in sname_location_cat:
 			result+= "在" + node_b + sname_translate[semantic] + "的" 
-
+		else:
+			result+= semantic_node_dict[semantic]
 		#last element
 		if i<len(semantic_node_dict)-1:
-			result+="且"
+			conj = '或' if node_a == 'or' else '且'
+			result+= conj
 
 	if end:
 		result+= end_node + "的" + node_a
