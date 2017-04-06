@@ -8,28 +8,32 @@
   <hr>
   <h3>
     
-    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
     {% trans 'The system randomly selects one of 200 words as the answer.' %}
     <br><br>
     
-    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
     {% trans 'You can keep asking questions, and try to guess the answer with the dialog as hints.' %}
     <br><br>
     
     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    {% trans "The question sentence must contain 'it/he/she'." %}
+    {% trans "The question sentence must contain 'it/he/she'. For example, you can ask 'Can it swim?'" %}
     <br><br>
     
-    <!--<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    如果覺得太難猜了，也有三個提示可以提供一些線索
-    <br><br>-->
-    
     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-    {% trans 'You can guess the answer by asking a question (e.g. "Is it airplane?").' %}
-    <br>
+    {% trans 'You can guess the answer by asking a question (e.g. "Is it airplane?"), or directly type the answer (e.g. "Airplane").' %}
+    <br><br>
 
-    {% trans 'Or directly type the answer (e.g. "Airplane").' %}
+    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+    {% trans 'There is a scrollable list of some candidate answers in the left.' %}
+    <br><br>
     
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    {% trans 'You can also use the hints by clicking on the hint button.' %}
+    <br><br>
+    
+    <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    {% trans 'Asking questions and using hints would decrease the score. Try to get higher score!' %}
     <br><br>
   </h3>
 </div>

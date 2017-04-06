@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-31 03:56+0000\n"
+"POT-Creation-Date: 2017-04-06 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,35 +73,35 @@ msgstr "問個問題.."
 msgid "Submit"
 msgstr "送出"
 
-#: game/templates/game/game.html:229
+#: game/templates/game/game.html:235
 msgid "Oops! There is something wrong, please try again."
 msgstr "Oops! 錯誤發生，請再試一次! "
 
-#: game/templates/game/game.html:248
+#: game/templates/game/game.html:259
 msgid "Congratulations! You are right!"
 msgstr "恭喜答對!"
 
-#: game/templates/game/game.html:253
+#: game/templates/game/game.html:264
 msgid "Reveal the Answer"
 msgstr "公布答案"
 
-#: game/templates/game/game.html:264
+#: game/templates/game/game.html:275
 msgid "Hint"
 msgstr "提示"
 
-#: game/templates/game/game.html:314
+#: game/templates/game/game.html:324
 msgid "Answer:"
 msgstr "正確答案:"
 
-#: game/templates/game/game.html:326
+#: game/templates/game/game.html:336
 msgid "Question"
 msgstr "問題"
 
-#: game/templates/game/game.html:327
+#: game/templates/game/game.html:337
 msgid "Result"
 msgstr "結果"
 
-#: game/templates/game/game.html:328
+#: game/templates/game/game.html:338
 #, python-format
 msgid "Confidence(%%)"
 msgstr "信心(%%)"
@@ -132,23 +132,36 @@ msgstr "登入"
 
 #: pages/templates/pages/home.html:12
 msgid "The system randomly selects one of 200 words as the answer."
-msgstr "電腦會隨機從200個詞裡面選出一個作為答案"
+msgstr "電腦會隨機從200個詞裡面選出一個作為答案。"
 
 #: pages/templates/pages/home.html:16
 msgid ""
 "You can keep asking questions, and try to guess the answer with the dialog "
 "as hints."
-msgstr "你可以不斷問問題，從對話中猜猜看答案是什麼"
+msgstr "你可以不斷問問題，從對話中猜猜看答案是什麼。"
 
 #: pages/templates/pages/home.html:20
-msgid "The question sentence must contain 'it/he/she'."
-msgstr "你的問題裡必須包含 '它/他/她'"
+msgid ""
+"The question sentence must contain 'it/he/she'. For example, you can ask "
+"'Can it swim?'"
+msgstr "你的問題裡必須包含 它/他/她。例如，你可以問「它會游泳嗎？」"
+
+#: pages/templates/pages/home.html:24
+msgid ""
+"You can guess the answer by asking a question (e.g. \"Is it airplane?\"), or "
+"directly type the answer (e.g. \"Airplane\")."
+msgstr "你可以用句子猜答案，例如：它是飛機嗎？也可以直接猜答案，例如：飛機。"
 
 #: pages/templates/pages/home.html:28
-msgid ""
-"You can guess the answer by asking a question (e.g. \"Is it airplane?\")."
-msgstr "你可以用句子猜答案，例如: 它是飛機嗎?"
+msgid "There is a scrollable list of some candidate answers in the left."
+msgstr "左邊有一個捲動式答案列表可以參考。"
 
-#: pages/templates/pages/home.html:31
-msgid "Or directly type the answer (e.g. \"Airplane\")."
-msgstr "也可以直接猜答案，例如: 飛機"
+#: pages/templates/pages/home.html:32
+msgid "You can also use the hints by clicking on the hint button."
+msgstr "也可以按提示鈕獲得提示。"
+
+#: pages/templates/pages/home.html:36
+msgid ""
+"Asking questions and using hints would decrease the score. Try to get higher "
+"score!"
+msgstr "問問題及使用提示都會讓分數降低。試著獲得高分吧！"
