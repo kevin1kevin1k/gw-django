@@ -1,9 +1,10 @@
+django==1.10
 django-crispy-forms
 numpy
 scipy
-scikit-learn
+scikit-learn==0.18
 simplejson
 bs4
-gensim
+gensim==0.13.2
 django-ipware
 
