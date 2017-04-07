@@ -1,5 +1,6 @@
 {% extends 'game/base.html' %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}{% trans 'Play the game!' %} | {{ block.super }}{% endblock title %}
 
@@ -147,7 +148,7 @@
                       //append loading image
                         var objDiv = document.getElementById("dialog");
                         objDiv.innerHTML += `<div class='conversation_item'> 
-                        <div id='loading'><img src="http://people.cs.nctu.edu.tw/~cyhuang9656/loading.gif" alt="LOADING" style="width:40px">
+                        <div id='loading'><img src="{% static "img/loading.gif" %}" alt="LOADING" style="width:40px">
                         </div></div>`
                         objDiv.scrollTop = objDiv.scrollHeight;
 
