@@ -162,7 +162,7 @@ def get_result(request):
             if '?' not in question_trans:
                 question_trans = question_trans+'?'        
             question_trans = gt.translate(question_trans,tl='en',sl='zh-tw')
-            question_trans = question_trans.replace('he','it')
+            question_trans = question_trans.replace(' he ',' it ')
 
         # print 'POST data:'
         # for k in data:
@@ -249,7 +249,7 @@ def get_result(request):
                         small_trans = gt.translate(small_q,sl='zh-tw',tl='en')                       
                     else:
                         small_trans = question_trans
-                    small_trans = small_trans.replace('he','it')
+                    small_trans = small_trans.replace(' he ',' it ')
                     small_q = '{} ({})'.format(small_q, small_trans)
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
                 score_diff = -1 # one question minus 1 point
@@ -431,7 +431,7 @@ def update_user_check(request):
         i = 0
         for cvalue, wvalue in zip(correct_values, wrong_values):
             cvalue = cvalue.encode('utf-8')
-            wvalue = cvalue.encode('utf-8')
+            wvalue = wvalue.encode('utf-8')
             qo = questions[i]
             i+=1
 
