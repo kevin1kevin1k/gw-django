@@ -149,15 +149,20 @@ def get_result(request):
 
         if request.LANGUAGE_CODE == 'en':
             print('english mode!')
-            question_origin = question
-            if '?' not in question:
-                question = question+'?'
-            question = question.replace('it','he')                
-            question = gt.translate(question,sl='en',tl='zh-tw')
-            question = question.replace('？','').replace('?','')
-            if '他' not in question and '它' not in question and len(question.decode('utf-8'))>3:
-                question = '它'+question
+            # question_origin = question
+            # if '?' not in question:
+            #     question = question+'?'
+            # question = question.replace('it','he')                
+            # question = gt.translate(question,sl='en',tl='zh-tw')
+            # question = question.replace('？','').replace('?','')
+            # if '他' not in question and '它' not in question and len(question.decode('utf-8'))>3:
+            #     question = '它'+question
 
+            question_trans = question
+            if '?' not in question_trans:
+                question_trans = question_trans+'?'        
+            question_trans = gt.translate(question_trans,tl='en',sl='zh-tw')
+            question_trans = question_trans.replace('he','it')
 
         # print 'POST data:'
         # for k in data:
@@ -241,9 +246,11 @@ def get_result(request):
                 small_q = result.answer_str.replace('不', '').replace('沒有', '有').replace('無關', '有關')+'嗎'   
                 if request.LANGUAGE_CODE == 'en':
                     if small_q != question.replace('他','它'):
-                        small_q = gt.translate(small_q,sl='zh-tw',tl='en')                       
+                        small_trans = gt.translate(small_q,sl='zh-tw',tl='en')                       
                     else:
-                        small_q = question_origin
+                        small_trans = question_trans
+                    small_trans = small_trans.replace('he','it')
+                    small_q = '{} ({})'.format(small_q, small_trans)
                 record_list.append([small_q, result.label, format(float(result.conf)*100, '.2f')])
                 score_diff = -1 # one question minus 1 point
 
@@ -317,7 +324,7 @@ def get_result(request):
                 dialog_en.append(gt.translate(subs,sl='zh-tw',tl='en'))
             response_dialog_en = ','.join(dialog_en)
 
-            contexts['question_trans'] = question
+            contexts['question_trans'] = question_trans
             contexts['response_dialog_trans'] = response_dialog_en
 
             # if hint:
