@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-06 14:46+0000\n"
+"POT-Creation-Date: 2017-11-26 15:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,28 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: game/templates/game/answer_detail.html:11 game/templates/game/game.html:490
+#: game/templates/game/game_detail.html:12
+msgid "Question"
+msgstr "問題"
+
+#: game/templates/game/answer_detail.html:12 game/templates/game/game.html:491
+#: game/templates/game/game_detail.html:13
+msgid "Result"
+msgstr "結果"
+
+#: game/templates/game/answer_detail.html:13
+#: game/templates/game/game_detail.html:14
+msgid "Source"
+msgstr "來源"
+
+#: game/templates/game/answer_detail.html:14
+#: game/templates/game/game_detail.html:15
+#, fuzzy
+#| msgid "Confidence(%%)"
+msgid "Confidence"
+msgstr "信心(%%)"
 
 #: game/templates/game/answer_list.html:4 pages/templates/pages/base.html:26
 msgid "List of Answers"
@@ -25,19 +47,19 @@ msgstr "答案列表"
 msgid "Add an answer"
 msgstr "新增答案"
 
-#: game/templates/game/game.html:4
+#: game/templates/game/game.html:5
 msgid "Play the game!"
 msgstr "玩遊戲"
 
-#: game/templates/game/game.html:12
+#: game/templates/game/game.html:13
 msgid "List of answers"
 msgstr "答案列表"
 
-#: game/templates/game/game.html:42 game/templates/game/game.html:48
+#: game/templates/game/game.html:43 game/templates/game/game.html:49
 msgid "Introduction"
 msgstr "說明"
 
-#: game/templates/game/game.html:44
+#: game/templates/game/game.html:45
 #, fuzzy
 #| msgid ""
 #| " The question sentence must contain 'it/he/she'. <br>\n"
@@ -57,54 +79,100 @@ msgstr ""
 "你的問題必須包含 '它/他/她' <br>\n"
 "你也用句子問也可以直接猜答案, 例如:飛機 <br>                        "
 
-#: game/templates/game/game.html:53
+#: game/templates/game/game.html:54
 msgid "Your score : "
 msgstr "分數 ： "
 
-#: game/templates/game/game.html:86
+#: game/templates/game/game.html:87
 msgid "Guess what is in my mind now!"
 msgstr "猜猜我在想什麼~"
 
-#: game/templates/game/game.html:96
+#: game/templates/game/game.html:97
 msgid "Ask a question.."
 msgstr "問個問題.."
 
-#: game/templates/game/game.html:98
+#: game/templates/game/game.html:99 game/templates/game/game.html:352
 msgid "Submit"
 msgstr "送出"
 
-#: game/templates/game/game.html:235
+#: game/templates/game/game.html:253
+msgid "Correct　"
+msgstr "正確　"
+
+#: game/templates/game/game.html:254
+msgid "Wrong　"
+msgstr "錯誤　"
+
+#: game/templates/game/game.html:261
+msgid "Correct"
+msgstr "正確"
+
+#: game/templates/game/game.html:261
+msgid "Wrong"
+msgstr "錯誤"
+
+#: game/templates/game/game.html:297
 msgid "Oops! There is something wrong, please try again."
 msgstr "Oops! 錯誤發生，請再試一次! "
 
-#: game/templates/game/game.html:259
+#: game/templates/game/game.html:321
 msgid "Congratulations! You are right!"
 msgstr "恭喜答對!"
 
-#: game/templates/game/game.html:264
+#: game/templates/game/game.html:326
 msgid "Reveal the Answer"
 msgstr "公布答案"
 
-#: game/templates/game/game.html:275
-msgid "Hint"
-msgstr "提示"
-
-#: game/templates/game/game.html:324
+#: game/templates/game/game.html:339 game/templates/game/game.html:478
 msgid "Answer:"
 msgstr "正確答案:"
 
-#: game/templates/game/game.html:336
-msgid "Question"
+#: game/templates/game/game.html:344
+#, fuzzy
+#| msgid "Question"
+msgid "Questions"
 msgstr "問題"
 
-#: game/templates/game/game.html:337
-msgid "Result"
-msgstr "結果"
+#: game/templates/game/game.html:345
+msgid "System outputs"
+msgstr "系統答案"
 
-#: game/templates/game/game.html:338
+#: game/templates/game/game.html:346
+msgid "Check"
+msgstr "確認"
+
+#: game/templates/game/game.html:353
+msgid "Skip"
+msgstr "跳過"
+
+#: game/templates/game/game.html:373
+msgid "Hint"
+msgstr "提示"
+
+#: game/templates/game/game.html:492
 #, python-format
 msgid "Confidence(%%)"
 msgstr "信心(%%)"
+
+#: game/templates/game/game_detail.html:16
+msgid "User Label"
+msgstr "使用者標記"
+
+#: game/templates/game/game_list.html:4 pages/templates/pages/base.html:27
+msgid "List of Games"
+msgstr "遊戲列表"
+
+#: game/templates/game/game_list.html:12
+msgid "Game id"
+msgstr "遊戲 id"
+
+#: game/templates/game/game_list.html:13
+msgid "Score"
+msgstr "分數"
+
+#: game/templates/game/game_list.html:14
+msgid "Answer"
+msgstr "答案"
 
 #: gw/settings/base.py:118
 msgid "English"
@@ -118,17 +186,21 @@ msgstr "中文"
 msgid "New Game"
 msgstr "新遊戲"
 
-#: pages/templates/pages/base.html:31
+#: pages/templates/pages/base.html:32
 msgid "Admin"
 msgstr "管理"
 
-#: pages/templates/pages/base.html:39
+#: pages/templates/pages/base.html:40
 msgid "Logout"
 msgstr "登出"
 
-#: pages/templates/pages/base.html:41
+#: pages/templates/pages/base.html:42
 msgid "Login"
 msgstr "登入"
+
+#: pages/templates/pages/base.html:58
+msgid "改變語言"
+msgstr "Change Language"
 
 #: pages/templates/pages/home.html:12
 msgid "The system randomly selects one of 200 words as the answer."
@@ -165,3 +237,6 @@ msgid ""
 "Asking questions and using hints would decrease the score. Try to get higher "
 "score!"
 msgstr "問問題及使用提示都會讓分數降低。試著獲得高分吧！"
+
+#~ msgid "Change Language"
+#~ msgstr "改變語言"
