@@ -1,0 +1,32 @@
+{% extends 'game/base.html' %}
+
+{% block title %} {{game.pk}} {{ game.answer.name }} {{ game.answer.name_en }} | {{ block.super }}{% endblock title %}
+
+{% load i18n %}
+{% block content %}
+<div class="container">
+  <h1 style="margin-left: 20px">{{ game.answer.name }} {{ game.answer.name_en }}</h1>
+  <table class="table table-hover" style="margin-left: 20px">
+    <thead>
+      <tr>
+        <th>{% trans 'Question' %}</th>
+        <th>{% trans 'Result' %}</th>
+        <th>{% trans 'Source' %}</th>
+        <th>{% trans 'Confidence' %}</th>
+        <th>{% trans 'User Label' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ques in questions %}
+        <tr>
+          <td>{{ ques.content }}</td>
+          <td>{{ ques.label }}</td>
+          <td>{{ ques.source }}</td>
+          <td>{{ ques.confidence_score }}</td>
+          <td>{{ ques.user_label |yesno:"V, X,--" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}

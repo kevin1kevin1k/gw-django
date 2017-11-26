@@ -86,7 +86,23 @@ def game(request):
     }
 
     return render(request, 'game/game.html', contexts)
-    
+ 
+def game_list(request):
+    games = Game.objects.order_by('-pk')
+    valid_games = []
+    for g in games:
+        if g.questions.count() > 0:
+            valid_games.append(g)
+    return render(request, 'game/game_list.html', {'games': valid_games})
+
+def game_detail(request, pk):
+    try:
+        game = Game.objects.get(pk=pk)
+        questions = game.questions.all()
+    except Answer.DoesNotExist:
+        raise Http404
+    return render(request, 'game/game_detail.html', {'game': game, 'questions':questions})
+
 def answer_list(request):
     answers = Answer.objects.all()
     return render(request, 'game/answer_list.html', {'answers': answers})

@@ -11,6 +11,14 @@ class Answer(models.Model):
     def get_absolute_url(self):
         return reverse('answer_detail', kwargs={'pk': self.pk})
 
+    def get_valid_games_count(self):
+        games = self.games.all()
+        gcount = 0
+        for g in games:
+            if g.questions.count() > 0:
+                gcount+=1
+        return gcount
+
 class Game(models.Model):
     '''record each game'''
     user_id = models.IntegerField(default=0)
@@ -22,6 +30,8 @@ class Game(models.Model):
     original_questions = models.ManyToManyField('Original_Question')
     #questions
     #hints
+    def get_absolute_url(self):
+            return reverse('game_detail', kwargs={'pk': self.pk})
 
 class Hint(models.Model):
     game = models.ForeignKey('Game', related_name='hints', null=True)
