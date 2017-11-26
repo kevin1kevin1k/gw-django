@@ -392,4 +392,35 @@ def get_hint(request):
 
         contexts ={'hint' : hint , 'hint_trans' : hint_trans, 'score' : game.score }
         return HttpResponse(json.dumps(contexts),content_type="application/json")
-        
+
+def update_user_check(request):
+    if request.method == 'POST':
+        game_id =  request.POST.get('game_id')
+        answer =  request.POST.get('answer').encode('utf-8')
+        correct_values = request.POST.getlist('correct_values[]')
+        wrong_values = request.POST.getlist('wrong_values[]')
+        print(correct_values)
+        print(wrong_values)
+
+        game = Game.objects.get(id=game_id)
+        questions= game.questions.all()
+        print(len(questions))
+        i = 0
+        for cvalue, wvalue in zip(correct_values, wrong_values):
+            cvalue = cvalue.encode('utf-8')
+            wvalue = cvalue.encode('utf-8')
+            qo = questions[i]
+            i+=1
+
+            if cvalue =='false' and wvalue=='false': #user沒作答
+                continue
+            elif cvalue == 'true':
+                qo.user_label = True
+            elif wvalue == 'true':
+                qo.user_label = False
+            qo.save()
+
+        return HttpResponse(json.dumps({'success':1}),content_type="application/json")
+
+    else:
+        return HttpResponse(json.dumps({'success':0}),content_type="application/json")

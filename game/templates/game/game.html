@@ -211,6 +211,62 @@
                                           row_count+=1;
                                       }
                                       
+                                      //append to user check tables
+                                      var row_count = document.getElementById('user-check').rows.length;
+
+                                      for (var i = 0; i < json['record_list'].length; i++){
+                                          row_count+=1;
+
+                                          var record = json['record_list'][i];
+                                          new_row = document.createElement('tr');
+
+                                          // question content
+                                          new_td = document.createElement('td');          
+                                          $(new_td).addClass('col-xs-3 question-to-check');
+                                          $(new_td).html(record[0]).appendTo($(new_row)); 
+
+                                          // label
+                                          new_td = document.createElement('td');          
+                                          $(new_td).addClass('col-xs-3');
+                                          $(new_td).html(record[1]).appendTo($(new_row)); 
+
+                                          //check
+                                          new_td = document.createElement('td');
+                                          var check_form = document.createElement('form');
+                                          var radio_name = 'check-' + row_count.toString();
+
+                                          var c_input = document.createElement('input');
+                                          var w_input = document.createElement('input');
+
+                                          c_input.type = "radio";
+                                          w_input.type = "radio";
+                                          c_input.name = radio_name;
+                                          w_input.name = radio_name;
+                                          c_input.id = "correct-" + row_count.toString();
+                                          w_input.id = "wrong-" + row_count.toString();
+                                          $(c_input).addClass('check-correct');
+                                          $(w_input).addClass('check-wrong');
+                                          var c_label = document.createElement('label');
+                                          var w_label = document.createElement('label');
+                                          c_label.setAttribute('for',c_input.id);
+                                          w_label.setAttribute('for',w_input.id);
+                                          $(c_label).html('{% trans "Correct　" %}');
+                                          $(w_label).html('{% trans "Wrong　" %}');
+                                          $(c_input).appendTo($(check_form));
+                                          $(c_label).appendTo($(check_form));
+                                          $(w_input).appendTo($(check_form));
+                                          $(w_label).appendTo($(check_form));
+                                          $(check_form).appendTo($(new_td));
+
+                                          // var check = '<form><span class="radio"><input type="radio" name="check" id = "correct" class="check-correct" value=""><label for="correct">{% trans "Correct" %}</label></span><span class="radio"><input type="radio" name="check" id="wrong" class="check-wrong" value=""><label for="wrong">{% trans "Wrong" %}</label></span></form>';
+                                          $(new_td).addClass('col-xs-2');
+                                          // $(new_td).html(check).appendTo($(new_row)); 
+                                          $(new_td).appendTo($(new_row)); 
+
+                                          $(new_row).appendTo($("#user-check"));
+
+                                      }
+
                                       //show hints
                                       // if(json['hint'] != ''){
                                       // addDialog("left",json['hint'])      
@@ -226,6 +282,7 @@
                                         $(".alert-success").show();
                                         $("#answer_btn").hide();
                                         $("#hint_btn").hide();
+                                        $('#user-check-modal').modal('toggle');
                                         
                                       }
                           
@@ -263,12 +320,48 @@
             <br>
             <div class="col-xs-6" style="margin-left:-15px">
               <button id="answer_btn" type="button" class="btn btn-default" onclick="show_answer()">{% trans 'Reveal the Answer' %}</button>
+              
+              <!-- Trigger the modal with a button -->
+<!--               <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#user-check-modal">Open Modal</button> -->
+
+              <!-- Modal -->
+              <div id="user-check-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">{% trans 'Answer:' %} {{answer}}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <table id="user-check" class="table table-hover">
+                        <tr>
+                          <th class='col-xs-3'>{% trans 'Questions' %}</th>
+                          <th class='col-xs-2'>{% trans 'System outputs' %}</th>
+                          <th class='col-xs-3'>{% trans 'Check' %}</th>
+                        </tr>
+                      </table>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" onclick="send_user_check()">{% trans 'Submit' %}</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">{% trans 'Skip' %}</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+
               <script>
                 function show_answer() {
                   document.getElementById("show_answer").style.display = "block";
                   document.getElementById("fset").disabled = "true";
                   document.getElementById("answer_btn").disabled = "true";
+                  $('#user-check-modal').modal('toggle');
                 }
+
               </script>
             </div>
             
@@ -276,6 +369,62 @@
               <button id="hint_btn" type="button" class="btn btn-default" onclick="get_hint()" count=0>{% trans 'Hint' %}</button>
               
               <script>
+                function send_user_check() {
+                  var checked_correct = document.getElementsByClassName("check-correct");
+                  var checked_wrong = document.getElementsByClassName("check-wrong");
+                  var correct_values = [];
+                  var wrong_values = [];
+
+                  if(checked_correct.length==0 || checked_wrong.length==0){
+                    return;
+                  } 
+
+                  var i;
+                  at_least_one = false;
+                  for (i = 0; i < checked_correct.length; i++) {
+                      var correct_radio = checked_correct[i];
+                      correct_values.push(correct_radio.checked);
+                      var wrong_radio = checked_wrong[i];
+                      wrong_values.push(wrong_radio.checked);
+
+                      if(correct_radio.checked || wrong_radio.checked){
+                        at_least_one = true; 
+                      }
+                  };
+
+                  if (!at_least_one){
+                    // console.log('hi');
+                    return;
+                  }
+
+                  $.ajax({
+                    url: "{% url 'check' %}",
+                    data: {
+                            answer : '{{answer}}',
+                            game_id : '{{game_id}}',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            correct_values : correct_values,
+                            wrong_values : wrong_values,
+                          },
+                    type:"POST",
+
+                    success: function(json){
+                        success = json['success'];
+                        if(!success){
+                          console.log('user check error');
+                        }
+
+                        $('#user-check-modal').modal('hide');
+
+                    },
+
+                    error:function(xhr,errmsg,err){ 
+                      console.log(xhr.status + ": " + xhr.responseText + errmsg);
+                    }
+                  });
+                }
+
+
                 function get_hint() {
                   $.ajax({
                     url: "{% url 'get_hint' %}",

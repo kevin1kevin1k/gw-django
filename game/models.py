@@ -37,6 +37,7 @@ class Question(models.Model):
     source = models.CharField(max_length=10, blank=True) # the result is given by which component
     confidence_score = models.FloatField(default=0)
     created_time = models.DateTimeField(auto_now_add=True)
+    user_label = models.NullBooleanField(null=True)
     
     def __unicode__(self):
         return self.content
