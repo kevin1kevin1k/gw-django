@@ -241,7 +241,7 @@ class Responder():
                 #if answer and keyword don't both appear in the text content, response no
                 if features[0]==0:
                     print 'answer and keyword list do not both appear in the text content'
-                    answer_lst.append((keyword,key, 'N',"Model",'1'))
+                    answer_lst.append((keyword,key, 'N',"Classifier",'1'))
                     continue
 
                 start = time.clock()
@@ -252,7 +252,7 @@ class Responder():
                 end = time.clock()
                 scale_prob = (prob[0,max_ind] - 0.5) * 1.6 + 0.1
                 print "prediction time consuming: ",end - start
-                answer_lst.append((keyword,key, pred,"Model",str(scale_prob)))
+                answer_lst.append((keyword,key, pred,"Classifier",str(scale_prob)))
 
         temp=[(item[0],item[2],item[1]) for item in answer_lst ]
         answer_sentence=self.responseSentence(new_question,temp)
