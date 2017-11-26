@@ -5,15 +5,16 @@
 
 {% block content %}
 <div class="container">
-  <a href="{% url 'answer_create' %}" class="btn btn-default">{% trans 'Add an answer' %}</a>
+  <!-- <a href="{% url 'answer_create' %}" class="btn btn-default">{% trans 'Add an answer' %}</a> -->
   <hr>
   {% for answer in answers %}
     <div class="answer" style="margin-left: 20px">
       <h2>
         <a href="{{ answer.get_absolute_url }}">
           {{ answer.name }} {{ answer.name_en }}
-          {% if answer.questions.all %}
-            <span class="label label-info">{{ answer.questions.all|length }}</span>
+          {% if answer.get_valid_games_count %}
+            <!-- <span class="label label-info">{{ answer.games.all|length }}</span> -->
+            <span class="label label-info">{{ answer.get_valid_games_count }}</span>
           {% endif %}
         </a>
       </h2>
