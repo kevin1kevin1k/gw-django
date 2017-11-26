@@ -265,6 +265,10 @@
 
                                           $(new_row).appendTo($("#user-check"));
 
+                                          if(record[1].includes('AC')){
+                                            new_row.style.display= 'none';
+                                          }
+
                                       }
 
                                       //show hints
