@@ -19,7 +19,13 @@
       <tr>
           
           <td > <a href="{{ game.get_absolute_url }}"> Game - {{game.pk}}  </a> </td>
-          <td> {{game.score}}  </td>
+          <td> 
+          {% if game.is_finished %} 
+            {{ game.score }}
+          {% else %}
+            --
+          {% endif %}
+          </td>
           <td> {{ game.answer.name }} {{ game.answer.name_en }} </td>
           
       </tr>
